@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo navegável de jornada — comprador-cancela-antes-coleta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a; --ink-soft: #3d3d3d; --ink-light: #8a8a8a; --ink-faint: #c8c8c8;
+  --paper: #fcfcfa; --paper-edge: #f3f1e8;
+  --yellow: #fff2a8; --yellow-dim: #ffe771; --yellow-edge: #e6c732;
+  --green-soft: #c9e6b8; --red-soft: #f4b8b0; --blue-soft: #b8d4f0; --orange-soft: #f5d0a0;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: 'Patrick Hand', cursive; background: var(--paper); color: var(--ink); font-size: 15px; line-height: 1.4; }
+h1, h2, h3, .h-caveat { font-family: 'Caveat', cursive; }
+
+.bh-shell { display: grid; grid-template-rows: 56px 1fr; grid-template-columns: 240px 1fr; grid-template-areas: "topbar topbar" "sidebar main"; min-height: 100vh; }
+
+.bh-topbar { grid-area: topbar; position: sticky; top: 0; z-index: 100; background: var(--paper); border-bottom: 2px solid var(--ink); display: flex; align-items: center; padding: 0 18px; gap: 18px; }
+.bh-logo { font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700; background: var(--yellow); border: 1.8px solid var(--ink); border-radius: 100px; padding: 2px 14px; transform: rotate(-3deg); }
+.bh-breadcrumb { font-size: 13.5px; color: var(--ink-soft); flex: 1; }
+.bh-breadcrumb b { color: var(--ink); font-weight: 700; }
+.bh-breadcrumb .sep { color: var(--ink-light); margin: 0 6px; }
+.bh-search { width: 220px; border: 1.5px dashed var(--ink-light); border-radius: 100px; padding: 4px 14px; font-size: 12.5px; color: var(--ink-light); background: var(--paper-edge); }
+.bh-user { display: flex; align-items: center; gap: 8px; font-size: 13px; border: 1.5px solid var(--ink); border-radius: 100px; padding: 3px 12px 3px 4px; background: var(--paper); }
+.bh-user .avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--blue-soft); border: 1.5px solid var(--ink); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; }
+
+.bh-sidebar { grid-area: sidebar; position: sticky; top: 56px; height: calc(100vh - 56px); background: var(--paper-edge); border-right: 2px solid var(--ink); overflow-y: auto; padding: 12px 8px; }
+.nav-section { margin-bottom: 14px; }
+.nav-group-title { font-size: 10.5px; color: var(--ink-light); text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 10px; }
+.nav-item { display: flex; align-items: center; gap: 8px; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--ink-soft); margin-bottom: 1px; }
+.nav-item:hover { background: var(--paper); }
+.nav-item.active { background: var(--yellow); color: var(--ink); font-weight: 700; box-shadow: 2px 2px 0 var(--ink); transform: translate(-1px, -1px); }
+.nav-item .badge { margin-left: auto; background: var(--red-soft); border: 1.2px solid var(--ink); border-radius: 100px; padding: 0 6px; font-size: 10px; font-weight: 700; }
+.nav-item .ico { width: 14px; font-size: 12px; opacity: 0.7; }
+
+.bh-main { grid-area: main; padding: 20px 28px 100px; overflow-x: hidden; }
+
+.journey-stepper-wrap { border: 1.8px solid var(--ink); border-radius: 6px; background: var(--paper); padding: 10px 16px; margin-bottom: 16px; box-shadow: 3px 3px 0 var(--ink); }
+.journey-stepper-wrap .title { font-family: 'Caveat', cursive; font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.journey-stepper { display: flex; gap: 4px; }
+.journey-stepper .step { flex: 1; padding: 4px 6px; border: 1.4px solid var(--ink-light); border-radius: 4px; background: var(--paper); font-size: 10.5px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.journey-stepper .step:hover { background: var(--yellow-dim); }
+.journey-stepper .step.done { background: var(--paper-edge); border-color: var(--ink); color: var(--ink-soft); }
+.journey-stepper .step.current { background: var(--yellow); border-color: var(--ink); font-weight: 700; box-shadow: 2px 2px 0 var(--ink); }
+.journey-stepper .step.final { background: var(--paper-edge); border-color: var(--ink); font-weight: 700; }
+.journey-stepper .step .num { font-family: 'Caveat', cursive; font-weight: 700; font-size: 13px; }
+.journey-stepper .step .lbl { font-size: 10px; }
+
+.view { display: none; }
+.view.active { display: block; animation: fadeIn 0.2s; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.journey-nav-bar { position: fixed; bottom: 0; left: 240px; right: 0; background: var(--paper-edge); border-top: 1.8px solid var(--ink); padding: 10px 28px; display: flex; gap: 10px; align-items: center; z-index: 30; }
+.journey-nav-bar .meta-tag { font-size: 11.5px; color: var(--ink-light); font-style: italic; }
+
+.under-construction { border: 1.8px dashed var(--ink-light); border-radius: 8px; padding: 40px; background: var(--paper-edge); text-align: center; }
+.under-construction .big { font-family: 'Caveat', cursive; font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+.under-construction .sub { font-size: 13.5px; color: var(--ink-soft); }
+.stub-list { border: 1.5px solid var(--ink); border-radius: 5px; overflow: hidden; background: var(--paper); }
+.stub-list .row { display: flex; padding: 6px 12px; gap: 10px; border-bottom: 1px dashed var(--ink-light); align-items: center; font-size: 12.5px; }
+.stub-list .row:last-child { border: 0; }
+.stub-list .row.head { background: var(--paper-edge); font-weight: 700; font-size: 10.5px; color: var(--ink-soft); text-transform: uppercase; }
+
+/* ===== FILA-PEDIDOS bits ===== */
+.page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.page-header h2 { font-size: 24px; margin: 0; }
+.page-header .ctas { margin-left: auto; display: flex; gap: 6px; }
+
+.banner-cancel { border: 1.8px solid var(--ink); background: var(--red-soft); padding: 10px 14px; border-radius: 6px; margin-bottom: 14px; display: flex; gap: 10px; align-items: center; box-shadow: 3px 3px 0 var(--ink); }
+.banner-cancel b { font-family: 'Caveat', cursive; font-size: 16px; }
+
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
+.kpi { border: 1.5px solid var(--ink); border-radius: 5px; padding: 10px; background: var(--paper); text-align: center; box-shadow: 2px 2px 0 var(--ink); }
+.kpi .v { font-family: 'Caveat', cursive; font-size: 28px; font-weight: 700; line-height: 1; }
+.kpi .l { font-size: 10.5px; color: var(--ink-light); text-transform: uppercase; }
+.kpi.danger { background: var(--red-soft); }
+.kpi.warn { background: var(--orange-soft); }
+.kpi.green { background: var(--green-soft); }
+
+.filter-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+.filter-row .dd { border: 1.5px dashed var(--ink-light); padding: 3px 10px; border-radius: 5px; background: var(--paper); font-size: 12px; }
+.filter-row .search { flex: 1; max-width: 200px; border: 1.5px solid var(--ink); border-radius: 100px; padding: 3px 12px; font-size: 12px; background: var(--paper); margin-left: auto; }
+
+.dense-table { border: 1.5px solid var(--ink); border-radius: 5px; overflow: hidden; font-size: 12.5px; background: var(--paper); box-shadow: 3px 3px 0 var(--ink); }
+.dense-table .tr { display: flex; border-bottom: 1px dashed var(--ink-light); padding: 5px 10px; gap: 8px; align-items: center; cursor: pointer; }
+.dense-table .tr:last-child { border: 0; }
+.dense-table .tr:hover { background: var(--yellow-dim); }
+.dense-table .tr.head { background: var(--paper-edge); font-weight: 700; font-size: 10.5px; color: var(--ink-soft); text-transform: uppercase; cursor: default; }
+.dense-table .tr.head:hover { background: var(--paper-edge); }
+.dense-table .tr.risk { background: var(--red-soft); border: 2px solid var(--ink); border-radius: 4px; }
+.dense-table .tr.warn { background: var(--orange-soft); }
+.dense-table .col { flex: 1; }
+.dense-table .col-w-s { flex: 0.5; }
+.dense-table .col-w-m { flex: 0.7; }
+
+/* ===== DETALHE-PEDIDO bits ===== */
+.dp-header { border: 1.8px solid var(--ink); border-radius: 6px; padding: 8px 12px; box-shadow: 3px 3px 0 var(--ink); background: var(--paper); margin-bottom: 12px; }
+.dp-header .row { display: flex; gap: 10px; align-items: center; }
+.dp-header .id { font-weight: 700; font-size: 14px; }
+.top-actions { background: var(--yellow-dim); border: 1.5px solid var(--ink); border-radius: 5px; padding: 7px 12px; display: flex; gap: 8px; align-items: center; box-shadow: 2px 2px 0 var(--ink); margin-bottom: 12px; }
+.top-actions.danger { background: var(--red-soft); }
+.top-actions.warn { background: var(--orange-soft); }
+.main-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 14px; }
+
+.card { border: 1.5px solid var(--ink); border-radius: 6px; padding: 12px 14px; background: var(--paper); box-shadow: 3px 3px 0 var(--ink); margin-bottom: 14px; }
+.card .title { font-family: 'Caveat', cursive; font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+
+.routing-table { border: 1.5px solid var(--ink); border-radius: 4px; overflow: hidden; font-size: 12px; }
+.routing-table .row { display: flex; padding: 4px 10px; gap: 8px; border-bottom: 1px dashed var(--ink-light); }
+.routing-table .row:last-child { border: 0; }
+.routing-table .row.head { background: var(--paper-edge); font-weight: 700; font-size: 10.5px; color: var(--ink-soft); text-transform: uppercase; }
+.routing-table .col { flex: 1; }
+
+.steps-h { display: flex; align-items: center; gap: 0; margin: 6px 0; }
+.steps-h .d { width: 14px; height: 14px; border: 1.5px solid var(--ink); border-radius: 50%; background: var(--paper); flex-shrink: 0; }
+.steps-h .d.done { background: var(--ink); }
+.steps-h .d.current { background: var(--yellow); box-shadow: 0 0 0 3px var(--yellow-dim); }
+.steps-h .d.cancel { background: var(--red-soft); }
+.steps-h .ln { flex: 1; height: 2px; background: var(--ink-light); border-radius: 1px; }
+.steps-h .ln.done { background: var(--ink); }
+.steps-labels { display: flex; gap: 0; font-size: 10px; color: var(--ink-light); }
+.steps-labels .lbl { flex: 1; text-align: center; }
+.steps-labels .lbl.current { color: var(--ink); font-weight: 700; }
+
+.panel-state { border: 1.5px solid var(--ink); border-radius: 5px; padding: 8px 10px; }
+.panel-state.danger { background: var(--red-soft); }
+.panel-state.warn { background: var(--orange-soft); }
+.panel-state.fillsoft { background: var(--paper-edge); }
+.panel-state.green { background: var(--green-soft); }
+.panel-state h4 { margin: 0 0 4px; font-family: 'Caveat', cursive; font-size: 17px; font-weight: 700; }
+.panel-state .checklist > div { font-size: 12.5px; padding: 1px 0; }
+.panel-state .check-icon { display: inline-block; width: 16px; }
+
+.btn { border: 1.5px solid var(--ink); border-radius: 100px; padding: 4px 12px; background: var(--paper); font-family: inherit; font-size: 13px; cursor: pointer; }
+.btn:hover { transform: translate(-1px, -1px); }
+.btn.primary { background: var(--yellow); font-weight: 700; }
+.btn.ghost { border-style: dashed; color: var(--ink-soft); }
+.btn.danger { background: var(--red-soft); color: var(--ink); }
+.btn.disabled { background: var(--paper-edge); color: var(--ink-light); border-color: var(--ink-faint); cursor: not-allowed; }
+
+.chip { border: 1.2px solid var(--ink); border-radius: 100px; padding: 1px 8px; font-size: 11.5px; background: var(--paper); display: inline-block; }
+.chip.green { background: var(--green-soft); }
+.chip.warn { background: var(--orange-soft); }
+.chip.danger { background: var(--red-soft); }
+.chip.info { background: var(--blue-soft); }
+.chip.muted { color: var(--ink-light); }
+.chip.active { background: var(--yellow); font-weight: 700; }
+
+.tag { font-size: 11.5px; color: var(--ink-light); font-style: italic; }
+.line-dash { border-top: 1.2px dashed var(--ink-light); margin: 6px 0; }
+
+.toast { position: fixed; bottom: 80px; right: 20px; background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 8px; box-shadow: 4px 4px 0 rgba(0,0,0,0.2); z-index: 200; font-size: 13px; max-width: 320px; }
+.toast .close { position: absolute; top: 4px; right: 8px; cursor: pointer; opacity: 0.7; }
+</style>
+</head>
+<body>
+
+<div class="bh-shell">
+
+  <header class="bh-topbar">
+    <div class="bh-logo">BH</div>
+    <nav class="bh-breadcrumb" id="crumb"><b>Logística</b><span class="sep">›</span><b>Pedidos</b></nav>
+    <div class="bh-search">⌕ buscar pedidos, BHIDs, devoluções…</div>
+    <div class="bh-user"><div class="avatar">J</div>Jhonatan</div>
+  </header>
+
+  <aside class="bh-sidebar">
+    <div class="nav-section">
+      <div class="nav-item" data-view="inicio"><span class="ico">⌂</span>Início</div>
+      <div class="nav-item" data-view="catalogo"><span class="ico">▥</span>Catálogo</div>
+      <div class="nav-item" data-view="vitrine"><span class="ico">▣</span>Vitrine</div>
+      <div class="nav-item" data-view="cadastro"><span class="ico">⊞</span>Cadastro</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-group-title">Logística</div>
+      <div class="nav-item active" data-view="fila-pedidos"><span class="ico">▤</span>Pedidos <span class="badge">1</span></div>
+      <div class="nav-item" data-view="painel-coletas"><span class="ico">▦</span>Coletas</div>
+      <div class="nav-item" data-view="fila-devolucoes"><span class="ico">▩</span>Devoluções</div>
+      <div class="nav-item" data-view="enderecos"><span class="ico">◉</span>Endereços</div>
+      <div class="nav-item" data-view="embalagens"><span class="ico">▢</span>Embalagens</div>
+      <div class="nav-item" data-view="carriers"><span class="ico">▶</span>Carriers</div>
+      <div class="nav-item" data-view="dashboard-uso"><span class="ico">▥</span>Uso & cobrança</div>
+      <div class="nav-item" data-view="config-logistica"><span class="ico">⚙</span>Configurações</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-group-title">Planos e preços</div>
+      <div class="nav-item" data-view="modulos"><span class="ico">▥</span>Módulos</div>
+      <div class="nav-item" data-view="subscricoes"><span class="ico">▤</span>Subscrições</div>
+      <div class="nav-item" data-view="faturas"><span class="ico">▦</span>Faturas</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-item" data-view="suporte"><span class="ico">?</span>Suporte</div>
+      <div class="nav-item" data-view="config-geral"><span class="ico">⚙</span>Configurações</div>
+    </div>
+  </aside>
+
+  <main class="bh-main">
+
+    <div class="journey-stepper-wrap" id="journey-stepper-wrap">
+      <div class="title">↩ Jornada — Cancelamento pelo comprador (passo <span id="step-current">1</span> de 5 · cenário A &gt;30min)</div>
+      <div class="journey-stepper" id="journey-stepper"></div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- VIEW: FILA-PEDIDOS (Fase 1 — BH notifica)    -->
+    <!-- ============================================ -->
+    <div class="view active" id="view-fila-pedidos">
+      <div class="page-header">
+        <h2 class="h-caveat">Pedidos · 37</h2>
+        <span class="chip danger">⚠ 1 cancelamento pendente</span>
+        <div class="ctas">
+          <button class="btn ghost">↑ Importar CSV</button>
+          <button class="btn primary">+ Novo pedido</button>
+        </div>
+      </div>
+
+      <div class="banner-cancel">
+        <span style="font-size:18px;">⚠</span>
+        <span style="flex:1;"><b>Comprador cancelou #PED-1029</b> · janela <b>1h 22min</b> até a coleta DPD de hoje 16:00. Ação necessária para evitar cobrança de frete.</span>
+        <button class="btn" onclick="goToPhase(1)">abrir pedido →</button>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi"><div class="v">37</div><div class="l">total</div></div>
+        <div class="kpi"><div class="v">3</div><div class="l">em risco</div></div>
+        <div class="kpi danger"><div class="v">1</div><div class="l">cancel pendente</div></div>
+        <div class="kpi green"><div class="v">12</div><div class="l">aguard. coleta</div></div>
+      </div>
+
+      <div class="filter-row">
+        <div class="dd">Canal: todos ▾</div>
+        <div class="dd">Status ▾</div>
+        <div class="dd">Origem ▾</div>
+        <div class="dd">Prazo ▾</div>
+        <div class="search">⌕ ID ou comprador</div>
+      </div>
+
+      <div class="dense-table">
+        <div class="tr head">
+          <div class="col">ID</div><div class="col">Canal</div><div class="col">Comprador</div><div class="col col-w-s">Itens</div><div class="col col-w-m">Valor</div><div class="col col-w-m">Status</div><div class="col col-w-s">→</div>
+        </div>
+        <div class="tr risk" onclick="goToPhase(1)">
+          <div class="col">#PED-1029</div>
+          <div class="col">Amazon</div>
+          <div class="col">M. Silva</div>
+          <div class="col col-w-s">3</div>
+          <div class="col col-w-m">€87,50</div>
+          <div class="col col-w-m">⚠ cancel pendente</div>
+          <div class="col col-w-s">→</div>
+        </div>
+        <div class="tr">
+          <div class="col">#PED-1032</div><div class="col">Vitrine</div><div class="col">R. Lopes</div><div class="col col-w-s">2</div><div class="col col-w-m">€54,90</div><div class="col col-w-m">2 dias</div><div class="col col-w-s">→</div>
+        </div>
+        <div class="tr">
+          <div class="col">#PED-1033</div><div class="col">Amazon</div><div class="col">A. Pinto</div><div class="col col-w-s">1</div><div class="col col-w-m">€19,80</div><div class="col col-w-m">3 dias</div><div class="col col-w-s">→</div>
+        </div>
+        <div class="tr">
+          <div class="col">#PED-1034</div><div class="col">big.pt</div><div class="col">L. Faria</div><div class="col col-w-s">2</div><div class="col col-w-m">€72,40</div><div class="col col-w-m">3 dias</div><div class="col col-w-s">→</div>
+        </div>
+      </div>
+
+      <div class="tag" style="margin-top:8px;">↳ click na linha vermelha do <b>#PED-1029</b> ou no botão do banner para abrir e avançar para Fase 2 (revisão do cancelamento).</div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- VIEW: DETALHE-PEDIDO (Fases 2 a 5)            -->
+    <!-- ============================================ -->
+    <div class="view" id="view-detalhe-pedido">
+      <div class="dp-header">
+        <div class="row">
+          <span class="id">#PED-1029</span>
+          <span class="chip">Amazon</span>
+          <span class="chip" id="dp-status-chip">Cancelado pelo comprador</span>
+          <div style="flex:1;"></div>
+          <span class="id" id="dp-value">€87,50</span>
+          <span id="dp-meta-right"></span>
+        </div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px; color:var(--ink-light); display:flex; gap:14px;">
+          <span>Maria Silva · Lisboa, PT</span>
+          <span id="dp-context"></span>
+        </div>
+      </div>
+
+      <div class="top-actions" id="dp-actions"><!-- preenchido por JS por fase --></div>
+
+      <div class="main-grid">
+        <div>
+          <div class="card" id="dp-routing-card">
+            <!-- preenchido por JS por fase (com strike ou normal) -->
+          </div>
+
+          <div class="card" id="dp-items-card">
+            <!-- preenchido por JS -->
+          </div>
+
+          <div class="card">
+            <div class="title">Progresso</div>
+            <div class="steps-h" id="dp-steps"></div>
+            <div class="steps-labels" id="dp-step-labels"></div>
+            <div class="tag" style="margin-top:4px;" id="dp-timestamp"></div>
+          </div>
+        </div>
+
+        <div>
+          <div id="dp-panel"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STUBS -->
+    <div class="view" id="view-painel-coletas">
+      <div class="under-construction"><div class="big">Coletas</div><div class="sub">Stub. Coleta DPD hoje 16:00 será cancelada automaticamente quando o seller confirmar o cancel.</div></div>
+    </div>
+    <div class="view" id="view-fila-devolucoes"><div class="under-construction"><div class="big">Devoluções</div><div class="sub">Cancel pré-entrega não vira RMA (não há devolução física pós-entrega).</div></div></div>
+    <div class="view" id="view-faturas">
+      <div class="page-header"><h2 class="h-caveat">Planos e preços · Faturas</h2></div>
+      <div class="stub-list">
+        <div class="row head"><div style="flex:1;">Nº fatura</div><div style="flex:1;">Ciclo</div><div style="flex:0.5;">Status</div><div style="flex:0.8;">Total</div></div>
+        <div class="row"><div style="flex:1;">FAT 2026/04-1029</div><div style="flex:1;">abr 2026</div><div style="flex:0.5;"><span class="chip warn">em curso</span></div><div style="flex:0.8;">€197,72</div></div>
+      </div>
+      <div class="tag" style="margin-top:8px;">↗ etiqueta cancelada a tempo (decisão #18 PRD) <b>não cobra €0,25</b> · zero impacto na fatura mensal.</div>
+    </div>
+    <div class="view" id="view-dashboard-uso"><div class="under-construction"><div class="big">Uso & cobrança</div><div class="sub">Seção 1 (Ações pendentes) inclui cancel pendente com prazo até coleta.</div></div></div>
+    <div class="view" id="view-inicio"><div class="under-construction"><div class="big">Início</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-catalogo"><div class="under-construction"><div class="big">Catálogo</div><div class="sub">Estoque incrementado em +1 Camisola + 1 Cinto quando ações automáticas concluírem.</div></div></div>
+    <div class="view" id="view-vitrine"><div class="under-construction"><div class="big">Vitrine</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-cadastro"><div class="under-construction"><div class="big">Cadastro</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-enderecos"><div class="under-construction"><div class="big">Endereços</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-embalagens"><div class="under-construction"><div class="big">Embalagens</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-carriers"><div class="under-construction"><div class="big">Carriers</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-config-logistica"><div class="under-construction"><div class="big">Configurações · Logística</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-modulos"><div class="under-construction"><div class="big">Módulos</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-subscricoes"><div class="under-construction"><div class="big">Subscrições</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-suporte"><div class="under-construction"><div class="big">Suporte</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-config-geral"><div class="under-construction"><div class="big">Configurações gerais</div><div class="sub">Stub.</div></div></div>
+
+  </main>
+
+</div>
+
+<div class="journey-nav-bar" id="journey-nav-bar">
+  <button class="btn back" id="btn-back" onclick="goToPrevPhase()">← passo anterior</button>
+  <span class="meta-tag" id="phase-tag"></span>
+  <div style="flex:1;"></div>
+  <span id="phase-ctas"></span>
+  <button class="btn next" id="btn-next" onclick="goToNextPhase()">avançar →</button>
+</div>
+
+<div class="toast" id="toast">
+  <span class="close" onclick="hideToast()">×</span>
+  <b>Como navegar:</b><br>
+  · Use <b>← / avançar →</b> para seguir o fluxo de cancelamento.<br>
+  · Click na linha vermelha da fila ou no banner para abrir o pedido.<br>
+  · Sidebar permite sair do fluxo a qualquer momento.
+</div>
+
+<script>
+const journeyPhases = [
+  { id: 'notif',     view: 'fila-pedidos',   label: 'BH detecta' },
+  { id: 'abre',      view: 'detalhe-pedido', scenario: 'pendente', label: 'Seller revisa' },
+  { id: 'confirma',  view: 'detalhe-pedido', scenario: 'checklist', label: 'Ações em curso' },
+  { id: 'retira',    view: 'detalhe-pedido', scenario: 'retirada',  label: 'Retirar pacote' },
+  { id: 'final',     view: 'detalhe-pedido', scenario: 'final',     label: 'Cancelado' },
+];
+
+const breadcrumbMap = {
+  'fila-pedidos':    ['Logística', 'Pedidos'],
+  'detalhe-pedido':  ['Logística', 'Pedidos', '#PED-1029'],
+  'painel-coletas':  ['Logística', 'Coletas'],
+  'fila-devolucoes': ['Logística', 'Devoluções'],
+  'faturas':         ['Planos e preços', 'Faturas'],
+  'dashboard-uso':   ['Logística', 'Uso & cobrança'],
+  inicio: ['Início'], catalogo: ['Catálogo'], vitrine: ['Vitrine'], cadastro: ['Cadastro'],
+  enderecos: ['Logística', 'Endereços'], embalagens: ['Logística', 'Embalagens'],
+  carriers: ['Logística', 'Carriers'], 'config-logistica': ['Logística', 'Configurações'],
+  modulos: ['Planos e preços', 'Módulos'], subscricoes: ['Planos e preços', 'Subscrições'],
+  suporte: ['Suporte'], 'config-geral': ['Configurações'],
+};
+
+let state = { phaseIndex: 0, inJourney: true };
+
+// Roteamento cards
+const routingActive = `
+  <div class="title">Roteamento</div>
+  <div style="margin-bottom:6px;">
+    <span class="chip muted">Origem:</span> <span class="chip active">Lisboa</span>
+    <span class="chip muted">Carrier:</span> <span class="chip">DPD Classic</span>
+    <span class="chip muted">Tarifa:</span> <span class="chip">€4,20</span>
+  </div>
+  <div class="tag">↳ etiqueta DPD-X29-001 gerada · pacote na zona de coleta</div>
+`;
+const routingCancelled = `
+  <div class="title">Roteamento (cancelado)</div>
+  <div style="margin-bottom:6px; opacity:0.5;">
+    <span class="chip muted" style="text-decoration:line-through;">Lisboa</span>
+    <span class="chip muted" style="text-decoration:line-through;">DPD Classic</span>
+    <span class="chip muted" style="text-decoration:line-through;">€4,20</span>
+  </div>
+  <div class="tag">↳ etiqueta DPD-X29-001 <b>cancelada</b> · zero cobrança de frete</div>
+`;
+
+// Items cards
+const itemsActive = `
+  <div class="title">Itens (2) — voltam ao estoque</div>
+  <div style="font-size:12.5px;">
+    <div style="padding:4px 0; border-bottom:1px dashed var(--ink-light);"><b>1×</b> Camisola Azul · M <span class="tag">B-1042 · → +1 disponível</span></div>
+    <div style="padding:4px 0;"><b>1×</b> Cinto Couro · 95cm <span class="tag">B-2017 · → +1 disponível</span></div>
+  </div>
+`;
+const itemsPending = `
+  <div class="title">Itens (2) — devolução pendente</div>
+  <div style="font-size:12.5px;">
+    <div style="padding:4px 0; border-bottom:1px dashed var(--ink-light);"><b>1×</b> Camisola Azul · M <span class="tag" style="color:var(--orange-soft);">aguardando…</span></div>
+    <div style="padding:4px 0;"><b>1×</b> Cinto Couro · 95cm <span class="tag" style="color:var(--orange-soft);">aguardando…</span></div>
+  </div>
+`;
+const itemsBack = `
+  <div class="title">Itens (2) — devolvidos ao estoque</div>
+  <div style="font-size:12.5px;">
+    <div style="padding:4px 0; border-bottom:1px dashed var(--ink-light); text-decoration:line-through; color:var(--ink-light);"><b>1×</b> Camisola Azul · M <span class="chip green">+1 estoque ✓</span></div>
+    <div style="padding:4px 0; text-decoration:line-through; color:var(--ink-light);"><b>1×</b> Cinto Couro · 95cm <span class="chip green">+1 estoque ✓</span></div>
+  </div>
+`;
+
+const dpScenarios = {
+  pendente: {
+    statusChip: { text: 'Cancelado · pendente ação', cls: 'chip danger' },
+    valueAside: '<span class="chip warn" style="margin-left:6px;">⏱ 1h 22min até coleta</span>',
+    context: 'Comprador cancelou 13/05 14:38 · razão: arrependimento · próxima coleta DPD: hoje 16:00',
+    actions: `
+      <button class="btn danger">⚠ Confirmar cancelamento</button>
+      <button class="btn ghost">questionar / reverter</button>
+      <div style="flex:1;"></div>
+      <span class="chip warn">⏱ 1h 22min</span>
+    `,
+    routing: routingActive,
+    items: itemsActive,
+    stepIdx: 2,
+    stepCls: 'cancel',
+    panel: `
+      <div class="panel-state danger">
+        <h4>⚠ Ações que serão executadas</h4>
+        <div style="font-size:12.5px; margin-bottom:6px;">Comprador cancelou no Amazon. Após confirmar, BH executa em paralelo:</div>
+        <div class="checklist">
+          <div><span class="check-icon">○</span> Cancelar etiqueta DPD-X29-001</div>
+          <div><span class="check-icon">○</span> Cancelar pickup na coleta de hoje 16:00</div>
+          <div><span class="check-icon">○</span> Reverter tracking write-back no Amazon</div>
+          <div><span class="check-icon">○</span> Disparar evento de cancelamento ao canal (NF crédito)</div>
+          <div><span class="check-icon">○</span> Devolver estoque (2 itens)</div>
+          <div><span class="check-icon">○</span> Atualizar SLA (não conta como atraso)</div>
+        </div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px;"><b>Você precisa:</b> retirar o pacote da zona de coleta (após confirmar)</div>
+      </div>
+    `,
+    phaseTag: '<b>Fase 2 · Seller revisa</b> · janela &gt;30 min · confirme para disparar ações automáticas.',
+    nextLabel: 'Confirmar cancelamento →',
+  },
+  checklist: {
+    statusChip: { text: 'Cancelando…', cls: 'chip warn' },
+    valueAside: '<span class="chip warn" style="margin-left:6px;">⏱ 2 de 6 ações</span>',
+    context: 'Confirmado 13/05 14:42 · 32s atrás · ações em paralelo',
+    actions: `
+      <button class="btn disabled">cancelamento em curso…</button>
+      <div style="flex:1;"></div>
+      <span class="chip warn">2 de 6 ações concluídas</span>
+    `,
+    routing: routingCancelled.replace('cancelada', 'sendo cancelada na API'),
+    items: itemsPending,
+    stepIdx: 2,
+    stepCls: 'cancel',
+    panel: `
+      <div class="panel-state warn">
+        <h4>⚙ Executando ações…</h4>
+        <div class="checklist" style="font-size:12.5px;">
+          <div><span class="check-icon">✓</span> <b>Etiqueta DPD cancelada</b> <span class="tag">+5s</span></div>
+          <div><span class="check-icon">✓</span> <b>Pickup cancelado</b> (DPD coleta 16h) <span class="tag">+12s</span></div>
+          <div><span class="check-icon">⚙</span> Tracking sendo revertido no Amazon… <span class="tag">tentativa 1/3</span></div>
+          <div><span class="check-icon">⚙</span> Evento ao canal de venda… <span class="tag">enviado</span></div>
+          <div><span class="check-icon">○</span> Estoque devolvendo</div>
+          <div><span class="check-icon">○</span> Atualizar SLA</div>
+        </div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px;"><b>Próximo:</b> aguardar conclusão (~30s) e retirar pacote físico da zona de coleta.</div>
+      </div>
+    `,
+    phaseTag: '<b>Fase 3 · Ações automáticas em curso</b> · 6 APIs em paralelo · retry automático em caso de falha.',
+    nextLabel: 'simular conclusão →',
+  },
+  retirada: {
+    statusChip: { text: 'Aguarda retirada física', cls: 'chip warn' },
+    valueAside: '<span class="chip warn" style="margin-left:6px;">⏱ coleta em 1h 18min</span>',
+    context: 'Cancelado e estornado · ações digitais ✓ · pacote ainda na zona de coleta',
+    actions: `
+      <button class="btn primary">✓ Marquei pacote retirado</button>
+      <button class="btn ghost">↓ sticker "CANCELADO"</button>
+      <div style="flex:1;"></div>
+      <span class="chip warn">⏱ coleta DPD em 1h 18min</span>
+    `,
+    routing: routingCancelled,
+    items: `
+      <div class="title">Itens (devolvidos ao estoque)</div>
+      <div style="font-size:12.5px;">
+        <div style="padding:4px 0; border-bottom:1px dashed var(--ink-light);"><b>1×</b> Camisola Azul · M <span class="chip green">+1 estoque ✓</span></div>
+        <div style="padding:4px 0;"><b>1×</b> Cinto Couro · 95cm <span class="chip green">+1 estoque ✓</span></div>
+      </div>
+    `,
+    stepIdx: 3,
+    stepCls: 'current',
+    panel: `
+      <div class="panel-state warn">
+        <h4>⚠ Lembrete físico</h4>
+        <div style="font-size:13px; margin-bottom:6px;">
+          O pacote etiquetado <b>ainda está na zona de coleta</b>. Retire antes da próxima coleta DPD às 16:00 — senão o motorista vai pegar e cai no <b>cenário C</b> (interceptação RTS com custo extra).
+        </div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px;">
+          <b>Opcional:</b> baixe e cole o sticker "CANCELADO — NÃO COLETAR" sobre a etiqueta para garantia visual<br><br>
+          <b>Tempo restante:</b> 1h 18min até a coleta
+        </div>
+      </div>
+      <div class="panel-state fillsoft" style="margin-top:10px;">
+        <h4 style="font-size:14px;">✓ Estado digital</h4>
+        <div class="checklist" style="font-size:12px;">
+          <div><span class="check-icon">✓</span> Etiqueta cancelada (DPD)</div>
+          <div><span class="check-icon">✓</span> Tracking revertido (Amazon)</div>
+          <div><span class="check-icon">✓</span> Estoque devolvido</div>
+          <div><span class="check-icon">✓</span> NF crédito disparada ao canal</div>
+        </div>
+      </div>
+    `,
+    phaseTag: '<b>Fase 4 · Retirar pacote</b> · todas as ações digitais OK · só falta o passo físico.',
+    nextLabel: 'Marquei pacote retirado →',
+  },
+  final: {
+    statusChip: { text: 'Cancelado · finalizado', cls: 'chip muted' },
+    valueAside: '<span class="chip muted" style="margin-left:6px; text-decoration:line-through;">€87,50</span>',
+    context: 'Cancelado 13/05 14:38 · Pacote retirado 13/05 15:12 · ciclo encerrado',
+    actions: `
+      <button class="btn ghost">ver histórico de eventos</button>
+      <div style="flex:1;"></div>
+      <button class="btn" onclick="goToView('fila-pedidos'); state.phaseIndex=0; renderStepper(); renderJourneyNav();">→ voltar à fila</button>
+    `,
+    routing: routingCancelled,
+    items: itemsBack,
+    stepIdx: 4,
+    stepCls: 'final',
+    panel: `
+      <div class="panel-state fillsoft">
+        <h4>Reembolso ao comprador</h4>
+        <div style="font-size:12.5px;">
+          <div>Status: <b>em curso pelo Amazon</b></div>
+          <div class="tag">tipicamente 5–14 dias úteis</div>
+        </div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px;">
+          <b>Custo do cancelamento:</b> €0,00<br>
+          <span class="tag">etiqueta cancelada a tempo · sem cobrança DPD · sem €0,25 BIG logistics</span>
+        </div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px;">
+          <b>Impacto SLA:</b> não contabilizado (cancel pelo comprador, não pelo seller)
+        </div>
+      </div>
+      <div class="panel-state green" style="margin-top:10px;">
+        <h4 style="font-size:14px;">📊 Telemetria</h4>
+        <div style="font-size:11.5px;">
+          <div><b>Tempo total:</b> 34min (notif → finalizado)</div>
+          <div><b>Tempo digital seller:</b> ~1 min</div>
+          <div><b>Tempo físico seller:</b> ~2 min (retirar)</div>
+          <div><b>Custo:</b> €0,00 ✓</div>
+        </div>
+        <div class="tag" style="margin-top:4px;">↳ sem BH seria 5–10 min digital + risco de etiqueta não cancelar.</div>
+      </div>
+    `,
+    phaseTag: '<b>Fase 5 · Finalizado</b> · ciclo encerrado · zero custo no happy path.',
+    nextHide: true,
+  },
+};
+
+function renderStepper() {
+  const wrap = document.getElementById('journey-stepper');
+  wrap.innerHTML = '';
+  journeyPhases.forEach((p, i) => {
+    let cls = '';
+    if (i === journeyPhases.length - 1 && state.phaseIndex >= journeyPhases.length - 1) cls = 'final';
+    else if (i < state.phaseIndex) cls = 'done';
+    else if (i === state.phaseIndex) cls = 'current';
+    const el = document.createElement('div');
+    el.className = `step ${cls}`;
+    el.innerHTML = `<div class="num">${i + 1}</div><div class="lbl">${p.label}</div>`;
+    el.onclick = () => goToPhase(i);
+    wrap.appendChild(el);
+  });
+  document.getElementById('step-current').textContent = state.phaseIndex + 1;
+}
+
+function renderJourneyNav() {
+  const back = document.getElementById('btn-back');
+  const next = document.getElementById('btn-next');
+  back.disabled = state.phaseIndex === 0;
+  const phase = journeyPhases[state.phaseIndex];
+  let scenario = null;
+  if (phase && phase.scenario) scenario = dpScenarios[phase.scenario];
+
+  if (scenario) {
+    document.getElementById('phase-tag').innerHTML = '↳ ' + scenario.phaseTag;
+    document.getElementById('phase-ctas').innerHTML = '';
+    if (scenario.nextHide) {
+      next.style.display = 'none';
+    } else {
+      next.style.display = '';
+      next.textContent = scenario.nextLabel || 'avançar →';
+    }
+  } else if (phase && phase.view === 'fila-pedidos') {
+    document.getElementById('phase-tag').innerHTML = '↳ <b>Fase 1 · BH detectou cancelamento</b> · click no banner ou na linha vermelha para revisar.';
+    document.getElementById('phase-ctas').innerHTML = '';
+    next.style.display = '';
+    next.textContent = 'avançar →';
+  } else {
+    document.getElementById('phase-tag').innerHTML = '';
+    document.getElementById('phase-ctas').innerHTML = '';
+    next.textContent = 'avançar →';
+  }
+}
+
+function renderDetalhePedido(scenarioId) {
+  const sc = dpScenarios[scenarioId];
+  if (!sc) return;
+
+  const statusEl = document.getElementById('dp-status-chip');
+  statusEl.textContent = sc.statusChip.text;
+  statusEl.className = sc.statusChip.cls;
+
+  document.getElementById('dp-meta-right').innerHTML = sc.valueAside || '';
+  document.getElementById('dp-context').textContent = sc.context;
+  document.getElementById('dp-actions').innerHTML = sc.actions;
+  document.getElementById('dp-routing-card').innerHTML = sc.routing;
+  document.getElementById('dp-items-card').innerHTML = sc.items;
+  document.getElementById('dp-panel').innerHTML = sc.panel;
+
+  // Top actions container style by phase
+  const ta = document.getElementById('dp-actions');
+  ta.className = 'top-actions';
+  if (scenarioId === 'pendente') ta.classList.add('danger');
+  if (scenarioId === 'checklist' || scenarioId === 'retirada') ta.classList.add('warn');
+
+  // Steps: 5 dots (roteado · docs · cancel · retirada · final)
+  const stepsHtml = [];
+  const labels = ['roteado', 'docs', 'cancel', 'retirada', 'final'];
+  for (let i = 0; i < 5; i++) {
+    let cls = '';
+    if (i < sc.stepIdx) cls = 'done';
+    else if (i === sc.stepIdx) cls = sc.stepCls || 'current';
+    stepsHtml.push(`<div class="d ${cls}"></div>`);
+    if (i < 4) stepsHtml.push(`<div class="ln ${i < sc.stepIdx ? 'done' : ''}"></div>`);
+  }
+  document.getElementById('dp-steps').innerHTML = stepsHtml.join('');
+  document.getElementById('dp-step-labels').innerHTML = labels.map((l, i) => `<span class="lbl ${i === sc.stepIdx ? 'current' : ''}">${l}</span>`).join('');
+
+  document.getElementById('dp-timestamp').textContent = sc.context.split('·')[0].trim();
+}
+
+function goToPhase(index) {
+  if (index < 0 || index >= journeyPhases.length) return;
+  state.phaseIndex = index;
+  state.inJourney = true;
+  const phase = journeyPhases[index];
+  showView(phase.view);
+  if (phase.scenario) renderDetalhePedido(phase.scenario);
+  renderStepper();
+  renderJourneyNav();
+  renderBreadcrumb(breadcrumbMap[phase.view]);
+  setSidebarActive(phase.view);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goToNextPhase() { goToPhase(state.phaseIndex + 1); }
+function goToPrevPhase() { goToPhase(state.phaseIndex - 1); }
+
+function goToView(viewId) {
+  state.inJourney = (viewId === 'fila-pedidos' || viewId === 'detalhe-pedido');
+  showView(viewId);
+  setSidebarActive(viewId);
+  renderBreadcrumb(breadcrumbMap[viewId]);
+  document.getElementById('journey-stepper-wrap').style.display = state.inJourney ? 'block' : 'none';
+  document.getElementById('journey-nav-bar').style.display = state.inJourney ? 'flex' : 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showView(viewId) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const el = document.getElementById('view-' + viewId);
+  if (el) el.classList.add('active');
+  document.getElementById('journey-stepper-wrap').style.display = state.inJourney ? 'block' : 'none';
+  document.getElementById('journey-nav-bar').style.display = state.inJourney ? 'flex' : 'none';
+}
+
+function setSidebarActive(viewId) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const sb = document.querySelector(`.nav-item[data-view="${viewId}"]`);
+  if (sb) sb.classList.add('active');
+}
+
+function renderBreadcrumb(crumb) {
+  if (!crumb) return;
+  document.getElementById('crumb').innerHTML = crumb.map((c, i) => i === crumb.length - 1 ? `<b>${c}</b>` : c).join('<span class="sep">›</span>');
+}
+
+document.querySelectorAll('.nav-item[data-view]').forEach(item => {
+  item.addEventListener('click', () => goToView(item.dataset.view));
+});
+
+function hideToast() { document.getElementById('toast').style.display = 'none'; }
+setTimeout(hideToast, 14000);
+
+renderStepper();
+renderJourneyNav();
+</script>
+
+</body>
+</html>

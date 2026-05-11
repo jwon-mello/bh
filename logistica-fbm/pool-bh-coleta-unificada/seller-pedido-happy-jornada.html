@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo navegável de jornada — seller-pedido-happy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a; --ink-soft: #3d3d3d; --ink-light: #8a8a8a; --ink-faint: #c8c8c8;
+  --paper: #fcfcfa; --paper-edge: #f3f1e8;
+  --yellow: #fff2a8; --yellow-dim: #ffe771; --yellow-edge: #e6c732;
+  --green-soft: #c9e6b8; --red-soft: #f4b8b0; --blue-soft: #b8d4f0; --orange-soft: #f5d0a0;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: 'Patrick Hand', cursive; background: var(--paper); color: var(--ink); font-size: 15px; line-height: 1.4; }
+h1, h2, h3, .h-caveat { font-family: 'Caveat', cursive; }
+
+/* ===== SHELL GRID ===== */
+.bh-shell {
+  display: grid;
+  grid-template-rows: 56px 1fr;
+  grid-template-columns: 240px 1fr;
+  grid-template-areas: "topbar topbar" "sidebar main";
+  min-height: 100vh;
+}
+
+/* ===== TOPBAR ===== */
+.bh-topbar {
+  grid-area: topbar;
+  position: sticky; top: 0; z-index: 100;
+  background: var(--paper);
+  border-bottom: 2px solid var(--ink);
+  display: flex; align-items: center; padding: 0 18px; gap: 18px;
+}
+.bh-logo {
+  font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700;
+  background: var(--yellow); border: 1.8px solid var(--ink); border-radius: 100px;
+  padding: 2px 14px; transform: rotate(-3deg);
+}
+.bh-breadcrumb { font-size: 13.5px; color: var(--ink-soft); flex: 1; }
+.bh-breadcrumb b { color: var(--ink); font-weight: 700; }
+.bh-breadcrumb .sep { color: var(--ink-light); margin: 0 6px; }
+.bh-search {
+  width: 220px; border: 1.5px dashed var(--ink-light); border-radius: 100px;
+  padding: 4px 14px; font-size: 12.5px; color: var(--ink-light); background: var(--paper-edge);
+}
+.bh-user {
+  display: flex; align-items: center; gap: 8px; font-size: 13px;
+  border: 1.5px solid var(--ink); border-radius: 100px; padding: 3px 12px 3px 4px;
+  background: var(--paper);
+}
+.bh-user .avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--blue-soft); border: 1.5px solid var(--ink); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; }
+
+/* ===== SIDEBAR ===== */
+.bh-sidebar {
+  grid-area: sidebar;
+  position: sticky; top: 56px;
+  height: calc(100vh - 56px);
+  background: var(--paper-edge);
+  border-right: 2px solid var(--ink);
+  overflow-y: auto;
+  padding: 12px 8px;
+}
+.nav-section { margin-bottom: 14px; }
+.nav-group-title { font-size: 10.5px; color: var(--ink-light); text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 10px; }
+.nav-item {
+  display: flex; align-items: center; gap: 8px; padding: 5px 10px;
+  border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--ink-soft);
+  margin-bottom: 1px;
+}
+.nav-item:hover { background: var(--paper); }
+.nav-item.active {
+  background: var(--yellow); color: var(--ink); font-weight: 700;
+  box-shadow: 2px 2px 0 var(--ink); transform: translate(-1px, -1px);
+}
+.nav-item.sub { padding-left: 22px; font-size: 12.5px; }
+.nav-item .badge { margin-left: auto; background: var(--red-soft); border: 1.2px solid var(--ink); border-radius: 100px; padding: 0 6px; font-size: 10px; font-weight: 700; }
+.nav-item .ico { width: 14px; font-size: 12px; opacity: 0.7; }
+
+/* ===== MAIN ===== */
+.bh-main {
+  grid-area: main;
+  padding: 20px 28px;
+  overflow-x: hidden;
+}
+
+/* ===== JOURNEY STEPPER ===== */
+.journey-stepper-wrap {
+  border: 1.8px solid var(--ink); border-radius: 6px; background: var(--paper);
+  padding: 10px 16px; margin-bottom: 16px; box-shadow: 3px 3px 0 var(--ink);
+}
+.journey-stepper-wrap .title { font-family: 'Caveat', cursive; font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.journey-stepper { display: flex; gap: 4px; }
+.journey-stepper .step {
+  flex: 1; padding: 4px 6px; border: 1.4px solid var(--ink-light); border-radius: 4px;
+  background: var(--paper); font-size: 10.5px; text-align: center; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.journey-stepper .step:hover { background: var(--yellow-dim); }
+.journey-stepper .step.done { background: var(--paper-edge); border-color: var(--ink); color: var(--ink-soft); }
+.journey-stepper .step.current { background: var(--yellow); border-color: var(--ink); font-weight: 700; box-shadow: 2px 2px 0 var(--ink); }
+.journey-stepper .step .num { font-family: 'Caveat', cursive; font-weight: 700; font-size: 13px; }
+.journey-stepper .step .lbl { font-size: 10px; }
+
+/* ===== VIEW ===== */
+.view { display: none; }
+.view.active { display: block; animation: fadeIn 0.2s; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ===== JOURNEY NAV (voltar / avançar) ===== */
+.journey-nav {
+  display: flex; gap: 10px; align-items: center;
+  margin-top: 18px; padding-top: 12px; border-top: 1.5px dashed var(--ink-light);
+}
+.journey-nav .back { color: var(--ink-soft); }
+.journey-nav .next { background: var(--yellow); font-weight: 700; }
+
+/* ===== UNDER CONSTRUCTION (stubs) ===== */
+.under-construction {
+  border: 1.8px dashed var(--ink-light); border-radius: 8px; padding: 40px;
+  background: var(--paper-edge); text-align: center;
+}
+.under-construction .big { font-family: 'Caveat', cursive; font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+.under-construction .sub { font-size: 13.5px; color: var(--ink-soft); }
+
+/* ===== STUB LIST (compact module preview) ===== */
+.stub-list { border: 1.5px solid var(--ink); border-radius: 5px; overflow: hidden; background: var(--paper); }
+.stub-list .row { display: flex; padding: 6px 12px; gap: 10px; border-bottom: 1px dashed var(--ink-light); align-items: center; font-size: 12.5px; }
+.stub-list .row:last-child { border: 0; }
+.stub-list .row.head { background: var(--paper-edge); font-weight: 700; font-size: 10.5px; color: var(--ink-soft); text-transform: uppercase; }
+
+/* ===== Common page bits ===== */
+.page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.page-header h2 { font-size: 24px; margin: 0; }
+.page-header .ctas { margin-left: auto; display: flex; gap: 6px; }
+
+.card { border: 1.5px solid var(--ink); border-radius: 6px; padding: 12px 14px; background: var(--paper); box-shadow: 3px 3px 0 var(--ink); margin-bottom: 14px; }
+.card .title { font-family: 'Caveat', cursive; font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+
+.btn { border: 1.5px solid var(--ink); border-radius: 100px; padding: 4px 12px; background: var(--paper); font-family: inherit; font-size: 13px; cursor: pointer; }
+.btn:hover { transform: translate(-1px, -1px); }
+.btn.primary { background: var(--yellow); font-weight: 700; }
+.btn.ghost { border-style: dashed; color: var(--ink-soft); }
+.btn.disabled { background: var(--paper-edge); color: var(--ink-light); border-color: var(--ink-faint); cursor: not-allowed; }
+
+.chip { border: 1.2px solid var(--ink); border-radius: 100px; padding: 1px 8px; font-size: 11.5px; background: var(--paper); display: inline-block; }
+.chip.green { background: var(--green-soft); }
+.chip.warn { background: var(--orange-soft); }
+.chip.danger { background: var(--red-soft); }
+.chip.info { background: var(--blue-soft); }
+.chip.muted { color: var(--ink-light); }
+.chip.active { background: var(--yellow); font-weight: 700; }
+
+.tag { font-size: 11.5px; color: var(--ink-light); font-style: italic; }
+.line-dash { border-top: 1.2px dashed var(--ink-light); margin: 6px 0; }
+
+/* ===== KPI cards (fila-pedidos) ===== */
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
+.kpi { border: 1.5px solid var(--ink); border-radius: 5px; padding: 10px; background: var(--paper); text-align: center; box-shadow: 2px 2px 0 var(--ink); }
+.kpi .v { font-family: 'Caveat', cursive; font-size: 28px; font-weight: 700; line-height: 1; }
+.kpi .l { font-size: 10.5px; color: var(--ink-light); text-transform: uppercase; }
+.kpi.danger { background: var(--red-soft); }
+.kpi.warn { background: var(--orange-soft); }
+.kpi.green { background: var(--green-soft); }
+
+/* ===== Tabela densa (fila) ===== */
+.dense-table { border: 1.5px solid var(--ink); border-radius: 5px; overflow: hidden; font-size: 12.5px; background: var(--paper); box-shadow: 3px 3px 0 var(--ink); }
+.dense-table .tr { display: flex; border-bottom: 1px dashed var(--ink-light); padding: 5px 10px; gap: 8px; align-items: center; cursor: pointer; }
+.dense-table .tr:last-child { border: 0; }
+.dense-table .tr:hover { background: var(--yellow-dim); }
+.dense-table .tr.head { background: var(--paper-edge); font-weight: 700; font-size: 10.5px; color: var(--ink-soft); text-transform: uppercase; cursor: default; }
+.dense-table .tr.head:hover { background: var(--paper-edge); }
+.dense-table .tr.risk { background: var(--red-soft); }
+.dense-table .tr.warn { background: var(--orange-soft); }
+.dense-table .col { flex: 1; }
+.dense-table .col-w-s { flex: 0.5; }
+.dense-table .col-w-m { flex: 0.7; }
+
+/* ===== Stripe filter row ===== */
+.filter-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+.filter-row .dd { border: 1.5px dashed var(--ink-light); padding: 3px 10px; border-radius: 5px; background: var(--paper); font-size: 12px; }
+.filter-row .search { flex: 1; max-width: 200px; border: 1.5px solid var(--ink); border-radius: 100px; padding: 3px 12px; font-size: 12px; background: var(--paper); margin-left: auto; }
+
+/* ===== Sticky batch bar ===== */
+.batch-bar { position: sticky; bottom: 0; background: var(--ink); color: var(--paper); padding: 8px 14px; display: flex; align-items: center; gap: 8px; font-size: 12.5px; border-radius: 0 0 5px 5px; margin: 0 -14px -14px; }
+.batch-bar .btn { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+.batch-bar .btn.primary { background: var(--yellow); border-color: var(--ink); }
+
+/* ===== detalhe-pedido bits ===== */
+.dp-header { border: 1.8px solid var(--ink); border-radius: 6px; padding: 8px 12px; box-shadow: 3px 3px 0 var(--ink); background: var(--paper); margin-bottom: 12px; }
+.dp-header .row { display: flex; gap: 10px; align-items: center; }
+.dp-header .id { font-weight: 700; font-size: 14px; }
+.top-actions { background: var(--yellow-dim); border: 1.5px solid var(--ink); border-radius: 5px; padding: 7px 12px; display: flex; gap: 8px; align-items: center; box-shadow: 2px 2px 0 var(--ink); margin-bottom: 12px; }
+.main-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 14px; }
+
+.routing-table { border: 1.5px solid var(--ink); border-radius: 4px; overflow: hidden; font-size: 12px; }
+.routing-table .row { display: flex; padding: 4px 10px; gap: 8px; border-bottom: 1px dashed var(--ink-light); }
+.routing-table .row:last-child { border: 0; }
+.routing-table .row.head { background: var(--paper-edge); font-weight: 700; font-size: 10.5px; color: var(--ink-soft); text-transform: uppercase; }
+.routing-table .row.fill { background: var(--yellow); }
+.routing-table .col { flex: 1; }
+
+.steps-h { display: flex; align-items: center; gap: 0; margin: 6px 0; }
+.steps-h .d { width: 14px; height: 14px; border: 1.5px solid var(--ink); border-radius: 50%; background: var(--paper); flex-shrink: 0; }
+.steps-h .d.done { background: var(--ink); }
+.steps-h .d.current { background: var(--yellow); box-shadow: 0 0 0 3px var(--yellow-dim); }
+.steps-h .ln { flex: 1; height: 2px; background: var(--ink-light); border-radius: 1px; }
+.steps-h .ln.done { background: var(--ink); }
+.steps-labels { display: flex; gap: 0; font-size: 10px; color: var(--ink-light); }
+.steps-labels .lbl { flex: 1; text-align: center; }
+.steps-labels .lbl.current { color: var(--ink); font-weight: 700; }
+
+.panel-state { border: 1.5px solid var(--ink); border-radius: 5px; padding: 8px 10px; }
+.panel-state.green { background: var(--green-soft); }
+.panel-state.fillsoft { background: var(--paper-edge); }
+
+/* ===== Painel coletas (lista por dia) ===== */
+.coleta-day { border: 1.5px solid var(--ink); border-radius: 6px; padding: 10px 12px; background: var(--paper); box-shadow: 3px 3px 0 var(--ink); margin-bottom: 10px; }
+.coleta-day .day-title { font-family: 'Caveat', cursive; font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.coleta-row { border: 1.5px solid var(--ink); border-radius: 4px; padding: 5px 10px; background: var(--paper); margin-bottom: 6px; font-size: 12.5px; display: flex; gap: 8px; align-items: center; cursor: pointer; }
+.coleta-row:hover { background: var(--yellow-dim); }
+.coleta-row.next { background: var(--yellow); font-weight: 700; }
+
+/* ===== Toast ===== */
+.toast {
+  position: fixed; bottom: 20px; right: 20px;
+  background: var(--ink); color: var(--paper); padding: 10px 16px;
+  border-radius: 8px; box-shadow: 4px 4px 0 rgba(0,0,0,0.2); z-index: 200;
+  font-size: 13px; max-width: 300px;
+}
+.toast.show { animation: toastIn 0.3s; }
+.toast .close { position: absolute; top: 4px; right: 8px; cursor: pointer; opacity: 0.7; }
+@keyframes toastIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+</style>
+</head>
+<body>
+
+<div class="bh-shell">
+
+  <!-- ============ TOPBAR ============ -->
+  <header class="bh-topbar">
+    <div class="bh-logo">BH</div>
+    <nav class="bh-breadcrumb" id="crumb">
+      <b>Logística</b><span class="sep">›</span><b>Pedidos</b>
+    </nav>
+    <div class="bh-search">⌕ buscar pedidos, BHIDs, devoluções…</div>
+    <div class="bh-user"><div class="avatar">J</div>Jhonatan</div>
+  </header>
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="bh-sidebar">
+    <div class="nav-section">
+      <div class="nav-item" data-view="inicio"><span class="ico">⌂</span>Início</div>
+      <div class="nav-item" data-view="catalogo"><span class="ico">▥</span>Catálogo</div>
+      <div class="nav-item" data-view="vitrine"><span class="ico">▣</span>Vitrine</div>
+      <div class="nav-item" data-view="cadastro"><span class="ico">⊞</span>Cadastro</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-group-title">Logística</div>
+      <div class="nav-item active" data-view="fila-pedidos"><span class="ico">▤</span>Pedidos <span class="badge">3</span></div>
+      <div class="nav-item" data-view="painel-coletas"><span class="ico">▦</span>Coletas</div>
+      <div class="nav-item" data-view="devolucoes"><span class="ico">▩</span>Devoluções <span class="badge">1</span></div>
+      <div class="nav-item" data-view="enderecos"><span class="ico">◉</span>Endereços</div>
+      <div class="nav-item" data-view="embalagens"><span class="ico">▢</span>Embalagens</div>
+      <div class="nav-item" data-view="carriers"><span class="ico">▶</span>Carriers</div>
+      <div class="nav-item" data-view="dashboard-uso"><span class="ico">▥</span>Uso & cobrança</div>
+      <div class="nav-item" data-view="config-logistica"><span class="ico">⚙</span>Configurações</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-group-title">Planos e preços</div>
+      <div class="nav-item" data-view="modulos"><span class="ico">▥</span>Módulos</div>
+      <div class="nav-item" data-view="subscricoes"><span class="ico">▤</span>Subscrições</div>
+      <div class="nav-item" data-view="faturas"><span class="ico">▦</span>Faturas</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-item" data-view="suporte"><span class="ico">?</span>Suporte</div>
+      <div class="nav-item" data-view="config-geral"><span class="ico">⚙</span>Configurações</div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="bh-main">
+
+    <!-- JOURNEY STEPPER (visível só em views da journey) -->
+    <div class="journey-stepper-wrap" id="journey-stepper-wrap">
+      <div class="title">📦 Jornada — operação por pedido (passo <span id="step-current">1</span> de 6)</div>
+      <div class="journey-stepper" id="journey-stepper"></div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- VIEW: FILA-PEDIDOS (Fase 1)                  -->
+    <!-- ============================================ -->
+    <div class="view active" id="view-fila-pedidos" data-journey-phase="0">
+      <div class="page-header">
+        <h2 class="h-caveat">Pedidos · 37</h2>
+        <span class="tag">atualizado há 12s</span>
+        <div class="ctas">
+          <button class="btn ghost">↑ Importar CSV</button>
+          <button class="btn primary">+ Novo pedido</button>
+        </div>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi"><div class="v">37</div><div class="l">total</div></div>
+        <div class="kpi danger"><div class="v">3</div><div class="l">em risco</div></div>
+        <div class="kpi warn"><div class="v">1</div><div class="l">cancel pendente</div></div>
+        <div class="kpi green"><div class="v">12</div><div class="l">aguard. coleta</div></div>
+      </div>
+
+      <div class="filter-row">
+        <div class="dd">Canal: todos ▾</div>
+        <div class="dd">Status ▾</div>
+        <div class="dd">Origem ▾</div>
+        <div class="dd">Prazo ▾</div>
+        <div class="search">⌕ ID ou comprador</div>
+      </div>
+
+      <div class="dense-table">
+        <div class="tr head">
+          <div class="col">ID</div>
+          <div class="col">Canal</div>
+          <div class="col">Comprador</div>
+          <div class="col col-w-s">Itens</div>
+          <div class="col col-w-m">Valor</div>
+          <div class="col col-w-m">SLA</div>
+          <div class="col col-w-s">→</div>
+        </div>
+        <div class="tr risk" onclick="goToPhase(1)">
+          <div class="col">#PED-1029</div>
+          <div class="col">Amazon</div>
+          <div class="col">M. Silva</div>
+          <div class="col col-w-s">3</div>
+          <div class="col col-w-m">€87,50</div>
+          <div class="col col-w-m">⚠ hoje</div>
+          <div class="col col-w-s">→</div>
+        </div>
+        <div class="tr warn">
+          <div class="col">#PED-1031</div>
+          <div class="col">Cdisc.</div>
+          <div class="col">P. Costa</div>
+          <div class="col col-w-s">1</div>
+          <div class="col col-w-m">€32,00</div>
+          <div class="col col-w-m">cancel pendente</div>
+          <div class="col col-w-s">→</div>
+        </div>
+        <div class="tr">
+          <div class="col">#PED-1032</div>
+          <div class="col">Vitrine</div>
+          <div class="col">R. Lopes</div>
+          <div class="col col-w-s">2</div>
+          <div class="col col-w-m">€54,90</div>
+          <div class="col col-w-m">2 dias</div>
+          <div class="col col-w-s">→</div>
+        </div>
+        <div class="tr">
+          <div class="col">#PED-1033</div>
+          <div class="col">Amazon</div>
+          <div class="col">A. Pinto</div>
+          <div class="col col-w-s">1</div>
+          <div class="col col-w-m">€19,80</div>
+          <div class="col col-w-m">3 dias</div>
+          <div class="col col-w-s">→</div>
+        </div>
+        <div class="tr">
+          <div class="col">#PED-1034</div>
+          <div class="col">big.pt</div>
+          <div class="col">L. Faria</div>
+          <div class="col col-w-s">2</div>
+          <div class="col col-w-m">€72,40</div>
+          <div class="col col-w-m">3 dias</div>
+          <div class="col col-w-s">→</div>
+        </div>
+      </div>
+
+      <div class="tag" style="margin-top:8px;">↳ <b>click numa linha</b> para abrir o pedido e avançar para a Fase 2 da jornada (Roteamento).</div>
+
+      <div class="journey-nav">
+        <button class="btn back" id="btn-back" disabled>← passo anterior</button>
+        <span class="tag">Você está em <b>Fase 1 · Receber pedido</b> · clique numa linha da tabela para avançar.</span>
+        <div style="flex:1;"></div>
+        <button class="btn next" onclick="goToPhase(1)">avançar →</button>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- VIEW: DETALHE-PEDIDO (Fases 2, 3, 6, 7)       -->
+    <!-- ============================================ -->
+    <div class="view" id="view-detalhe-pedido">
+      <div class="dp-header">
+        <div class="row">
+          <span class="id" id="dp-id">#PED-1029</span>
+          <span class="chip">Amazon</span>
+          <span class="chip active" id="dp-status">Aguardando docs</span>
+          <div style="flex:1;"></div>
+          <span class="id">€87,50</span>
+          <span class="chip muted" id="dp-sla">SLA: 2 dias</span>
+        </div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px; color:var(--ink-light); display:flex; gap:14px;">
+          <span>Maria Silva · Lisboa, PT</span>
+          <span id="dp-context">Recebido 12/05 09:14</span>
+        </div>
+      </div>
+
+      <div class="top-actions" id="dp-actions">
+        <!-- preenchido por JS por fase -->
+      </div>
+
+      <div class="main-grid">
+        <div>
+          <div class="card">
+            <div class="title">Roteamento</div>
+            <div style="margin-bottom:6px;">
+              <span class="chip muted">Origem:</span> <span class="chip active">Lisboa ▾</span>
+            </div>
+            <div class="routing-table">
+              <div class="row head"><div class="col">Carrier</div><div class="col">Preço</div><div class="col">Prazo</div></div>
+              <div class="row fill"><div class="col"><b>DPD Classic ✓</b></div><div class="col">€4,20</div><div class="col">3 dias</div></div>
+              <div class="row"><div class="col">GLS Standard</div><div class="col">€4,80</div><div class="col">3 dias</div></div>
+              <div class="row"><div class="col">DPD Express</div><div class="col">€8,50</div><div class="col">1 dia</div></div>
+            </div>
+            <div class="tag" style="margin-top:6px;">por que DPD? <span style="text-decoration:underline; cursor:pointer;">ver breakdown</span></div>
+          </div>
+
+          <div class="card">
+            <div class="title">Itens (2)</div>
+            <div style="font-size:12.5px;">
+              <div style="padding:4px 0; border-bottom:1px dashed var(--ink-light);"><b>1×</b> Camisola Azul · M <span class="tag">B-1042</span></div>
+              <div style="padding:4px 0;"><b>1×</b> Cinto Couro · 95cm <span class="tag">B-2017</span></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="title">Progresso</div>
+            <div class="steps-h" id="dp-steps">
+              <!-- preenchido por JS -->
+            </div>
+            <div class="steps-labels" id="dp-step-labels">
+              <span class="lbl current">roteado</span><span class="lbl">docs</span><span class="lbl">coleta</span><span class="lbl">trânsito</span><span class="lbl">entregue</span>
+            </div>
+            <div class="tag" style="margin-top:4px;" id="dp-timestamp">timestamp da fase atual: 12/05 09:14</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel-state fillsoft" id="dp-panel">
+            <!-- preenchido por JS -->
+          </div>
+        </div>
+      </div>
+
+      <div class="journey-nav">
+        <button class="btn back" onclick="goToPrevPhase()">← passo anterior</button>
+        <span class="tag" id="dp-phase-tag"></span>
+        <div style="flex:1;"></div>
+        <button class="btn next" onclick="goToNextPhase()">avançar →</button>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- VIEW: PAINEL-COLETAS (Fase 4)                -->
+    <!-- ============================================ -->
+    <div class="view" id="view-painel-coletas" data-journey-phase="3">
+      <div class="page-header">
+        <h2 class="h-caveat">Coletas</h2>
+        <span class="chip muted">Origem: todas (3) ▾</span>
+        <div class="ctas">
+          <button class="btn ghost">↓ manifesto</button>
+          <button class="btn ghost">+ extra</button>
+        </div>
+      </div>
+
+      <div class="card" style="background:var(--yellow);">
+        <div class="title">📍 Próxima coleta · #PED-1029 está nesta janela</div>
+        <div style="display:flex; gap:14px; align-items:center;">
+          <div style="flex:1;">
+            <div style="font-family:'Caveat',cursive; font-size:22px; font-weight:700;">Hoje · 16:00</div>
+            <div style="font-size:12px;">DPD · Lisboa · 12 pacotes prontos</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-family:'Caveat',cursive; font-size:24px; font-weight:700;">12</div>
+            <div style="font-size:10px; color:var(--ink-light);">pacotes</div>
+            <div class="chip warn" style="margin-top:4px;">⏱ 2h 14min</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="coleta-day">
+        <div class="day-title">Hoje · 12 mai</div>
+        <div class="coleta-row next">
+          <span class="chip" style="font-size:10px;">DPD</span>
+          <span class="chip muted" style="font-size:10px;">Lisboa</span>
+          <span style="flex:1;">16:00 — 18:00 · 12 pacotes</span>
+          <span class="chip warn" style="font-size:10px;">⏱ 2h 14min</span>
+          <span class="tag">→</span>
+        </div>
+      </div>
+
+      <div class="coleta-day">
+        <div class="day-title">Amanhã · 13 mai</div>
+        <div class="coleta-row">
+          <span class="chip" style="font-size:10px;">GLS</span>
+          <span class="chip muted" style="font-size:10px;">Porto</span>
+          <span style="flex:1;">10:00 — 12:00 · 8 pacotes</span>
+          <span class="tag">→</span>
+        </div>
+        <div class="coleta-row">
+          <span class="chip" style="font-size:10px;">DPD</span>
+          <span class="chip muted" style="font-size:10px;">Lisboa</span>
+          <span style="flex:1;">14:00 — 16:00 · 5 pacotes</span>
+          <span class="tag">→</span>
+        </div>
+      </div>
+
+      <div class="coleta-day">
+        <div class="day-title">Quarta-feira · 14 mai</div>
+        <div class="coleta-row">
+          <span class="chip" style="font-size:10px;">GLS</span>
+          <span class="chip muted" style="font-size:10px;">Porto</span>
+          <span style="flex:1;">10:00 — 12:00 · 4 pacotes</span>
+          <span class="tag">→</span>
+        </div>
+      </div>
+
+      <div class="journey-nav">
+        <button class="btn back" onclick="goToPrevPhase()">← passo anterior</button>
+        <span class="tag">Você está em <b>Fase 4 · Pacote pronto, aguarda coleta</b>. Após a coleta, pedido segue para trânsito.</span>
+        <div style="flex:1;"></div>
+        <button class="btn next" onclick="goToNextPhase()">→ simular coleta + avançar para trânsito</button>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- STUBS DE MÓDULOS VIZINHOS                    -->
+    <!-- ============================================ -->
+    <div class="view" id="view-devolucoes">
+      <div class="page-header"><h2 class="h-caveat">Devoluções · 1</h2></div>
+      <div class="stub-list">
+        <div class="row head"><div style="flex:1;">RMA</div><div style="flex:1;">Pedido</div><div style="flex:1;">Motivo</div><div style="flex:0.5;">Status</div></div>
+        <div class="row"><div style="flex:1;">#RMA-2901</div><div style="flex:1;">#PED-1029</div><div style="flex:1;">defeito</div><div style="flex:0.5;"><span class="chip warn">aguard. ação</span></div></div>
+      </div>
+      <div class="tag" style="margin-top:8px;">↗ módulo vizinho (stub) · acessível a qualquer momento via sidebar · interrompe a journey mas preserva o estado.</div>
+    </div>
+
+    <div class="view" id="view-faturas">
+      <div class="page-header"><h2 class="h-caveat">Planos e preços · Faturas</h2></div>
+      <div class="stub-list">
+        <div class="row head"><div style="flex:1;">Nº fatura</div><div style="flex:1;">Ciclo</div><div style="flex:0.5;">Status</div><div style="flex:0.8;">Total</div></div>
+        <div class="row"><div style="flex:1;">FAT 2026/04-1029</div><div style="flex:1;">abr 2026</div><div style="flex:0.5;"><span class="chip warn">em curso</span></div><div style="flex:0.8;">€197,72</div></div>
+        <div class="row"><div style="flex:1;">FAT 2026/03-1028</div><div style="flex:1;">mar 2026</div><div style="flex:0.5;"><span class="chip green">paga ✓</span></div><div style="flex:0.8;">€176,40</div></div>
+      </div>
+      <div class="tag" style="margin-top:8px;">↗ cross-module · veio do dashboard de uso & cobrança via deep-link.</div>
+    </div>
+
+    <div class="view" id="view-dashboard-uso">
+      <div class="under-construction">
+        <div class="big">Uso & cobrança</div>
+        <div class="sub">Dashboard operacional já desenhado · acessível em prototipo dedicado · stub aqui.</div>
+      </div>
+    </div>
+
+    <!-- Demais views: under-construction -->
+    <div class="view" id="view-inicio"><div class="under-construction"><div class="big">Início</div><div class="sub">Tela ainda não desenhada. Stub do módulo do ecossistema BH.</div></div></div>
+    <div class="view" id="view-catalogo"><div class="under-construction"><div class="big">Catálogo</div><div class="sub">Stub. BHIDs, variantes, medidas físicas.</div></div></div>
+    <div class="view" id="view-vitrine"><div class="under-construction"><div class="big">Vitrine</div><div class="sub">Stub. Loja própria do BIG sales.</div></div></div>
+    <div class="view" id="view-cadastro"><div class="under-construction"><div class="big">Cadastro</div><div class="sub">Stub. Dados fiscais do lojista.</div></div></div>
+    <div class="view" id="view-enderecos"><div class="under-construction"><div class="big">Endereços</div><div class="sub">Stub. Origens cadastradas (multi-origem).</div></div></div>
+    <div class="view" id="view-embalagens"><div class="under-construction"><div class="big">Embalagens</div><div class="sub">Stub. Caixas P/M/G + medidas.</div></div></div>
+    <div class="view" id="view-carriers"><div class="under-construction"><div class="big">Carriers</div><div class="sub">Stub. Pool BH + contratos próprios.</div></div></div>
+    <div class="view" id="view-config-logistica"><div class="under-construction"><div class="big">Configurações · Logística</div><div class="sub">Stub. Hub de configs + regras.</div></div></div>
+    <div class="view" id="view-modulos"><div class="under-construction"><div class="big">Módulos</div><div class="sub">Stub do ecossistema.</div></div></div>
+    <div class="view" id="view-subscricoes"><div class="under-construction"><div class="big">Subscrições</div><div class="sub">Stub do ecossistema.</div></div></div>
+    <div class="view" id="view-suporte"><div class="under-construction"><div class="big">Suporte</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-config-geral"><div class="under-construction"><div class="big">Configurações gerais</div><div class="sub">Stub.</div></div></div>
+
+  </main>
+
+</div>
+
+<!-- ============ TOAST ============ -->
+<div class="toast" id="toast" style="display:none;">
+  <span class="close" onclick="hideToast()">×</span>
+  <b>Como navegar:</b><br>
+  · Use <b>← passo anterior</b> / <b>avançar →</b> para seguir a jornada.<br>
+  · Click em qualquer item da <b>sidebar</b> para sair do fluxo a qualquer momento (estado preservado).<br>
+  · Click numa linha da tabela em <b>Pedidos</b> também avança a journey.
+</div>
+
+<script>
+// ============================================
+// JOURNEY STATE
+// ============================================
+const journeyPhases = [
+  { id: 'fila',        view: 'fila-pedidos',    label: 'Receber pedido',    crumb: ['Logística', 'Pedidos'] },
+  { id: 'roteamento',  view: 'detalhe-pedido',  scenario: 'roteamento',     label: 'Roteamento',         crumb: ['Logística', 'Pedidos', '#PED-1029'] },
+  { id: 'docs',        view: 'detalhe-pedido',  scenario: 'docs',           label: 'Gerar docs',         crumb: ['Logística', 'Pedidos', '#PED-1029'] },
+  { id: 'aguarda',     view: 'painel-coletas',  label: 'Aguarda coleta',    crumb: ['Logística', 'Coletas'] },
+  { id: 'transito',    view: 'detalhe-pedido',  scenario: 'transito',       label: 'Em trânsito',        crumb: ['Logística', 'Pedidos', '#PED-1029'] },
+  { id: 'entregue',    view: 'detalhe-pedido',  scenario: 'entregue',       label: 'Entregue',           crumb: ['Logística', 'Pedidos', '#PED-1029'] },
+];
+
+const breadcrumbMap = {
+  'fila-pedidos':    ['Logística', 'Pedidos'],
+  'detalhe-pedido':  ['Logística', 'Pedidos', '#PED-1029'],
+  'painel-coletas':  ['Logística', 'Coletas'],
+  'devolucoes':      ['Logística', 'Devoluções'],
+  'faturas':         ['Planos e preços', 'Faturas'],
+  'dashboard-uso':   ['Logística', 'Uso & cobrança'],
+  'inicio':          ['Início'],
+  'catalogo':        ['Catálogo'],
+  'vitrine':         ['Vitrine'],
+  'cadastro':        ['Cadastro'],
+  'enderecos':       ['Logística', 'Endereços'],
+  'embalagens':      ['Logística', 'Embalagens'],
+  'carriers':        ['Logística', 'Carriers'],
+  'config-logistica':['Logística', 'Configurações'],
+  'modulos':         ['Planos e preços', 'Módulos'],
+  'subscricoes':     ['Planos e preços', 'Subscrições'],
+  'suporte':         ['Suporte'],
+  'config-geral':    ['Configurações'],
+};
+
+let state = { phaseIndex: 0, inJourney: true };
+
+// ============================================
+// CONTEÚDO POR FASE (detalhe-pedido)
+// ============================================
+const dpScenarios = {
+  roteamento: {
+    statusChip: { text: 'Aguardando docs', cls: 'active' },
+    sla: 'SLA: 2 dias',
+    context: 'Recebido 12/05 09:14',
+    actions: `
+      <button class="btn primary">Gerar documentos →</button>
+      <button class="btn ghost">salvar</button>
+      <div style="flex:1;"></div>
+      <button class="btn ghost">cancelar</button>
+    `,
+    stepIdx: 0,
+    panel: `
+      <h4 class="h-caveat" style="font-size:16px; font-weight:700; margin:0 0 6px;">Resumo</h4>
+      <div style="font-size:12.5px;">Tudo pronto para gerar documentos. Click em <b>Gerar documentos</b> para produzir etiqueta + packing slip.</div>
+      <div class="line-dash"></div>
+      <div style="font-size:11.5px; color:var(--ink-soft);">Tarifa: <b>€4,20</b><br>Prazo prometido: <b>15/05</b></div>
+    `,
+    phaseTag: 'Você está em <b>Fase 2 · Roteamento</b>. Confirme carrier + origem e avance para gerar documentos.',
+  },
+  docs: {
+    statusChip: { text: 'Docs prontos', cls: 'active' },
+    sla: 'SLA: 2 dias',
+    context: 'Tracking: DPD-X29-001 · write-back ✓',
+    actions: `
+      <button class="btn primary">↓ Imprimir etiqueta + slip</button>
+      <button class="btn">Marcar como pronto</button>
+      <div style="flex:1;"></div>
+      <button class="btn ghost danger">cancelar etiqueta</button>
+    `,
+    stepIdx: 1,
+    panel: `
+      <div style="background:var(--green-soft); border:1.5px solid var(--ink); border-radius:5px; padding:8px 10px;">
+        <h4 class="h-caveat" style="font-size:16px; font-weight:700; margin:0 0 4px;">✓ Documentos gerados</h4>
+        <div style="font-size:12px;">
+          Etiqueta DPD: <b>DPD-X29-001</b><br>
+          Packing slip: PDF gerado<br>
+          Tracking propagado ao Amazon: ✓
+        </div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px;">
+          <b>Próxima coleta:</b> hoje 16:00<br>
+          <span class="tag">DPD · 12 pacotes prontos</span>
+        </div>
+      </div>
+    `,
+    phaseTag: 'Você está em <b>Fase 3 · Gerar docs</b>. Imprima e deixe o pacote na zona de coleta · avance para acompanhar a coleta.',
+  },
+  transito: {
+    statusChip: { text: 'Em trânsito', cls: 'info' },
+    sla: 'SLA: 2 dias',
+    context: 'Tracking: DPD-X29-001 · ETA: 15/05',
+    actions: `
+      <button class="btn ghost">↓ ver tracking carrier</button>
+      <div style="flex:1;"></div>
+      <span class="tag">sem ações pendentes</span>
+    `,
+    stepIdx: 3,
+    panel: `
+      <h4 class="h-caveat" style="font-size:16px; font-weight:700; margin:0 0 6px;">Eventos da carrier</h4>
+      <div style="font-size:11.5px;">
+        <div>● <b>13/05 16:14</b> — Coletado em Lisboa</div>
+        <div>● <b>13/05 22:30</b> — Saiu hub Lisboa</div>
+        <div>● <b>14/05 04:12</b> — Em trânsito internacional</div>
+        <div>● <b>14/05 11:40</b> — Chegou hub destino</div>
+        <div style="opacity:0.5;">○ Em rota de entrega</div>
+        <div style="opacity:0.5;">○ Entregue</div>
+      </div>
+      <div class="line-dash"></div>
+      <div style="font-size:11.5px;"><b>ETA:</b> 15/05 (no prazo Amazon)</div>
+    `,
+    phaseTag: 'Você está em <b>Fase 6 · Em trânsito</b>. Operação passiva. Avance para fechar o ciclo quando entregue.',
+  },
+  entregue: {
+    statusChip: { text: 'Entregue ✓', cls: 'green' },
+    sla: 'SLA cumprido',
+    context: 'Entregue 15/05 11:40 · janela RMA: até 29/05',
+    actions: `
+      <button class="btn ghost">ver pedido similar</button>
+      <button class="btn ghost">↓ comprovante entrega</button>
+      <div style="flex:1;"></div>
+      <button class="btn" onclick="goToView('fila-pedidos'); state.phaseIndex=0; renderStepper(); renderJourneyNav();">voltar à fila</button>
+    `,
+    stepIdx: 4,
+    panel: `
+      <div style="background:var(--green-soft); border:1.5px solid var(--ink); border-radius:5px; padding:8px 10px;">
+        <h4 class="h-caveat" style="font-size:16px; font-weight:700; margin:0 0 4px;">✓ Entrega confirmada</h4>
+        <div style="font-size:12px;">
+          <b>15/05 às 11:40</b><br>
+          Recebedor: Maria Silva<br>
+          Comprovante DPD: assinatura digital
+        </div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px;">
+          <b>SLA Amazon:</b> cumprido com 1 dia de folga<br><br>
+          <b>Janela RMA UE:</b> 14 dias (até 29/05)<br>
+          <span class="tag">↗ se houver RMA, será criado em "Devoluções"</span>
+        </div>
+      </div>
+    `,
+    phaseTag: 'Você está em <b>Fase 7 · Entregue</b>. Ciclo da journey fechado · clique para voltar à fila.',
+  }
+};
+
+// ============================================
+// FUNÇÕES
+// ============================================
+function renderStepper() {
+  const wrap = document.getElementById('journey-stepper');
+  wrap.innerHTML = '';
+  journeyPhases.forEach((p, i) => {
+    let cls = '';
+    if (i < state.phaseIndex) cls = 'done';
+    else if (i === state.phaseIndex) cls = 'current';
+    const el = document.createElement('div');
+    el.className = `step ${cls}`;
+    el.innerHTML = `<div class="num">${i + 1}</div><div class="lbl">${p.label}</div>`;
+    el.onclick = () => goToPhase(i);
+    wrap.appendChild(el);
+  });
+  document.getElementById('step-current').textContent = state.phaseIndex + 1;
+}
+
+function renderJourneyNav() {
+  const back = document.getElementById('btn-back');
+  if (back) back.disabled = state.phaseIndex === 0;
+}
+
+function renderDetalhePedido(scenarioId) {
+  const sc = dpScenarios[scenarioId];
+  if (!sc) return;
+
+  // Status chip
+  const statusEl = document.getElementById('dp-status');
+  statusEl.textContent = sc.statusChip.text;
+  statusEl.className = `chip ${sc.statusChip.cls}`;
+
+  document.getElementById('dp-sla').textContent = sc.sla;
+  document.getElementById('dp-context').textContent = sc.context;
+  document.getElementById('dp-actions').innerHTML = sc.actions;
+  document.getElementById('dp-panel').innerHTML = sc.panel;
+  document.getElementById('dp-phase-tag').innerHTML = sc.phaseTag;
+
+  // Steps (5 dots: roteado · docs · coleta · trânsito · entregue)
+  const stepsHtml = [];
+  const labelsHtml = ['roteado', 'docs', 'coleta', 'trânsito', 'entregue'];
+  for (let i = 0; i < 5; i++) {
+    let cls = '';
+    if (i < sc.stepIdx) cls = 'done';
+    else if (i === sc.stepIdx) cls = 'current';
+    stepsHtml.push(`<div class="d ${cls}"></div>`);
+    if (i < 4) stepsHtml.push(`<div class="ln ${i < sc.stepIdx ? 'done' : ''}"></div>`);
+  }
+  document.getElementById('dp-steps').innerHTML = stepsHtml.join('');
+
+  const labelsEl = document.getElementById('dp-step-labels');
+  labelsEl.innerHTML = labelsHtml.map((l, i) => `<span class="lbl ${i === sc.stepIdx ? 'current' : ''}">${l}</span>`).join('');
+}
+
+function goToPhase(index) {
+  if (index < 0 || index >= journeyPhases.length) return;
+  state.phaseIndex = index;
+  state.inJourney = true;
+  const phase = journeyPhases[index];
+  showView(phase.view);
+  if (phase.scenario) renderDetalhePedido(phase.scenario);
+  renderStepper();
+  renderJourneyNav();
+  renderBreadcrumb(phase.crumb || breadcrumbMap[phase.view]);
+  setSidebarActive(phase.view);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goToNextPhase() { goToPhase(state.phaseIndex + 1); }
+function goToPrevPhase() { goToPhase(state.phaseIndex - 1); }
+
+function goToView(viewId) {
+  // Sair do fluxo da journey (mas preservar phaseIndex)
+  state.inJourney = (viewId === 'fila-pedidos' || viewId === 'detalhe-pedido' || viewId === 'painel-coletas');
+  showView(viewId);
+  setSidebarActive(viewId);
+  renderBreadcrumb(breadcrumbMap[viewId]);
+  document.getElementById('journey-stepper-wrap').style.display = state.inJourney ? 'block' : 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showView(viewId) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const el = document.getElementById('view-' + viewId);
+  if (el) el.classList.add('active');
+  document.getElementById('journey-stepper-wrap').style.display = state.inJourney ? 'block' : 'none';
+}
+
+function setSidebarActive(viewId) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const sb = document.querySelector(`.nav-item[data-view="${viewId}"]`);
+  if (sb) sb.classList.add('active');
+}
+
+function renderBreadcrumb(crumb) {
+  if (!crumb) return;
+  document.getElementById('crumb').innerHTML = crumb.map((c, i) => i === crumb.length - 1 ? `<b>${c}</b>` : c).join('<span class="sep">›</span>');
+}
+
+// Sidebar click handlers
+document.querySelectorAll('.nav-item[data-view]').forEach(item => {
+  item.addEventListener('click', () => goToView(item.dataset.view));
+});
+
+// Toast helper
+function showToast() { document.getElementById('toast').style.display = 'block'; }
+function hideToast() { document.getElementById('toast').style.display = 'none'; }
+
+// Boot
+renderStepper();
+renderJourneyNav();
+showToast();
+setTimeout(hideToast, 14000);
+</script>
+
+</body>
+</html>

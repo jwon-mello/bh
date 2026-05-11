@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="pt-pt">
+<head>
+<meta charset="utf-8">
+<title>Cadastro de Lojistas · H5b Eligibility por Perfil · PF Aspirante Happy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a; --ink-soft: #3d3d3d; --ink-light: #8a8a8a;
+  --paper: #fcfcfa; --yellow: #fff2a8; --yellow-dim: #ffe771; --yellow-edge: #e6c732;
+  --red-soft: #ffd0c9;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: 'Patrick Hand', cursive;
+  background: var(--paper);
+  background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.02) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--ink);
+  padding: 40px 60px 80px;
+  line-height: 1.45;
+}
+h1, h2, h3, .section-title, .var-label, .section-num { font-family: 'Caveat', cursive; letter-spacing: 0.4px; }
+.title-block { border-bottom: 2px solid var(--ink); padding-bottom: 18px; margin-bottom: 28px; }
+.title-block h1 { font-size: 44px; font-weight: 700; margin: 0; }
+.title-block .meta { color: var(--ink-light); font-size: 15px; margin-top: 6px; display: flex; flex-wrap: wrap; gap: 18px; }
+.title-block .meta b { color: var(--ink-soft); font-weight: 400; font-family: 'Patrick Hand', cursive; }
+.hyp-badge {
+  display: inline-block; background: var(--yellow); border: 1.5px solid var(--ink);
+  padding: 3px 10px; border-radius: 100px; font-size: 16px; font-family: 'Caveat', cursive;
+  transform: rotate(-1deg); margin-left: 8px;
+}
+.floor-nav { display: flex; gap: 6px 14px; flex-wrap: wrap; padding: 14px 20px; margin-bottom: 48px; border: 1.8px dashed var(--ink); border-radius: 6px; }
+.floor-nav a { color: var(--ink); text-decoration: none; font-size: 17px; padding: 2px 8px; border-radius: 3px; border-bottom: 2px solid transparent; }
+.floor-nav a:hover { background: var(--yellow); border-bottom-color: var(--ink); }
+.floor-nav .nav-focus { font-weight: 700; background: var(--yellow-dim); }
+.section { margin-bottom: 68px; scroll-margin-top: 20px; }
+.section-head { display: flex; align-items: flex-end; gap: 18px; margin-bottom: 10px; flex-wrap: wrap; }
+.section-num { font-size: 84px; line-height: 0.9; font-weight: 700; color: var(--ink); }
+.section-title { font-size: 34px; font-weight: 700; margin: 0; }
+.section-sentiment {
+  font-family: 'Patrick Hand', cursive; font-size: 13px; padding: 3px 10px;
+  border: 1.5px solid var(--ink); border-radius: 100px;
+  text-transform: lowercase; transform: rotate(-1.5deg);
+}
+.section-sentiment.pos { background: var(--yellow); }
+.section-sentiment.neutra { background: transparent; }
+.section-sentiment.neg { background: var(--red-soft); }
+.section-desc { font-size: 17px; color: var(--ink-soft); margin: 6px 0 0 102px; max-width: 820px; }
+.highlight { background: linear-gradient(180deg, transparent 55%, var(--yellow) 55%, var(--yellow) 92%, transparent 92%); padding: 0 2px; }
+.vars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 28px; }
+.var-card {
+  position: relative; border: 1.8px solid var(--ink); border-radius: 6px;
+  padding: 26px 18px 18px 18px; background: var(--paper); box-shadow: 4px 4px 0 var(--ink);
+}
+.var-card::before {
+  content: ""; position: absolute; top: -10px; left: 22px;
+  width: 56px; height: 20px; background: var(--yellow);
+  border: 1px solid var(--yellow-edge); transform: rotate(-3deg); opacity: 0.9;
+}
+.var-label { font-size: 28px; font-weight: 700; display: flex; align-items: baseline; gap: 10px; margin: 0 0 2px 0; }
+.var-tag { font-family: 'Patrick Hand', cursive; font-size: 13px; padding: 1px 10px; border: 1.5px solid var(--ink); border-radius: 100px; background: var(--paper); }
+.var-desc { font-size: 15px; color: var(--ink-soft); margin-bottom: 14px; min-height: 42px; }
+.sk-frame {
+  border: 1.8px solid var(--ink); border-radius: 4px; padding: 10px; background: var(--paper);
+  display: flex; flex-direction: column; gap: 7px; min-height: 320px; font-size: 13px;
+}
+.sk-row { display: flex; gap: 6px; align-items: center; }
+.sk-col { display: flex; flex-direction: column; gap: 5px; }
+.sk-grow { flex: 1; }
+.sk-box { border: 1.5px solid var(--ink); border-radius: 3px; padding: 5px 8px; font-family: 'Patrick Hand', cursive; background: var(--paper); font-size: 12.5px; }
+.sk-box.dashed { border-style: dashed; }
+.sk-box.fill { background: var(--yellow); }
+.sk-box.fillsoft { background: #f0efe9; }
+.sk-box.tiny { padding: 3px 6px; font-size: 11.5px; }
+.sk-box small { color: var(--ink-light); font-size: 10.5px; display: block; line-height: 1.2; }
+.sk-btn { display: inline-block; border: 1.5px solid var(--ink); border-radius: 100px; padding: 3px 12px; font-family: 'Patrick Hand', cursive; font-size: 12px; background: var(--paper); box-shadow: 2px 2px 0 var(--ink); }
+.sk-btn.primary { background: var(--yellow); }
+.sk-btn.ghost { border-style: dashed; box-shadow: none; }
+.sk-chip { display: inline-block; border: 1.2px solid var(--ink); border-radius: 100px; padding: 1px 7px; font-size: 10.5px; background: var(--paper); white-space: nowrap; }
+.sk-chip.active { background: var(--yellow); }
+.sk-chip.lock { background: #f0efe9; color: var(--ink-soft); }
+.sk-line { height: 1.5px; background: var(--ink); margin: 3px 0; }
+.sk-line.dash { background: none; border-top: 1.5px dashed var(--ink); height: 0; }
+
+/* Profile choice card */
+.sk-choice-card {
+  border: 1.5px solid var(--ink); border-radius: 4px;
+  padding: 10px; font-size: 11.5px;
+  flex: 1; min-height: 100px;
+  display: flex; flex-direction: column; gap: 4px;
+  background: var(--paper);
+}
+.sk-choice-card.selected { background: var(--yellow); box-shadow: 2px 2px 0 var(--ink); }
+.sk-choice-card .ch-title { font-weight: 700; font-size: 13px; }
+.sk-choice-card .ch-desc { color: var(--ink-soft); font-size: 10.5px; line-height: 1.25; }
+.sk-choice-card .ch-check {
+  align-self: flex-end; width: 14px; height: 14px;
+  border: 1.5px solid var(--ink); border-radius: 100px;
+  display: flex; align-items: center; justify-content: center; font-size: 10px;
+}
+.sk-choice-card.selected .ch-check { background: var(--ink); color: var(--yellow); }
+.sk-choice-card.selected .ch-check::after { content: "✓"; }
+
+.sk-module {
+  position: relative; border: 1.5px solid var(--ink); border-radius: 4px;
+  padding: 7px 8px; background: var(--paper);
+  display: flex; flex-direction: column; gap: 4px; font-size: 11.5px; min-height: 56px;
+}
+.sk-module .mod-title { font-weight: 700; font-size: 12px; }
+.sk-module .mod-desc { color: var(--ink-light); font-size: 10.5px; line-height: 1.25; }
+.sk-module.locked { background: #f5f4ee; }
+.sk-module.locked .mod-title, .sk-module.locked .mod-desc { color: var(--ink-light); }
+.sk-module.highlight-for-you { background: #fffcea; border-width: 1.8px; }
+.sk-module .badge {
+  position: absolute; top: 4px; right: 4px;
+  font-size: 9.5px; padding: 1px 6px;
+  border: 1.2px solid var(--ink); border-radius: 100px;
+  background: #f0efe9; color: var(--ink-soft);
+}
+.sk-module .badge.warn { background: var(--red-soft); }
+.sk-module .badge.foryou { background: var(--yellow); color: var(--ink); }
+.mod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.mod-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
+
+/* Stepper */
+.sk-steps { display: flex; align-items: center; gap: 4px; margin: 4px 0; }
+.sk-steps .d { width: 13px; height: 13px; border: 1.5px solid var(--ink); border-radius: 100px; background: var(--paper); font-size: 9px; display: flex; align-items: center; justify-content: center; }
+.sk-steps .d.done { background: var(--ink); color: var(--paper); }
+.sk-steps .d.current { background: var(--yellow); }
+.sk-steps .ln { flex: 1; height: 1.5px; background: var(--ink); }
+
+.annotate {
+  font-family: 'Caveat', cursive; font-size: 16px; color: var(--ink-soft);
+  font-style: italic; margin-top: 14px; padding-left: 10px;
+  border-left: 2px solid var(--ink); transform: rotate(-0.3deg);
+}
+.overview-card {
+  border: 1.8px dashed var(--ink); border-radius: 6px;
+  padding: 18px 22px; margin-top: 4px; background: var(--paper);
+  display: flex; gap: 20px; align-items: flex-start;
+}
+.overview-card .ov-body { flex: 1; }
+.overview-card .ov-body p { margin: 6px 0; font-size: 15px; }
+.overview-card .ov-meta {
+  font-family: 'Caveat', cursive; font-size: 18px; color: var(--ink-soft);
+  font-style: italic; padding-left: 14px; border-left: 2px solid var(--ink);
+  min-width: 220px; max-width: 260px;
+}
+.footer-note {
+  margin-top: 68px; padding-top: 20px; border-top: 2px solid var(--ink);
+  font-family: 'Caveat', cursive; font-size: 20px; color: var(--ink-soft);
+}
+.footer-note b { font-weight: 700; color: var(--ink); }
+.cross-ref {
+  margin-top: 10px; padding: 10px 14px; background: #f7f6f0;
+  border: 1.5px dashed var(--ink-light); border-radius: 4px;
+  font-family: 'Caveat', cursive; font-size: 17px;
+}
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <h1>Cadastro de Lojistas <span class="hyp-badge">H5b — Eligibility por Perfil</span></h1>
+  <div class="meta">
+    <span><b>caminho:</b> pf-aspirante-happy</span>
+    <span><b>persona:</b> PF em Portugal, sem empresa, quer vender em marketplaces EU</span>
+    <span><b>canal:</b> desktop</span>
+    <span><b>premissa:</b> usuário auto-declara perfil no cadastro · catálogo personaliza</span>
+    <span><b>fases com sketches:</b> 2 e 3</span>
+  </div>
+</div>
+
+<div class="cross-ref" style="background:#f0efe9; border-color:var(--ink); border-width:2px;">
+  <b>⊘ Hipótese arquivada · 2026-04-21</b><br>
+  Convergimos em <b>H5a Eligibility Universal</b> (arquivo paralelo). H5b foi descartada — a fricção adicional da declaração no cadastro + o risco de auto-declaração incorreta não compensaram a personalização.<br>
+  <span style="font-size:15px">Arquivo mantido como registo da exploração.</span>
+</div>
+
+<nav class="floor-nav" style="margin-top: 28px;">
+  <a href="#f1">1 · Chegada</a>
+  <a href="#f2" class="nav-focus">2 · Cadastro ★</a>
+  <a href="#f3" class="nav-focus">3 · Catálogo ★</a>
+  <a href="#f4">4 · Modal</a>
+  <a href="#f5">5 · Alternativas</a>
+  <a href="#f6">6 · Resolução externa</a>
+  <a href="#f7">7 · Retorno & atualização</a>
+</nav>
+
+<!-- FASE 1 -->
+<section class="section" id="f1">
+  <div class="section-head">
+    <span class="section-num">1</span>
+    <h2 class="section-title">Chegada e intenção</h2>
+    <span class="section-sentiment neutra">neutra</span>
+  </div>
+  <p class="section-desc">PF acessa o Big Hub. Landing idealmente já antecipa que haverá escolha de perfil.</p>
+  <div class="overview-card">
+    <div class="ov-body">
+      <p>Pequeno hint na landing: <i>"Adaptamos o Big Hub ao teu perfil — pessoa ou empresa"</i>. Prepara a expectativa pra fase 2.</p>
+    </div>
+    <div class="ov-meta">↳ visão geral. Conecta narrativamente com a variação 2C (qualifier-gate).</div>
+  </div>
+</section>
+
+<!-- FASE 2 — FOCO -->
+<section class="section" id="f2">
+  <div class="section-head">
+    <span class="section-num">2</span>
+    <h2 class="section-title">Cadastro com declaração de perfil ★</h2>
+    <span class="section-sentiment pos">positiva</span>
+  </div>
+  <p class="section-desc">A decisão crítica de H5b é <span class="highlight">onde e como perguntar o tipo de uso</span>. Três abordagens com pesos diferentes de fricção:</p>
+
+  <div class="vars">
+
+    <!-- 2.A -->
+    <div class="var-card">
+      <div class="var-label">Passo 1 dedicado <span class="var-tag">A</span></div>
+      <div class="var-desc">Antes de pedir dados pessoais, 2 cards grandes: <i>"Como pessoa"</i> / <i>"Como empresa"</i>. Link discreto "ainda a decidir" embaixo.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">Big Hub</div>
+          <div class="sk-grow"></div>
+          <span class="sk-chip">sair</span>
+        </div>
+        <div class="sk-steps">
+          <span class="d current">1</span>
+          <span class="ln"></span>
+          <span class="d">2</span>
+          <span class="ln"></span>
+          <span class="d">3</span>
+        </div>
+        <div style="font-family:'Caveat',cursive; font-size:20px; text-align:center; margin: 4px 0 2px;">Como vais usar o Big Hub?</div>
+        <div style="text-align:center; font-size:11px; color:var(--ink-light); margin-bottom:6px">Adaptamos o catálogo ao teu perfil. Podes mudar depois.</div>
+        <div class="sk-row" style="align-items:stretch">
+          <div class="sk-choice-card selected">
+            <span class="ch-check"></span>
+            <div class="ch-title">Como pessoa</div>
+            <div class="ch-desc">Sites, landing pages, venda direta (ex: freelancer)</div>
+          </div>
+          <div class="sk-choice-card">
+            <span class="ch-check"></span>
+            <div class="ch-title">Como empresa</div>
+            <div class="ch-desc">Tudo acima + marketplaces, faturação UE, integrações</div>
+          </div>
+        </div>
+        <div style="text-align:center; font-size:11px; color:var(--ink-light); margin-top: 4px;">
+          <u>Ainda a decidir →</u>
+        </div>
+        <div class="sk-row" style="justify-content:flex-end; margin-top:auto">
+          <span class="sk-btn primary">Continuar</span>
+        </div>
+      </div>
+      <div class="annotate">↳ explícito e educativo. Mas adiciona um passo extra antes do cadastro — 3 telas no total.</div>
+    </div>
+
+    <!-- 2.B -->
+    <div class="var-card">
+      <div class="var-label">Inline junto do NIF <span class="var-tag">B</span></div>
+      <div class="var-desc">Mantém 2 passos atuais. No passo 2, logo após o campo NIF, aparecem radio buttons: <i>"Este NIF é pessoal ou de empresa?"</i>.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">Big Hub</div>
+          <div class="sk-grow"></div>
+          <span class="sk-chip">sair</span>
+        </div>
+        <div class="sk-steps">
+          <span class="d done">1</span>
+          <span class="ln"></span>
+          <span class="d current">2</span>
+        </div>
+        <div style="font-family:'Caveat',cursive; font-size:20px; margin: 2px 0">Passo 2 · dados fiscais</div>
+        <div class="sk-box">
+          NIF<small>123 456 789</small>
+        </div>
+        <div class="sk-box fillsoft" style="padding:8px">
+          <div style="font-weight:700; font-size:12px; margin-bottom:4px">Este NIF é:</div>
+          <div class="sk-row">
+            <span class="sk-chip active">⬤ pessoal</span>
+            <span class="sk-chip">⬤ de empresa</span>
+          </div>
+        </div>
+        <div class="sk-box">Razão social <small>(opcional se pessoal)</small></div>
+        <div class="sk-row">
+          <div class="sk-box sk-grow">Morada</div>
+        </div>
+        <div class="sk-row">
+          <div class="sk-box">Cidade</div>
+          <div class="sk-box">CP</div>
+        </div>
+        <div class="sk-row" style="justify-content:space-between; margin-top:auto">
+          <span class="sk-btn ghost">Voltar</span>
+          <span class="sk-btn primary">Concluir</span>
+        </div>
+      </div>
+      <div class="annotate">↳ mínima fricção extra (1 radio). Mas menos educativo — não explica bem o impacto da escolha.</div>
+    </div>
+
+    <!-- 2.C -->
+    <div class="var-card">
+      <div class="var-label">Qualifier antes do cadastro <span class="var-tag">C</span></div>
+      <div class="var-desc">Antes de qualquer formulário, pergunta única em tela cheia: <i>"O que queres fazer no Big Hub?"</i> com 3 opções. Declaração implícita no objetivo.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">Big Hub</div>
+          <div class="sk-grow"></div>
+        </div>
+        <div style="font-family:'Caveat',cursive; font-size:22px; text-align:center; margin: 14px 0 4px;">O que queres fazer no Big Hub?</div>
+        <div style="text-align:center; font-size:11px; color:var(--ink-light); margin-bottom:10px">Escolhe o que mais se aproxima. Adaptamos o resto pra ti.</div>
+        <div class="sk-col" style="gap:6px">
+          <div class="sk-choice-card" style="flex-direction:row; align-items:center; gap:10px">
+            <span style="font-size:18px">🛍️</span>
+            <div style="flex:1">
+              <div class="ch-title">Criar sites ou landing pages</div>
+              <div class="ch-desc">Podes ser pessoa ou empresa</div>
+            </div>
+          </div>
+          <div class="sk-choice-card selected" style="flex-direction:row; align-items:center; gap:10px">
+            <span style="font-size:18px">🛒</span>
+            <div style="flex:1">
+              <div class="ch-title">Vender em marketplaces EU</div>
+              <div class="ch-desc">Precisas ser empresa (ou abrir uma)</div>
+            </div>
+          </div>
+          <div class="sk-choice-card" style="flex-direction:row; align-items:center; gap:10px">
+            <span style="font-size:18px">❓</span>
+            <div style="flex:1">
+              <div class="ch-title">Ainda a explorar</div>
+              <div class="ch-desc">Mostra-me tudo sem filtrar</div>
+            </div>
+          </div>
+        </div>
+        <div class="sk-row" style="justify-content:flex-end; margin-top:auto">
+          <span class="sk-btn primary">Continuar</span>
+        </div>
+      </div>
+      <div class="annotate">↳ qualifier-gate mostra consequência ("precisas ser empresa"). Mais honesto. Mas adiciona 1 tela antes do cadastro.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FASE 3 — FOCO -->
+<section class="section" id="f3">
+  <div class="section-head">
+    <span class="section-num">3</span>
+    <h2 class="section-title">Catálogo personalizado ★</h2>
+    <span class="section-sentiment pos">positiva</span>
+  </div>
+  <p class="section-desc">Usuário declarou "Pessoa". <span class="highlight">Como o catálogo personaliza sem esconder possibilidades futuras</span>?</p>
+
+  <div class="vars">
+
+    <!-- 3.A -->
+    <div class="var-card">
+      <div class="var-label">Catálogo segmentado <span class="var-tag">A</span></div>
+      <div class="var-desc">Duas seções claras: "Para ti" (PF) em cima com fundo destacado; "Quando abrires empresa" em baixo, visível mas secundária.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">BH</div>
+          <div class="sk-box tiny sk-grow">pesquisar...</div>
+          <span class="sk-chip active">pessoa</span>
+        </div>
+        <div class="sk-line"></div>
+        <div class="sk-row" style="justify-content:space-between; align-items:baseline">
+          <b style="font-size:13px">★ Para ti</b>
+          <span class="sk-chip">3 módulos</span>
+        </div>
+        <div class="mod-grid cols3">
+          <div class="sk-module highlight-for-you">
+            <div class="mod-title">Site institucional</div>
+            <div class="mod-desc">Pronto em 1 dia</div>
+          </div>
+          <div class="sk-module highlight-for-you">
+            <div class="mod-title">Landing page</div>
+            <div class="mod-desc">Conversão</div>
+          </div>
+          <div class="sk-module highlight-for-you">
+            <div class="mod-title">SEO básico</div>
+            <div class="mod-desc">Otimização</div>
+          </div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="sk-row" style="justify-content:space-between; align-items:baseline">
+          <b style="font-size:13px">Quando abrires empresa</b>
+          <span class="sk-chip lock">3 ficam disponíveis</span>
+        </div>
+        <div class="mod-grid cols3">
+          <div class="sk-module locked">
+            <div class="mod-title">Vender em MKPs</div>
+            <div class="mod-desc">Amazon, eBay</div>
+          </div>
+          <div class="sk-module locked">
+            <div class="mod-title">Integração MKP</div>
+            <div class="mod-desc">Stock, pedidos</div>
+          </div>
+          <div class="sk-module locked">
+            <div class="mod-title">Fatura UE</div>
+            <div class="mod-desc">IVA europeu</div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">↳ clareza máxima. Frase "quando abrires empresa" transforma restrição em horizonte positivo.</div>
+    </div>
+
+    <!-- 3.B -->
+    <div class="var-card">
+      <div class="var-label">Filtro ativo + toggle <span class="var-tag">B</span></div>
+      <div class="var-desc">Default: mostra só compatíveis com perfil. Um toggle discreto revela os demais. Catálogo parece puramente "seu".</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">BH</div>
+          <div class="sk-box tiny sk-grow">pesquisar...</div>
+          <span class="sk-chip active">pessoa</span>
+        </div>
+        <div class="sk-line"></div>
+        <div class="sk-box fillsoft" style="font-size:12px">
+          A mostrar: <b>módulos para pessoas</b>
+          <small style="margin-top:3px">3 módulos · 3 ocultos (ver abaixo)</small>
+        </div>
+        <div class="mod-grid cols3">
+          <div class="sk-module">
+            <div class="mod-title">Site institucional</div>
+            <div class="mod-desc">Presença online</div>
+          </div>
+          <div class="sk-module">
+            <div class="mod-title">Landing page</div>
+            <div class="mod-desc">Página única</div>
+          </div>
+          <div class="sk-module">
+            <div class="mod-title">SEO básico</div>
+            <div class="mod-desc">Otimização</div>
+          </div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="sk-row" style="justify-content:center; margin-top: 4px;">
+          <span class="sk-btn ghost">▾ Ver também módulos para empresas (3)</span>
+        </div>
+      </div>
+      <div class="annotate">↳ foco total. Mas esconde possibilidades — PF aspirante pode não descobrir que BH vende em MKPs.</div>
+    </div>
+
+    <!-- 3.C -->
+    <div class="var-card">
+      <div class="var-label">Grid unificado com destaque <span class="var-tag">C</span></div>
+      <div class="var-desc">Todos os módulos no mesmo grid, sem divisões. "Para ti" marcado com badge amarelo; outros com badge neutro "empresa". Ordem prioriza os seus.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">BH</div>
+          <div class="sk-box tiny sk-grow">pesquisar...</div>
+          <span class="sk-chip active">pessoa</span>
+        </div>
+        <div class="sk-line"></div>
+        <div class="mod-grid cols3">
+          <div class="sk-module highlight-for-you">
+            <span class="badge foryou">★ pra ti</span>
+            <div class="mod-title">Site institucional</div>
+            <div class="mod-desc">Presença online</div>
+          </div>
+          <div class="sk-module highlight-for-you">
+            <span class="badge foryou">★ pra ti</span>
+            <div class="mod-title">Landing page</div>
+            <div class="mod-desc">Conversão</div>
+          </div>
+          <div class="sk-module highlight-for-you">
+            <span class="badge foryou">★ pra ti</span>
+            <div class="mod-title">SEO básico</div>
+            <div class="mod-desc">Otimização</div>
+          </div>
+          <div class="sk-module">
+            <span class="badge">empresa</span>
+            <div class="mod-title">Vender em MKPs</div>
+            <div class="mod-desc">Amazon, eBay</div>
+          </div>
+          <div class="sk-module">
+            <span class="badge">empresa</span>
+            <div class="mod-title">Integração MKP</div>
+            <div class="mod-desc">Stock, pedidos</div>
+          </div>
+          <div class="sk-module">
+            <span class="badge">empresa</span>
+            <div class="mod-title">Fatura UE</div>
+            <div class="mod-desc">IVA europeu</div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">↳ equilibra: destaca o seu mas não esconde o resto. Risco: badges podem parecer "concorrência visual".</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FASE 4 -->
+<section class="section" id="f4">
+  <div class="section-head">
+    <span class="section-num">4</span>
+    <h2 class="section-title">Modal de confirmação</h2>
+    <span class="section-sentiment neutra">neutra</span>
+  </div>
+  <p class="section-desc">Clica num módulo empresarial. Modal <span class="highlight">confirma</span> a restrição (não surpreende — a fase 3 já sinalizou).</p>
+  <div class="overview-card">
+    <div class="ov-body">
+      <p>Em H5b, o modal da fase 4 é <b>menos crítico</b> que em H5a. Serve como confirmação, não como descoberta. Pode ser mais enxuto (similar à variação A da H5a) ou até um toast em vez de modal.</p>
+      <p>Tom recomendado: <i>"Como disseste ser pessoa, este módulo ainda não está ativo pra ti. Quando abrires empresa, aparece automaticamente aqui. <b>Já tens empresa? Atualiza o teu perfil</b>"</i> (atalho pra fase 7).</p>
+    </div>
+    <div class="ov-meta">↳ reutilizar variações da H5a. Priorizar tom de confirmação, não de rejeição.</div>
+  </div>
+</section>
+
+<!-- FASE 5 -->
+<section class="section" id="f5">
+  <div class="section-head">
+    <span class="section-num">5</span>
+    <h2 class="section-title">Exploração de alternativas</h2>
+    <span class="section-sentiment neutra">neutra</span>
+  </div>
+  <p class="section-desc">Modal fechado. Usuário já está na seção "Para ti" (default do catálogo personalizado).</p>
+  <div class="overview-card">
+    <div class="ov-body">
+      <p>Transição quase automática — a seção "Para ti" já é o contexto ativo. Cross-sell leve cabe aqui: <i>"Começa com um site agora e ativa marketplaces quando abrires empresa"</i> como banner contextual.</p>
+    </div>
+    <div class="ov-meta">↳ transição natural. Sem tela própria.</div>
+  </div>
+</section>
+
+<!-- FASE 6 -->
+<section class="section" id="f6">
+  <div class="section-head">
+    <span class="section-num">6</span>
+    <h2 class="section-title">Período de resolução externa</h2>
+    <span class="section-sentiment neg">negativa</span>
+  </div>
+  <p class="section-desc">Usuário sai para abrir atividade. Big Hub fica invisível.</p>
+  <div class="overview-card">
+    <div class="ov-body">
+      <p><b>Vantagem de H5b sobre H5a</b>: como o perfil está declarado, os emails de follow-up podem ser <b>segmentados</b> — conteúdo específico pra quem declarou "Pessoa" e está a caminho de "Empresa" (nurture direcionado).</p>
+    </div>
+    <div class="ov-meta">↳ off-platform, mas nurture segmentado é possível.</div>
+  </div>
+</section>
+
+<!-- FASE 7 -->
+<section class="section" id="f7">
+  <div class="section-head">
+    <span class="section-num">7</span>
+    <h2 class="section-title">Retorno com atualização de perfil</h2>
+    <span class="section-sentiment pos">positiva</span>
+  </div>
+  <p class="section-desc">Volta com empresa aberta. Atualiza declaração "Pessoa → Empresa". Catálogo se reconfigura.</p>
+  <div class="overview-card">
+    <div class="ov-body">
+      <p>CTA destacado na tela de conta: <b>"Atualizar para conta empresarial"</b>. Animação suave do catálogo se reconfigurando após a atualização (feedback positivo visível).</p>
+      <p>Email de confirmação: <i>"Ganhaste acesso a 3 módulos adicionais"</i> — converte burocracia em celebração.</p>
+    </div>
+    <div class="ov-meta">↳ iterar depois. A atualização é o pagamento simbólico da fricção paga na fase 2.</div>
+  </div>
+</section>
+
+<div class="footer-note">
+  <p>✎ <b>Resumo H5b</b>: paga 1 pergunta no cadastro (fase 2). Em troca: catálogo personalizado, fase 4 menos traumática, nurture segmentado, momento de "celebração" na fase 7.</p>
+  <p>✎ <b>Risco principal</b>: auto-declaração incorreta (usuário marca "Empresa" pra desbloquear). Precisa de instrumentação em produção.</p>
+  <p>✎ <b>Comparar com</b>: <b>H5a Eligibility Universal</b> (arquivo paralelo) — zero pergunta, catálogo impessoal, zero risco de mentira.</p>
+</div>
+
+</body>
+</html>

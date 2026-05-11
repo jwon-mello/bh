@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<title>Wireframe — importacoes-csv (base)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a; --ink-soft: #3d3d3d; --ink-light: #8a8a8a; --ink-faint: #c8c8c8;
+  --paper: #fcfcfa; --paper-edge: #f3f1e8;
+  --yellow: #fff2a8; --yellow-dim: #ffe771; --yellow-edge: #e6c732;
+  --green-soft: #c9e6b8; --red-soft: #f4b8b0; --blue-soft: #b8d4f0; --orange-soft: #f5d0a0;
+}
+* { box-sizing: border-box; }
+body { font-family: 'Patrick Hand', cursive; background: var(--paper); background-image: radial-gradient(circle at 25% 30%, rgba(0,0,0,0.015) 0%, transparent 50%), radial-gradient(circle at 75% 70%, rgba(0,0,0,0.015) 0%, transparent 50%); color: var(--ink); font-size: 16px; line-height: 1.4; margin: 0; padding: 24px 32px 80px; }
+h1, h2, .var-label, .section-title { font-family: 'Caveat', cursive; }
+.title-block { border: 2.5px solid var(--ink); border-radius: 10px; padding: 18px 24px 16px; background: var(--paper); box-shadow: 5px 5px 0 var(--ink); margin-bottom: 28px; }
+.title-block h1 { font-size: 38px; margin: 0 0 4px; line-height: 1.1; }
+.title-block .meta { font-size: 15px; color: var(--ink-soft); display: flex; gap: 18px; flex-wrap: wrap; margin-top: 4px; }
+.title-block .meta b { color: var(--ink); }
+.title-block .meta .badge-etapa { background: var(--yellow); border: 1.5px solid var(--ink); padding: 2px 12px; border-radius: 100px; font-family: 'Caveat', cursive; font-size: 18px; transform: rotate(-1.5deg); display: inline-block; }
+.overview-card { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; margin-top: 14px; padding: 12px 16px; border: 1.5px dashed var(--ink-light); border-radius: 6px; background: var(--paper-edge); font-size: 14.5px; }
+.overview-card b { color: var(--ink); }
+.overview-card .label { color: var(--ink-soft); }
+.floor-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; padding: 10px 14px; border: 1.5px dashed var(--ink-light); border-radius: 6px; background: var(--paper-edge); position: sticky; top: 8px; z-index: 10; }
+.floor-nav a { padding: 4px 12px; text-decoration: none; color: var(--ink); border: 1.5px solid var(--ink); border-radius: 100px; font-size: 14px; background: var(--paper); }
+.floor-nav a:hover { background: var(--yellow); }
+.section { margin-bottom: 36px; }
+.section-head { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px dashed var(--ink-light); }
+.section-num { font-family: 'Caveat', cursive; font-size: 64px; font-weight: 700; line-height: 0.85; color: var(--ink); min-width: 56px; text-align: center; background: var(--yellow); border: 2px solid var(--ink); border-radius: 8px; padding: 4px 8px; box-shadow: 3px 3px 0 var(--ink); transform: rotate(-2deg); }
+.section-info { flex: 1; }
+.section-title { font-size: 32px; margin: 0 0 4px; line-height: 1.05; }
+.section-sentiment { display: inline-block; padding: 1px 10px; border-radius: 100px; border: 1.2px solid var(--ink); font-size: 13px; margin-left: 8px; vertical-align: middle; }
+.section-sentiment.neutra { background: var(--paper-edge); }
+.section-sentiment.pos { background: var(--green-soft); }
+.section-desc { font-size: 14.5px; color: var(--ink-soft); max-width: 720px; }
+.vars { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+.var-card { position: relative; border: 2px solid var(--ink); border-radius: 8px; padding: 14px 14px 10px; background: var(--paper); box-shadow: 3px 3px 0 var(--ink); }
+.var-card::before { content: ''; position: absolute; top: -9px; left: 18px; width: 56px; height: 18px; background: var(--yellow-dim); border: 1px solid var(--ink); transform: rotate(-3deg); z-index: 0; }
+.var-label { font-size: 22px; font-weight: 700; margin: 0; position: relative; z-index: 1; }
+.var-tag { display: inline-block; font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700; background: var(--ink); color: var(--paper); width: 28px; height: 28px; text-align: center; line-height: 26px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+.var-desc { font-size: 13.5px; color: var(--ink-soft); line-height: 1.35; margin: 4px 0 10px; min-height: 36px; }
+.annotate { font-family: 'Kalam', cursive; font-style: italic; font-size: 13px; color: var(--ink-soft); margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--ink-faint); }
+.annotate::before { content: '↳ '; color: var(--ink-light); }
+.sk-frame { border: 1.8px solid var(--ink); border-radius: 5px; padding: 8px; background: var(--paper); display: flex; flex-direction: column; gap: 6px; min-height: 200px; font-size: 12px; position: relative; }
+.sk-row { display: flex; gap: 6px; align-items: center; }
+.sk-col { display: flex; flex-direction: column; gap: 4px; }
+.sk-grow { flex: 1; }
+.sk-box { border: 1.5px solid var(--ink); border-radius: 4px; padding: 4px 6px; background: var(--paper); font-size: 11.5px; min-height: 18px; display: flex; align-items: center; gap: 4px; }
+.sk-box.dashed { border-style: dashed; border-color: var(--ink-light); }
+.sk-box.fill { background: var(--yellow); }
+.sk-box.fillsoft { background: var(--paper-edge); }
+.sk-box.tiny { padding: 2px 5px; font-size: 11px; }
+.sk-btn { border: 1.5px solid var(--ink); border-radius: 100px; padding: 3px 9px; background: var(--paper); font-size: 11.5px; font-family: inherit; }
+.sk-btn.primary { background: var(--yellow); font-weight: 700; }
+.sk-btn.ghost { border-style: dashed; color: var(--ink-soft); }
+.sk-chip { border: 1.2px solid var(--ink); border-radius: 100px; padding: 1px 7px; font-size: 10.5px; background: var(--paper); display: inline-block; }
+.sk-chip.active { background: var(--yellow); font-weight: 700; }
+.sk-chip.muted { color: var(--ink-light); border-color: var(--ink-faint); }
+.sk-chip.green { background: var(--green-soft); }
+.sk-chip.red { background: var(--red-soft); }
+.sk-chip.orange { background: var(--orange-soft); }
+.sk-line { height: 1.2px; background: var(--ink-light); margin: 2px 0; }
+.sk-line.dash { background: transparent; border-top: 1.2px dashed var(--ink-light); }
+.sk-table { border: 1.2px solid var(--ink); border-radius: 3px; overflow: hidden; font-size: 10.5px; }
+.sk-table-row { display: flex; border-bottom: 1px dashed var(--ink-light); padding: 3px 5px; gap: 5px; align-items: center; }
+.sk-table-row:last-child { border-bottom: 0; }
+.sk-table-row.head { background: var(--paper-edge); font-weight: 700; font-size: 9.5px; color: var(--ink-soft); text-transform: uppercase; }
+.sk-table-row .col { flex: 1; }
+.sk-mini-card { border: 1.5px solid var(--ink); border-radius: 5px; padding: 5px 7px; background: var(--paper); font-size: 11px; }
+.sk-mini-card.fill { background: var(--yellow); }
+.sk-mini-card.fillsoft { background: var(--paper-edge); }
+.sk-mini-card.green { background: var(--green-soft); }
+.sk-mini-card.warn { background: var(--orange-soft); }
+.sk-stack > * + * { margin-top: 5px; }
+.sk-tag { font-size: 10px; color: var(--ink-light); font-style: italic; }
+.sk-tab { border: 1.5px solid var(--ink); border-bottom: none; border-radius: 5px 5px 0 0; padding: 3px 9px; background: var(--paper); font-size: 11px; }
+.sk-tab.active { background: var(--yellow); font-weight: 700; }
+
+.sk-dropzone { border: 2px dashed var(--ink); border-radius: 6px; padding: 16px; background: var(--paper-edge); text-align: center; font-size: 12px; color: var(--ink-soft); flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+.sk-dropzone.compact { padding: 10px; min-height: 60px; }
+
+.var-card.chosen { box-shadow: 4px 4px 0 var(--ink), inset 0 0 0 2.5px var(--green-soft); }
+.chosen-mark { position: absolute; top: -12px; right: 18px; background: var(--green-soft); border: 1.5px solid var(--ink); padding: 2px 12px; border-radius: 100px; font-family: 'Caveat', cursive; font-size: 16px; font-weight: 700; transform: rotate(2deg); z-index: 1; }
+.footer-note { margin-top: 32px; padding: 14px 18px; border: 1.8px dashed var(--ink); border-radius: 6px; background: var(--paper-edge); font-size: 14.5px; color: var(--ink-soft); }
+.footer-note b { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <h1>Wireframe base — <span style="color: var(--ink-soft);">importacoes-csv</span></h1>
+  <div class="meta">
+    <span class="badge-etapa">Etapa 1 · grid de regiões</span>
+    <span><b>Feature:</b> logistica-fbm</span>
+    <span><b>Hipótese:</b> pool-bh-coleta-unificada</span>
+    <span><b>Tela:</b> importacoes-csv (periférica)</span>
+    <span><b>Persona:</b> Seller com canais externos (Amazon, Cdiscount, bol)</span>
+  </div>
+  <div class="overview-card">
+    <div><span class="label">Journey:</span> <b>seller-pedido-happy</b> Fase 1B (canais externos via CSV)</div>
+    <div><span class="label">Cenários previstos (Etapa 2):</span> <b>4</b> — drag-drop happy · agendado · mapeamento · erro CSV</div>
+    <div><span class="label">Regiões × variações:</span> <b>4 × 3 = 12 mini-sketches</b></div>
+    <div><span class="label">Combinação validada ✓:</span> <b>1A · 2A · 3C · 4A</b> — pronta para Etapa 2</div>
+  </div>
+</div>
+
+<nav class="floor-nav">
+  <a href="#r1">1 · Header + tabs</a>
+  <a href="#r2">2 · Upload area</a>
+  <a href="#r3">3 · Mapeamento</a>
+  <a href="#r4">4 · Histórico</a>
+</nav>
+
+<!-- R1 -->
+<section id="r1" class="section">
+  <div class="section-head">
+    <div class="section-num">1</div>
+    <div class="section-info">
+      <h2 class="section-title">Header + tabs <span class="section-sentiment neutra">neutra</span></h2>
+      <p class="section-desc">Tabs separam ações (importar agora · agendados · histórico). Recorte direto.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">A</span>Tabs sticky + título</div>
+      <div class="var-desc">Título "Importações" + tabs (Importar agora · Agendados · Histórico). Convenção familiar.</div>
+      <div class="sk-frame">
+        <div style="font-family:'Caveat',cursive; font-size:22px; font-weight:700;">Importações</div>
+        <div class="sk-row" style="align-items:flex-end;">
+          <div class="sk-tab active">Importar agora</div>
+          <div class="sk-tab">Agendados · 2</div>
+          <div class="sk-tab">Histórico</div>
+        </div>
+        <div class="sk-line" style="margin-top:0;"></div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· conteúdo da tab ···</div>
+      </div>
+      <div class="annotate">familiar; com 4+ ações começa a apertar</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Header com 3 cards</div>
+      <div class="var-desc">3 cards no topo (Importar | Agendar | Ver histórico). Visual entry point claro.</div>
+      <div class="sk-frame">
+        <div style="font-family:'Caveat',cursive; font-size:18px; font-weight:700;">Importações</div>
+        <div class="sk-row" style="align-items:stretch;">
+          <div class="sk-mini-card fill" style="flex:1; text-align:center;">
+            <div style="font-weight:700;">↑ Importar</div>
+            <div style="font-size:9px;">CSV agora</div>
+          </div>
+          <div class="sk-mini-card fillsoft" style="flex:1; text-align:center;">
+            <div style="font-weight:700;">⏰ Agendar</div>
+            <div style="font-size:9px;">recorrente</div>
+          </div>
+          <div class="sk-mini-card fillsoft" style="flex:1; text-align:center;">
+            <div style="font-weight:700;">📋 Histórico</div>
+            <div style="font-size:9px;">últimos 30d</div>
+          </div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:10px; font-style:italic;">··· conteúdo do card ativo ···</div>
+      </div>
+      <div class="annotate">visual e amigável; ocupa altura fixa mesmo após escolher</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Header compacto + dropdown</div>
+      <div class="var-desc">Título compacto + dropdown "+" com ações. Maximiza espaço para conteúdo.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div style="font-family:'Caveat',cursive; font-size:18px; font-weight:700;">Importações</div>
+          <div class="sk-grow"></div>
+          <span class="sk-btn primary" style="font-size:13px; padding:2px 12px;">+</span>
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· lista única ···</div>
+      </div>
+      <div class="annotate">enxuto; 3 ações escondidas em menu — descoberta exige 1 click extra</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- R2 -->
+<section id="r2" class="section">
+  <div class="section-head">
+    <div class="section-num">2</div>
+    <div class="section-info">
+      <h2 class="section-title">Upload area <span class="section-sentiment pos">núcleo</span></h2>
+      <p class="section-desc">Drag-and-drop + escolha de MKP (template). Templates pré-prontos resolvem o pain point #1 ("CSV tem colunas que BH não reconhece").</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">A</span>Drop zone grande + dropdown MKP</div>
+      <div class="var-desc">Drop zone centralizada + dropdown "MKP de origem" separado. Convenção genérica.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div style="font-size:11px;">MKP de origem:</div>
+          <div class="sk-box tiny fillsoft">selecione ▾</div>
+        </div>
+        <div class="sk-dropzone">
+          <div style="font-size:24px;">📁</div>
+          <div style="font-weight:700;">Arraste o CSV aqui</div>
+          <div style="font-size:10px; color:var(--ink-light);">ou <span style="text-decoration:underline;">clique para selecionar</span></div>
+        </div>
+      </div>
+      <div class="annotate">simples e clean; depende do seller saber qual MKP escolher</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Drop zone + botões pré-prontos por MKP</div>
+      <div class="var-desc">Drop zone + botões "Modelo Amazon · Cdiscount · bol.com" que pré-configuram o template. Mais rápido.</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="flex-wrap:wrap;">
+          <span class="sk-tag" style="font-size:11px;">Templates prontos:</span>
+          <span class="sk-chip">Amazon</span>
+          <span class="sk-chip">Cdiscount</span>
+          <span class="sk-chip">bol.com</span>
+          <span class="sk-chip muted">+ outro</span>
+        </div>
+        <div class="sk-dropzone">
+          <div style="font-size:20px;">📁</div>
+          <div style="font-weight:700; font-size:12px;">Arraste o CSV ou clique</div>
+          <div style="font-size:9.5px; color:var(--ink-light);">↳ template auto-detectado pelo header</div>
+        </div>
+      </div>
+      <div class="annotate">resolve pain point #1; com 4+ MKPs vira lista longa</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Wizard 2 passos</div>
+      <div class="var-desc">Passo 1: escolha MKP. Passo 2: faça upload. Guiado.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <span class="sk-chip active">1. MKP ✓</span>
+          <span class="sk-tag">→</span>
+          <span class="sk-chip" style="background:var(--yellow);">2. Upload</span>
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="sk-mini-card fillsoft">
+          <div style="font-size:10px;">MKP escolhido: <b>Amazon</b> · template "Amazon Orders v3"</div>
+        </div>
+        <div class="sk-dropzone compact">
+          <div style="font-weight:700; font-size:12px;">↑ arraste o CSV</div>
+        </div>
+      </div>
+      <div class="annotate">guiado e didático; lento para sellers experientes (2 telas para 1 ação)</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- R3 -->
+<section id="r3" class="section">
+  <div class="section-head">
+    <div class="section-num">3</div>
+    <div class="section-info">
+      <h2 class="section-title">Mapeamento de colunas <span class="section-sentiment neutra">crítica</span></h2>
+      <p class="section-desc">Pós-upload: match coluna do CSV → campo BH. Auto-match quando MKP é template conhecido. Crítico: mapeamento errado → pedido errado depois.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">A</span>Tabela lado-a-lado com dropdowns</div>
+      <div class="var-desc">2 colunas (col CSV | col BH) com dropdowns de match em cada linha. Auditável.</div>
+      <div class="sk-frame">
+        <div class="sk-table">
+          <div class="sk-table-row head">
+            <div class="col">Coluna CSV</div>
+            <div class="col" style="flex:0.3;"></div>
+            <div class="col">Campo BH</div>
+          </div>
+          <div class="sk-table-row">
+            <div class="col">order-id</div>
+            <div class="col" style="flex:0.3;">→</div>
+            <div class="col"><div class="sk-box tiny fillsoft">ID externo ▾</div></div>
+          </div>
+          <div class="sk-table-row">
+            <div class="col">buyer-email</div>
+            <div class="col" style="flex:0.3;">→</div>
+            <div class="col"><div class="sk-box tiny fillsoft">Email comprador ▾</div></div>
+          </div>
+          <div class="sk-table-row">
+            <div class="col">ship-zip</div>
+            <div class="col" style="flex:0.3;">→</div>
+            <div class="col"><div class="sk-box tiny fillsoft">CEP destino ▾</div></div>
+          </div>
+        </div>
+        <div class="sk-tag">+ 8 colunas mapeadas</div>
+      </div>
+      <div class="annotate">auditável e claro; em CSV com 30+ colunas vira scroll longo</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Lista vertical (1 linha por coluna)</div>
+      <div class="var-desc">Cada coluna do CSV ocupa uma linha vertical com setinha → dropdown campo BH. Foco linha-a-linha.</div>
+      <div class="sk-frame">
+        <div class="sk-stack" style="font-size:10.5px;">
+          <div class="sk-mini-card fillsoft">
+            <div style="font-size:9px; color:var(--ink-light);">CSV: order-id</div>
+            <div class="sk-row" style="margin-top:2px;">
+              <span class="sk-tag">→</span>
+              <div class="sk-box tiny" style="flex:1;">ID externo ▾</div>
+            </div>
+          </div>
+          <div class="sk-mini-card fillsoft">
+            <div style="font-size:9px; color:var(--ink-light);">CSV: buyer-email</div>
+            <div class="sk-row" style="margin-top:2px;">
+              <span class="sk-tag">→</span>
+              <div class="sk-box tiny" style="flex:1;">Email comprador ▾</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">visual e claro; consome muita altura para CSVs com muitas colunas</div>
+    </article>
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">C</span>Auto-match + revisão de ambíguos</div>
+      <div class="var-desc">Quando MKP é template conhecido, BH faz auto-match e mostra só o que ficou ambíguo para revisão. Eficiente.</div>
+      <div class="sk-frame">
+        <div class="sk-mini-card green">
+          <div style="font-weight:700; font-size:11px;">✓ 9 colunas mapeadas automaticamente</div>
+          <div style="font-size:10px; color:var(--ink-soft);">Template "Amazon Orders v3" detectado</div>
+        </div>
+        <div class="sk-mini-card warn">
+          <div style="font-weight:700; font-size:11px;">⚠ 2 colunas ambíguas — revise:</div>
+        </div>
+        <div class="sk-table">
+          <div class="sk-table-row">
+            <div class="col">tax-collection</div>
+            <div class="col" style="flex:0.3;">→</div>
+            <div class="col"><div class="sk-box tiny dashed">escolher ▾</div></div>
+          </div>
+          <div class="sk-table-row">
+            <div class="col">marketplace-id</div>
+            <div class="col" style="flex:0.3;">→</div>
+            <div class="col"><div class="sk-box tiny dashed">escolher ▾</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">eficiente para templates conhecidos; falha se MKP muda formato (auto-match desatualizado)</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- R4 -->
+<section id="r4" class="section">
+  <div class="section-head">
+    <div class="section-num">4</div>
+    <div class="section-info">
+      <h2 class="section-title">Histórico recente <span class="section-sentiment neutra">utilitária</span></h2>
+      <p class="section-desc">Últimos 5 imports com status (sucesso · pendente · erro). Re-baixar template, re-tentar import com erro.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">A</span>Tabela densa</div>
+      <div class="var-desc">data · MKP · qtd · status · ações. Familiar e auditável.</div>
+      <div class="sk-frame">
+        <div class="sk-table">
+          <div class="sk-table-row head">
+            <div class="col">Data</div>
+            <div class="col">MKP</div>
+            <div class="col" style="flex:0.5;">Qtd</div>
+            <div class="col">Status</div>
+            <div class="col" style="flex:0.4;"></div>
+          </div>
+          <div class="sk-table-row">
+            <div class="col">09/05 09:14</div>
+            <div class="col">Amazon</div>
+            <div class="col" style="flex:0.5;">37</div>
+            <div class="col"><span class="sk-chip green" style="font-size:9px;">ok</span></div>
+            <div class="col" style="flex:0.4;">→</div>
+          </div>
+          <div class="sk-table-row">
+            <div class="col">08/05 17:32</div>
+            <div class="col">Cdiscount</div>
+            <div class="col" style="flex:0.5;">12</div>
+            <div class="col"><span class="sk-chip green" style="font-size:9px;">ok</span></div>
+            <div class="col" style="flex:0.4;">→</div>
+          </div>
+          <div class="sk-table-row" style="background:var(--red-soft);">
+            <div class="col">07/05 09:10</div>
+            <div class="col">Amazon</div>
+            <div class="col" style="flex:0.5;">—</div>
+            <div class="col"><span class="sk-chip red" style="font-size:9px;">erro</span></div>
+            <div class="col" style="flex:0.4;">→</div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">scaneável; coluna de ação é só seta — re-tentar exige clicar no detalhe</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Cards por import</div>
+      <div class="var-desc">Cards visuais por import com status colorido e ações inline (re-tentar, ver detalhe).</div>
+      <div class="sk-frame">
+        <div class="sk-mini-card green">
+          <div class="sk-row">
+            <span style="font-weight:700; flex:1;">Amazon · 37 pedidos</span>
+            <span class="sk-chip" style="font-size:9px;">ok</span>
+          </div>
+          <div style="font-size:10px;">09/05 09:14 · drag-drop manual</div>
+        </div>
+        <div class="sk-mini-card warn">
+          <div class="sk-row">
+            <span style="font-weight:700; flex:1;">Amazon · erro</span>
+            <span class="sk-chip red" style="font-size:9px;">erro CSV</span>
+          </div>
+          <div class="sk-row" style="font-size:10px;">
+            <span>07/05 · "coluna desconhecida: prime-status"</span>
+            <div class="sk-grow"></div>
+            <span class="sk-btn ghost" style="font-size:9px; padding:1px 5px;">re-tentar</span>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">visual e acionável; consome mais altura</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Lista compacta com chips</div>
+      <div class="var-desc">Linha mínima por import + chips de status. Densa e escalável.</div>
+      <div class="sk-frame">
+        <div class="sk-stack" style="font-size:11px;">
+          <div class="sk-row" style="padding:3px 5px; border-bottom:1px dashed var(--ink-light);">
+            <span style="font-weight:700;">09/05</span>
+            <span class="sk-chip muted">Amazon</span>
+            <span style="flex:1;">37 pedidos</span>
+            <span class="sk-chip green">ok</span>
+            <span class="sk-tag">→</span>
+          </div>
+          <div class="sk-row" style="padding:3px 5px; border-bottom:1px dashed var(--ink-light);">
+            <span style="font-weight:700;">08/05</span>
+            <span class="sk-chip muted">Cdisc.</span>
+            <span style="flex:1;">12 pedidos</span>
+            <span class="sk-chip green">ok</span>
+            <span class="sk-tag">→</span>
+          </div>
+          <div class="sk-row" style="padding:3px 5px;">
+            <span style="font-weight:700;">07/05</span>
+            <span class="sk-chip muted">Amazon</span>
+            <span style="flex:1;">erro</span>
+            <span class="sk-chip red">re-tentar</span>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">enxuto; "re-tentar" como chip pode ser confundido com status</div>
+    </article>
+
+  </div>
+</section>
+
+<div class="footer-note">
+  <b>Resumo:</b> 4 regiões × 3 variações = <b>12 mini-sketches</b> para validar.<br>
+  <b>Pontos críticos detectados</b>: (1) <b>R2 (templates por MKP)</b> resolve o pain point #1 — variação B é a aposta. (2) <b>R3 (auto-match em C)</b> é eficiente mas frágil se MKP muda formato — fallback A/B sempre disponível. (3) <b>Erro de CSV</b> aparece em R4 com botão "re-tentar" — não bloqueia o seller.<br>
+  <b>Combinação validada ✓</b>: <b>1A · 2A · 3C · 4A</b><br>
+  <b>Próximo passo</b>: novo-pedido-manual validado em paralelo · Etapa 1 da onda 1 completa.
+</div>
+
+</body>
+</html>

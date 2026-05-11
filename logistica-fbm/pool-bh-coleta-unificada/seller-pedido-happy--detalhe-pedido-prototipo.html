@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo de tela — detalhe-pedido (8 cenários)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a; --ink-soft: #3d3d3d; --ink-light: #8a8a8a; --ink-faint: #c8c8c8;
+  --paper: #fcfcfa; --paper-edge: #f3f1e8;
+  --yellow: #fff2a8; --yellow-dim: #ffe771; --yellow-edge: #e6c732;
+  --green-soft: #c9e6b8; --red-soft: #f4b8b0; --blue-soft: #b8d4f0; --orange-soft: #f5d0a0;
+}
+* { box-sizing: border-box; }
+body { font-family: 'Patrick Hand', cursive; background: var(--paper); color: var(--ink); font-size: 16px; line-height: 1.4; margin: 0; padding: 0 0 80px; }
+h1, h2, h3, .section-title { font-family: 'Caveat', cursive; }
+
+/* Title */
+.title-block { border-bottom: 2.5px solid var(--ink); padding: 16px 28px; background: var(--paper); position: sticky; top: 0; z-index: 50; }
+.title-block .row { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.title-block h1 { font-size: 28px; margin: 0; line-height: 1.05; }
+.title-block .meta { font-size: 13.5px; color: var(--ink-soft); }
+.title-block .meta b { color: var(--ink); }
+.title-block .badge-etapa { background: var(--yellow); border: 1.5px solid var(--ink); padding: 2px 12px; border-radius: 100px; font-family: 'Caveat', cursive; font-size: 16px; transform: rotate(-1.5deg); display: inline-block; }
+.title-block .combo { background: var(--green-soft); border: 1.5px solid var(--ink); padding: 2px 12px; border-radius: 100px; font-size: 13px; font-family: 'Patrick Hand', cursive; }
+
+/* Proto nav */
+.proto-nav { position: sticky; top: 64px; z-index: 40; background: var(--paper-edge); padding: 8px 28px; display: flex; gap: 6px; flex-wrap: wrap; border-bottom: 1.5px dashed var(--ink-light); }
+.proto-nav button {
+  border: 1.5px solid var(--ink); border-radius: 100px; padding: 4px 12px;
+  background: var(--paper); font-family: 'Patrick Hand', cursive; font-size: 13px;
+  cursor: pointer; transition: all 0.1s;
+}
+.proto-nav button:hover { background: var(--yellow-dim); transform: translate(-1px, -1px); }
+.proto-nav button.active { background: var(--yellow); font-weight: 700; box-shadow: 2px 2px 0 var(--ink); }
+.proto-nav .group-tag { font-size: 11px; color: var(--ink-light); align-self: center; padding: 0 6px; font-style: italic; }
+
+/* Screens */
+.screen { display: none; padding: 24px 28px; }
+.screen.active { display: block; animation: fadeIn 0.2s; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.scenario-banner {
+  border: 1.8px solid var(--ink); border-radius: 6px; padding: 8px 14px;
+  margin-bottom: 16px; display: flex; gap: 10px; align-items: center;
+  font-size: 13.5px; box-shadow: 3px 3px 0 var(--ink);
+}
+.scenario-banner.happy { background: var(--green-soft); }
+.scenario-banner.neutra { background: var(--paper-edge); }
+.scenario-banner.warn { background: var(--orange-soft); }
+.scenario-banner.danger { background: var(--red-soft); }
+.scenario-banner b { font-family: 'Caveat', cursive; font-size: 16px; }
+.scenario-banner .tag {
+  font-family: 'Caveat', cursive; font-size: 13px; font-weight: 700;
+  border: 1.5px solid var(--ink); padding: 1px 10px; border-radius: 100px; background: var(--paper);
+}
+
+/* Top action bar (R4=B) */
+.top-actions {
+  background: var(--yellow-dim); border: 1.5px solid var(--ink); border-radius: 6px;
+  padding: 8px 12px; margin-bottom: 14px;
+  display: flex; gap: 8px; align-items: center; box-shadow: 2px 2px 0 var(--ink);
+}
+
+/* Header (R1=A) */
+.tela-header {
+  border: 1.8px solid var(--ink); border-radius: 6px; padding: 10px 14px;
+  margin-bottom: 14px; box-shadow: 3px 3px 0 var(--ink); background: var(--paper);
+}
+.tela-header .row { display: flex; gap: 10px; align-items: center; }
+.tela-header .id { font-weight: 700; font-size: 15px; }
+
+/* Main grid */
+.main-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; }
+
+/* Cards genéricos */
+.card { border: 1.8px solid var(--ink); border-radius: 6px; padding: 10px 14px; background: var(--paper); box-shadow: 3px 3px 0 var(--ink); }
+.card .title { font-family: 'Caveat', cursive; font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+
+/* Roteamento (R2=C) */
+.routing-table { border: 1.5px solid var(--ink); border-radius: 4px; overflow: hidden; font-size: 13px; }
+.routing-table .row { display: flex; padding: 6px 10px; gap: 8px; border-bottom: 1px dashed var(--ink-light); }
+.routing-table .row:last-child { border-bottom: 0; }
+.routing-table .row.head { background: var(--paper-edge); font-weight: 700; font-size: 11px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.3px; }
+.routing-table .row.fill { background: var(--yellow); }
+.routing-table .row.muted { opacity: 0.5; }
+.routing-table .col { flex: 1; }
+
+/* Itens (R3=C) */
+.items-list .item { border: 1.5px solid var(--ink); border-radius: 4px; padding: 6px 10px; background: var(--paper); margin-bottom: 6px; font-size: 13px; }
+.items-list .item.fillsoft { background: var(--paper-edge); }
+.items-list .item .row { display: flex; gap: 8px; align-items: center; }
+
+/* Timeline (R5=A) */
+.steps-h { display: flex; align-items: center; gap: 0; margin: 6px 0; }
+.steps-h .d { width: 16px; height: 16px; border: 1.5px solid var(--ink); border-radius: 50%; background: var(--paper); flex-shrink: 0; }
+.steps-h .d.done { background: var(--ink); }
+.steps-h .d.current { background: var(--yellow); box-shadow: 0 0 0 3px var(--yellow-dim); }
+.steps-h .d.cancel { background: var(--red-soft); border-color: var(--ink); }
+.steps-h .ln { flex: 1; height: 2px; background: var(--ink-light); border-radius: 1px; }
+.steps-h .ln.done { background: var(--ink); }
+.steps-labels { display: flex; gap: 0; font-size: 11px; color: var(--ink-light); }
+.steps-labels .lbl { flex: 1; text-align: center; }
+.steps-labels .lbl.current { color: var(--ink); font-weight: 700; }
+
+/* Painel contextual (R6=A) */
+.panel-state { border: 1.5px solid var(--ink); border-radius: 5px; padding: 8px 10px; }
+.panel-state.danger { background: var(--red-soft); }
+.panel-state.warn { background: var(--orange-soft); }
+.panel-state.green { background: var(--green-soft); }
+.panel-state.fillsoft { background: var(--paper-edge); }
+.panel-state h4 { margin: 0 0 4px; font-family: 'Caveat', cursive; font-size: 16px; }
+.panel-state .checklist > div { font-size: 12.5px; padding: 1px 0; }
+.panel-state .check-icon { display: inline-block; width: 14px; }
+
+/* Buttons */
+.btn { border: 1.5px solid var(--ink); border-radius: 100px; padding: 4px 12px; background: var(--paper); font-family: inherit; font-size: 13px; cursor: pointer; }
+.btn:hover { transform: translate(-1px, -1px); }
+.btn.primary { background: var(--yellow); font-weight: 700; }
+.btn.ghost { border-style: dashed; color: var(--ink-soft); }
+.btn.danger { background: var(--red-soft); }
+.btn.disabled { background: var(--paper-edge); color: var(--ink-light); border-color: var(--ink-faint); cursor: not-allowed; }
+
+/* Chips */
+.chip { border: 1.2px solid var(--ink); border-radius: 100px; padding: 1px 8px; font-size: 12px; background: var(--paper); display: inline-block; }
+.chip.active { background: var(--yellow); font-weight: 700; }
+.chip.muted { color: var(--ink-light); border-color: var(--ink-faint); }
+.chip.green { background: var(--green-soft); }
+.chip.red { background: var(--red-soft); }
+.chip.orange { background: var(--orange-soft); }
+
+.tag { font-size: 11.5px; color: var(--ink-light); font-style: italic; }
+.line-dash { border-top: 1.2px dashed var(--ink-light); margin: 6px 0; }
+</style>
+</head>
+<body>
+
+<!-- TÍTULO -->
+<div class="title-block">
+  <div class="row">
+    <h1>detalhe-pedido</h1>
+    <span class="badge-etapa">Etapa 2 · protótipo de tela</span>
+    <span class="combo">Combinação: 1A · 2C · 3C · 4B · 5A · 6A</span>
+    <div style="flex:1;"></div>
+    <span class="meta"><b>8 cenários</b> · seller-pedido-happy + comprador-cancela-antes-coleta</span>
+  </div>
+</div>
+
+<!-- PROTO NAV -->
+<nav class="proto-nav">
+  <span class="group-tag">happy path:</span>
+  <button data-screen="sc-happy" class="active">1. roteamento</button>
+  <button data-screen="sc-docs">2. docs gerados</button>
+  <button data-screen="sc-transito">3. em trânsito</button>
+  <button data-screen="sc-entregue">4. entregue</button>
+  <span class="group-tag">cancelamento:</span>
+  <button data-screen="sc-cancel-pendente">5. cancel pendente</button>
+  <button data-screen="sc-cancel-checklist">6. checklist progresso</button>
+  <button data-screen="sc-cancel-retirada">7. aguarda retirada</button>
+  <button data-screen="sc-cancel-final">8. cancelado final</button>
+</nav>
+
+<!-- ============================================ -->
+<!-- CENÁRIO 1 — HAPPY ROTEAMENTO (Fase 2)         -->
+<!-- ============================================ -->
+<section class="screen active" id="sc-happy">
+  <div class="scenario-banner happy">
+    <span class="tag">happy</span>
+    <span><b>Roteamento ativo</b> — pedido recém-chegado, seller revisa origem + carrier antes de gerar documentos. Decisão de Fase 2 do happy path.</span>
+  </div>
+
+  <div class="top-actions">
+    <button class="btn primary">Gerar documentos →</button>
+    <button class="btn ghost">salvar</button>
+    <div style="flex:1;"></div>
+    <button class="btn ghost">cancelar</button>
+  </div>
+
+  <div class="tela-header">
+    <div class="row">
+      <span class="id">#PED-1029</span>
+      <span class="chip">Amazon</span>
+      <span class="chip active">Aguardando docs</span>
+      <div style="flex:1;"></div>
+      <span class="id">€87,50</span>
+      <span class="chip muted">SLA: 2 dias</span>
+    </div>
+    <div class="line-dash"></div>
+    <div style="font-size:12px; color:var(--ink-light); display:flex; gap:14px;">
+      <span>Maria Silva · Lisboa, PT</span>
+      <span>Recebido 12/05 09:14</span>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div>
+      <div class="card">
+        <div class="title">Roteamento</div>
+        <div style="margin-bottom:6px;">
+          <span class="chip muted">Origem:</span> <span class="chip active">Lisboa ▾</span>
+        </div>
+        <div class="routing-table">
+          <div class="row head"><div class="col">Carrier</div><div class="col">Preço</div><div class="col">Prazo</div></div>
+          <div class="row fill"><div class="col"><b>DPD Classic ✓</b></div><div class="col">€4,20</div><div class="col">3 dias</div></div>
+          <div class="row"><div class="col">GLS Standard</div><div class="col">€4,80</div><div class="col">3 dias</div></div>
+          <div class="row"><div class="col">DPD Express</div><div class="col">€8,50</div><div class="col">1 dia</div></div>
+        </div>
+        <div class="tag" style="margin-top:6px;">por que DPD? <u>ver breakdown</u></div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="title">Itens (2)</div>
+        <div class="items-list">
+          <div class="item fillsoft"><div class="row"><b>1×</b><span style="flex:1;">Camisola Azul · M</span><span class="tag">B-1042</span><span class="tag">▸</span></div></div>
+          <div class="item"><div class="row"><b>1×</b><span style="flex:1;">Cinto Couro · 95cm</span><span class="tag">B-2017</span><span class="tag">▸</span></div></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="title">Progresso</div>
+        <div class="steps-h">
+          <div class="d current"></div><div class="ln"></div>
+          <div class="d"></div><div class="ln"></div>
+          <div class="d"></div><div class="ln"></div>
+          <div class="d"></div><div class="ln"></div>
+          <div class="d"></div>
+        </div>
+        <div class="steps-labels">
+          <span class="lbl current">roteado</span><span class="lbl">docs</span><span class="lbl">coleta</span><span class="lbl">trânsito</span><span class="lbl">entregue</span>
+        </div>
+        <div class="tag" style="margin-top:4px;">timestamp: 12/05 09:14</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel-state fillsoft">
+        <h4>Resumo</h4>
+        <div style="font-size:12.5px;">Tudo pronto para gerar documentos. Click em <b>Gerar documentos</b> para produzir etiqueta + packing slip.</div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px; color:var(--ink-soft);">Tarifa total: <b>€4,20</b><br>Prazo prometido: <b>15/05</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- CENÁRIO 2 — DOCS GERADOS (Fase 3)             -->
+<!-- ============================================ -->
+<section class="screen" id="sc-docs">
+  <div class="scenario-banner happy">
+    <span class="tag">docs gerados</span>
+    <span><b>Etiqueta produzida</b> — packing slip impresso, tracking propagado ao MKP. Seller pode imprimir tudo e marcar pacote como pronto na zona de coleta.</span>
+  </div>
+
+  <div class="top-actions">
+    <button class="btn primary">↓ Imprimir etiqueta + slip</button>
+    <button class="btn">Marcar como pronto</button>
+    <div style="flex:1;"></div>
+    <button class="btn ghost danger">cancelar etiqueta</button>
+  </div>
+
+  <div class="tela-header">
+    <div class="row">
+      <span class="id">#PED-1029</span>
+      <span class="chip">Amazon</span>
+      <span class="chip active">Docs prontos</span>
+      <div style="flex:1;"></div>
+      <span class="id">€87,50</span>
+      <span class="chip muted">SLA: 2 dias</span>
+    </div>
+    <div class="line-dash"></div>
+    <div style="font-size:12px; color:var(--ink-light); display:flex; gap:14px;">
+      <span>Maria Silva · Lisboa, PT</span>
+      <span>Tracking: <b>DPD-X29-001</b> · write-back ✓</span>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div>
+      <div class="card">
+        <div class="title">Roteamento (confirmado)</div>
+        <div style="margin-bottom:6px;">
+          <span class="chip muted">Origem:</span> <span class="chip active">Lisboa</span>
+          <span class="chip muted">Carrier:</span> <span class="chip green">DPD Classic ✓</span>
+          <span class="chip muted">Tarifa:</span> <span class="chip">€4,20</span>
+        </div>
+        <div class="tag">↳ documentos foram gerados com esta configuração</div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="title">Itens (2)</div>
+        <div class="items-list">
+          <div class="item fillsoft"><div class="row"><b>1×</b><span style="flex:1;">Camisola Azul · M</span><span class="tag">B-1042</span></div></div>
+          <div class="item"><div class="row"><b>1×</b><span style="flex:1;">Cinto Couro · 95cm</span><span class="tag">B-2017</span></div></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="title">Progresso</div>
+        <div class="steps-h">
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d current"></div><div class="ln"></div>
+          <div class="d"></div><div class="ln"></div>
+          <div class="d"></div><div class="ln"></div>
+          <div class="d"></div>
+        </div>
+        <div class="steps-labels">
+          <span class="lbl">roteado</span><span class="lbl current">docs</span><span class="lbl">coleta</span><span class="lbl">trânsito</span><span class="lbl">entregue</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel-state green">
+        <h4>✓ Documentos gerados</h4>
+        <div style="font-size:12.5px;">
+          Etiqueta DPD: <b>DPD-X29-001</b><br>
+          Packing slip: PDF gerado<br>
+          Tracking propagado ao Amazon: ✓
+        </div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px;">
+          <b>Próxima coleta:</b> hoje 16:00<br>
+          <span class="tag">DPD · 12 pacotes prontos para esta coleta</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- CENÁRIO 3 — EM TRÂNSITO (Fase 6)              -->
+<!-- ============================================ -->
+<section class="screen" id="sc-transito">
+  <div class="scenario-banner neutra">
+    <span class="tag">em trânsito</span>
+    <span><b>Operação passiva</b> — pacote coletado e em trânsito até o destino. Seller pode monitorar; sem ação requerida.</span>
+  </div>
+
+  <div class="top-actions">
+    <button class="btn ghost">↓ ver tracking carrier</button>
+    <div style="flex:1;"></div>
+    <span class="tag">sem ações pendentes</span>
+  </div>
+
+  <div class="tela-header">
+    <div class="row">
+      <span class="id">#PED-1029</span>
+      <span class="chip">Amazon</span>
+      <span class="chip active">Em trânsito</span>
+      <div style="flex:1;"></div>
+      <span class="id">€87,50</span>
+      <span class="chip green">no prazo</span>
+    </div>
+    <div class="line-dash"></div>
+    <div style="font-size:12px; color:var(--ink-light); display:flex; gap:14px;">
+      <span>Maria Silva · Lisboa, PT</span>
+      <span>Tracking: <b>DPD-X29-001</b></span>
+      <span>ETA: 15/05</span>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div>
+      <div class="card">
+        <div class="title">Roteamento</div>
+        <div style="margin-bottom:6px;">
+          <span class="chip muted">Lisboa</span> →
+          <span class="chip muted">DPD Classic</span> →
+          <span class="chip muted">€4,20</span>
+        </div>
+        <div class="tag">↳ rota fixada — pedido em fase passiva</div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="title">Itens (2)</div>
+        <div class="items-list">
+          <div class="item fillsoft"><div class="row"><b>1×</b><span style="flex:1;">Camisola Azul · M</span><span class="tag">B-1042</span></div></div>
+          <div class="item"><div class="row"><b>1×</b><span style="flex:1;">Cinto Couro · 95cm</span><span class="tag">B-2017</span></div></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="title">Progresso</div>
+        <div class="steps-h">
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d current"></div><div class="ln"></div>
+          <div class="d"></div>
+        </div>
+        <div class="steps-labels">
+          <span class="lbl">roteado</span><span class="lbl">docs</span><span class="lbl">coleta</span><span class="lbl current">trânsito</span><span class="lbl">entregue</span>
+        </div>
+        <div class="tag" style="margin-top:4px;">coletado 13/05 16:14 · DPD hub Lisboa</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel-state fillsoft">
+        <h4>Eventos da carrier</h4>
+        <div style="font-size:12px;">
+          <div>● <b>13/05 16:14</b> — Coletado em Lisboa</div>
+          <div>● <b>13/05 22:30</b> — Saiu hub Lisboa</div>
+          <div>● <b>14/05 04:12</b> — Em trânsito internacional</div>
+          <div>● <b>14/05 11:40</b> — Chegou hub destino</div>
+          <div style="opacity:0.5;">○ Em rota de entrega</div>
+          <div style="opacity:0.5;">○ Entregue</div>
+        </div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px;">
+          <b>ETA:</b> 15/05 (no prazo Amazon)
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- CENÁRIO 4 — ENTREGUE (Fase 7)                 -->
+<!-- ============================================ -->
+<section class="screen" id="sc-entregue">
+  <div class="scenario-banner happy">
+    <span class="tag">entregue</span>
+    <span><b>Ciclo fechado</b> — pacote entregue ao comprador, SLA cumprido. Janela de RMA de 14 dias UE inicia automaticamente.</span>
+  </div>
+
+  <div class="top-actions">
+    <button class="btn ghost">ver pedido similar</button>
+    <button class="btn ghost">↓ comprovante entrega</button>
+    <div style="flex:1;"></div>
+    <button class="btn ghost">voltar à fila</button>
+  </div>
+
+  <div class="tela-header">
+    <div class="row">
+      <span class="id">#PED-1029</span>
+      <span class="chip">Amazon</span>
+      <span class="chip green">Entregue ✓</span>
+      <div style="flex:1;"></div>
+      <span class="id">€87,50</span>
+      <span class="chip green">SLA cumprido</span>
+    </div>
+    <div class="line-dash"></div>
+    <div style="font-size:12px; color:var(--ink-light); display:flex; gap:14px;">
+      <span>Maria Silva · Lisboa, PT</span>
+      <span>Entregue 15/05 11:40</span>
+      <span>Janela RMA: até 29/05</span>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div>
+      <div class="card">
+        <div class="title">Roteamento</div>
+        <div style="margin-bottom:6px;">
+          <span class="chip muted">Lisboa</span> →
+          <span class="chip muted">DPD Classic</span> →
+          <span class="chip muted">€4,20</span>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="title">Itens (2)</div>
+        <div class="items-list">
+          <div class="item fillsoft"><div class="row"><b>1×</b><span style="flex:1;">Camisola Azul · M</span><span class="tag">B-1042</span></div></div>
+          <div class="item"><div class="row"><b>1×</b><span style="flex:1;">Cinto Couro · 95cm</span><span class="tag">B-2017</span></div></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="title">Progresso</div>
+        <div class="steps-h">
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d current" style="background:var(--green-soft);"></div>
+        </div>
+        <div class="steps-labels">
+          <span class="lbl">roteado</span><span class="lbl">docs</span><span class="lbl">coleta</span><span class="lbl">trânsito</span><span class="lbl current">entregue ✓</span>
+        </div>
+        <div class="tag" style="margin-top:4px;">entregue 15/05 11:40 — recebedor: Maria Silva</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel-state green">
+        <h4>✓ Entrega confirmada</h4>
+        <div style="font-size:12.5px;">
+          <b>15/05 às 11:40</b><br>
+          Recebedor: Maria Silva (próprio)<br>
+          Comprovante DPD: assinatura digital
+        </div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px;">
+          <b>SLA Amazon:</b> 16/05 → cumprido com 1 dia de folga<br><br>
+          <b>Janela RMA UE:</b> 14 dias (até 29/05)<br>
+          <span class="tag">avaliação do comprador chega no painel Amazon</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- CENÁRIO 5 — CANCEL PENDENTE (cancel Fase 3)   -->
+<!-- ============================================ -->
+<section class="screen" id="sc-cancel-pendente">
+  <div class="scenario-banner danger">
+    <span class="tag">cancel pendente</span>
+    <span><b>Comprador cancelou</b> — pedido já tem etiqueta gerada e pacote na zona de coleta. Janela &gt;30 min até a próxima coleta. Seller revisa antes de confirmar ações automáticas.</span>
+  </div>
+
+  <div class="top-actions">
+    <button class="btn danger">⚠ Confirmar cancelamento</button>
+    <button class="btn ghost">questionar / reverter</button>
+    <div style="flex:1;"></div>
+    <span class="chip orange">⏱ 1h 22min até coleta</span>
+  </div>
+
+  <div class="tela-header">
+    <div class="row">
+      <span class="id">#PED-1029</span>
+      <span class="chip">Amazon</span>
+      <span class="chip red">Cancelado pelo comprador — ações pendentes</span>
+      <div style="flex:1;"></div>
+      <span class="id">€87,50</span>
+    </div>
+    <div class="line-dash"></div>
+    <div style="font-size:12px; color:var(--ink-light); display:flex; gap:14px;">
+      <span>Maria Silva · Lisboa, PT</span>
+      <span>Razão: arrependimento</span>
+      <span>Cancelado 13/05 14:38 · Próxima coleta: 16:00</span>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div>
+      <div class="card">
+        <div class="title">Roteamento (cancelado)</div>
+        <div style="margin-bottom:6px; opacity:0.6;">
+          <span class="chip muted">Lisboa</span> →
+          <span class="chip muted">DPD Classic</span> →
+          <span class="chip muted">€4,20</span>
+        </div>
+        <div class="tag">↳ etiqueta DPD-X29-001 será cancelada na carrier</div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="title">Itens (2) — voltam ao estoque</div>
+        <div class="items-list">
+          <div class="item fillsoft"><div class="row"><b>1×</b><span style="flex:1;">Camisola Azul · M</span><span class="tag">→ +1 disponível</span></div></div>
+          <div class="item"><div class="row"><b>1×</b><span style="flex:1;">Cinto Couro · 95cm</span><span class="tag">→ +1 disponível</span></div></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="title">Progresso</div>
+        <div class="steps-h">
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d cancel"></div><div class="ln" style="border-top:1.5px dashed var(--ink-light); background:transparent;"></div>
+          <div class="d" style="opacity:0.3;"></div><div class="ln" style="opacity:0.3;"></div>
+          <div class="d" style="opacity:0.3;"></div>
+        </div>
+        <div class="steps-labels">
+          <span class="lbl">roteado</span><span class="lbl">docs</span><span class="lbl current" style="color:var(--ink); font-weight:700;">⚠ cancel</span><span class="lbl" style="opacity:0.4;">trânsito</span><span class="lbl" style="opacity:0.4;">entregue</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel-state danger">
+        <h4>⚠ Ações que serão executadas</h4>
+        <div style="font-size:12.5px; margin-bottom:6px;">Comprador cancelou no Amazon. Após confirmar, BH executa em paralelo:</div>
+        <div class="checklist">
+          <div><span class="check-icon">○</span> Cancelar etiqueta DPD-X29-001</div>
+          <div><span class="check-icon">○</span> Cancelar pickup na coleta de hoje 16:00</div>
+          <div><span class="check-icon">○</span> Reverter tracking write-back no Amazon</div>
+          <div><span class="check-icon">○</span> Disparar evento de cancelamento ao canal (NF crédito)</div>
+          <div><span class="check-icon">○</span> Devolver estoque (2 itens)</div>
+          <div><span class="check-icon">○</span> Atualizar SLA (não conta como atraso)</div>
+        </div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px;">
+          <b>Você precisa:</b> retirar o pacote da zona de coleta (após confirmar)
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- CENÁRIO 6 — CANCEL CHECKLIST (cancel Fase 4)  -->
+<!-- ============================================ -->
+<section class="screen" id="sc-cancel-checklist">
+  <div class="scenario-banner warn">
+    <span class="tag">checklist</span>
+    <span><b>Cancelamento confirmado</b> — BH executa ações automáticas em paralelo. Acompanhe o progresso de cada API; falhas geram alerta para retry.</span>
+  </div>
+
+  <div class="top-actions">
+    <button class="btn disabled">cancelamento em curso…</button>
+    <div style="flex:1;"></div>
+    <span class="chip orange">2 de 6 ações concluídas</span>
+  </div>
+
+  <div class="tela-header">
+    <div class="row">
+      <span class="id">#PED-1029</span>
+      <span class="chip">Amazon</span>
+      <span class="chip orange">Cancelando…</span>
+      <div style="flex:1;"></div>
+      <span class="id">€87,50</span>
+    </div>
+    <div class="line-dash"></div>
+    <div style="font-size:12px; color:var(--ink-light); display:flex; gap:14px;">
+      <span>Maria Silva · Lisboa, PT</span>
+      <span>Confirmado 13/05 14:42 · 32s atrás</span>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div>
+      <div class="card">
+        <div class="title">Roteamento (cancelando)</div>
+        <div style="opacity:0.6;">
+          <span class="chip muted">DPD Classic</span> · etiqueta sendo cancelada na API…
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="title">Itens — devolução pendente</div>
+        <div class="items-list">
+          <div class="item fillsoft"><div class="row"><b>1×</b><span style="flex:1;">Camisola Azul · M</span><span class="tag" style="color:var(--orange-soft);">aguardando…</span></div></div>
+          <div class="item"><div class="row"><b>1×</b><span style="flex:1;">Cinto Couro · 95cm</span><span class="tag" style="color:var(--orange-soft);">aguardando…</span></div></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="title">Progresso</div>
+        <div class="steps-h">
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d cancel"></div><div class="ln" style="border-top:1.5px dashed var(--ink-light); background:transparent;"></div>
+          <div class="d" style="opacity:0.3;"></div><div class="ln" style="opacity:0.3;"></div>
+          <div class="d" style="opacity:0.3;"></div>
+        </div>
+        <div class="steps-labels">
+          <span class="lbl">roteado</span><span class="lbl">docs</span><span class="lbl current">cancelando…</span><span class="lbl" style="opacity:0.4;">—</span><span class="lbl" style="opacity:0.4;">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel-state warn">
+        <h4>⚙ Executando ações…</h4>
+        <div class="checklist" style="font-size:12.5px;">
+          <div><span class="check-icon">✓</span> <b>Etiqueta DPD cancelada</b> <span class="tag">+5s</span></div>
+          <div><span class="check-icon">✓</span> <b>Pickup cancelado</b> (DPD coleta 16h) <span class="tag">+12s</span></div>
+          <div><span class="check-icon">⚙</span> Tracking sendo revertido no Amazon… <span class="tag">tentativa 1/3</span></div>
+          <div><span class="check-icon">⚙</span> Evento ao canal de venda… <span class="tag">enviado</span></div>
+          <div><span class="check-icon">○</span> Estoque devolvendo</div>
+          <div><span class="check-icon">○</span> Atualizar SLA</div>
+        </div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px;">
+          <b>Próximo:</b> aguardar conclusão (~30s) e retirar o pacote físico da zona de coleta
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- CENÁRIO 7 — AGUARDA RETIRADA (cancel Fase 5)  -->
+<!-- ============================================ -->
+<section class="screen" id="sc-cancel-retirada">
+  <div class="scenario-banner warn">
+    <span class="tag">aguarda retirada</span>
+    <span><b>Ações automáticas concluídas</b> — última coisa pendente: retirar fisicamente o pacote da zona de coleta antes que o motorista chegue. Lembrete persistente até confirmar.</span>
+  </div>
+
+  <div class="top-actions">
+    <button class="btn primary">✓ Marquei pacote retirado</button>
+    <button class="btn ghost">↓ sticker "CANCELADO"</button>
+    <div style="flex:1;"></div>
+    <span class="chip orange">⏱ coleta DPD em 1h 18min</span>
+  </div>
+
+  <div class="tela-header">
+    <div class="row">
+      <span class="id">#PED-1029</span>
+      <span class="chip">Amazon</span>
+      <span class="chip orange">Aguarda retirada física</span>
+      <div style="flex:1;"></div>
+      <span class="id">€87,50</span>
+    </div>
+    <div class="line-dash"></div>
+    <div style="font-size:12px; color:var(--ink-light); display:flex; gap:14px;">
+      <span>Maria Silva · Lisboa, PT</span>
+      <span>Cancelado e estornado · ações digitais ✓</span>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div>
+      <div class="card">
+        <div class="title">Estado digital</div>
+        <div style="margin-bottom:6px;">
+          <span class="chip green">✓ Etiqueta cancelada (DPD)</span>
+          <span class="chip green">✓ Tracking revertido (Amazon)</span>
+          <span class="chip green">✓ Estoque devolvido</span>
+          <span class="chip green">✓ NF crédito disparada ao canal</span>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="title">Itens (devolvidos ao estoque)</div>
+        <div class="items-list">
+          <div class="item fillsoft"><div class="row"><b>1×</b><span style="flex:1;">Camisola Azul · M</span><span class="chip green">+1 estoque</span></div></div>
+          <div class="item"><div class="row"><b>1×</b><span style="flex:1;">Cinto Couro · 95cm</span><span class="chip green">+1 estoque</span></div></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="title">Progresso</div>
+        <div class="steps-h">
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d cancel"></div><div class="ln done" style="background:var(--ink);"></div>
+          <div class="d current" style="background:var(--orange-soft);"></div><div class="ln" style="opacity:0.3;"></div>
+          <div class="d" style="opacity:0.3;"></div>
+        </div>
+        <div class="steps-labels">
+          <span class="lbl">roteado</span><span class="lbl">docs</span><span class="lbl">cancel</span><span class="lbl current">⚠ retirar pacote</span><span class="lbl" style="opacity:0.4;">finalizado</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel-state warn">
+        <h4>⚠ Lembrete físico</h4>
+        <div style="font-size:13px; margin-bottom:6px;">
+          O pacote etiquetado <b>ainda está na zona de coleta</b>. Retire antes da próxima coleta DPD às 16:00, senão o motorista vai pegar e cair no <b>cenário C</b> (interceptação RTS, com custo extra).
+        </div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px;">
+          <b>Opcional:</b> baixe e cole o sticker "CANCELADO — NÃO COLETAR" sobre a etiqueta para garantia visual<br><br>
+          <b>Tempo:</b> 1h 18min até a coleta
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- CENÁRIO 8 — CANCELADO FINAL (cancel Fase 6)   -->
+<!-- ============================================ -->
+<section class="screen" id="sc-cancel-final">
+  <div class="scenario-banner neutra">
+    <span class="tag">cancelado final</span>
+    <span><b>Ciclo de cancelamento fechado</b> — pacote retirado, reembolso ao comprador em curso (passivo), histórico arquivado para auditoria.</span>
+  </div>
+
+  <div class="top-actions">
+    <button class="btn ghost">ver histórico de eventos</button>
+    <div style="flex:1;"></div>
+    <button class="btn ghost">voltar à fila</button>
+  </div>
+
+  <div class="tela-header">
+    <div class="row">
+      <span class="id">#PED-1029</span>
+      <span class="chip">Amazon</span>
+      <span class="chip muted">Cancelado · finalizado</span>
+      <div style="flex:1;"></div>
+      <span class="id" style="text-decoration:line-through; color:var(--ink-light);">€87,50</span>
+    </div>
+    <div class="line-dash"></div>
+    <div style="font-size:12px; color:var(--ink-light); display:flex; gap:14px;">
+      <span>Maria Silva · Lisboa, PT</span>
+      <span>Cancelado 13/05 14:38 · Pacote retirado 13/05 15:12</span>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div>
+      <div class="card" style="opacity:0.7;">
+        <div class="title">Roteamento (cancelado)</div>
+        <div style="margin-bottom:6px;">
+          <span class="chip muted" style="text-decoration:line-through;">DPD Classic</span>
+          <span class="chip muted">etiqueta cancelada · zero cobrança de frete</span>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="title">Itens (devolvidos)</div>
+        <div class="items-list">
+          <div class="item fillsoft"><div class="row" style="text-decoration:line-through; color:var(--ink-light);"><b>1×</b><span style="flex:1;">Camisola Azul · M</span></div></div>
+          <div class="item" style="opacity:0.6;"><div class="row" style="text-decoration:line-through; color:var(--ink-light);"><b>1×</b><span style="flex:1;">Cinto Couro · 95cm</span></div></div>
+        </div>
+        <div class="tag" style="margin-top:4px;">↳ ambos no estoque novamente</div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="title">Progresso</div>
+        <div class="steps-h">
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d cancel"></div><div class="ln done" style="background:var(--ink);"></div>
+          <div class="d done"></div><div class="ln done" style="background:var(--ink);"></div>
+          <div class="d done" style="background:var(--ink-light);"></div>
+        </div>
+        <div class="steps-labels">
+          <span class="lbl">roteado</span><span class="lbl">docs</span><span class="lbl">cancel</span><span class="lbl">retirado</span><span class="lbl current" style="color:var(--ink-light);">finalizado</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel-state fillsoft">
+        <h4>Reembolso ao comprador</h4>
+        <div style="font-size:12.5px;">
+          <div>Status: <b>em curso pelo Amazon</b></div>
+          <div class="tag">tipicamente 5–14 dias úteis</div>
+        </div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px;">
+          <b>Custo do cancelamento:</b> €0,00<br>
+          <span class="tag">etiqueta cancelada a tempo · sem cobrança de frete · sem €0,25 BIG logistics</span>
+        </div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px;">
+          <b>Impacto SLA:</b> não contabilizado (cancelamento pelo comprador, não pelo seller)
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+document.querySelectorAll('.proto-nav button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.screen;
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(target).classList.add('active');
+    document.querySelectorAll('.proto-nav button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    window.scrollTo({ top: 130, behavior: 'smooth' });
+  });
+});
+</script>
+
+</body>
+</html>

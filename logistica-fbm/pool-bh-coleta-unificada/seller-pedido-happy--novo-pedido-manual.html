@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<title>Wireframe — novo-pedido-manual (base)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a; --ink-soft: #3d3d3d; --ink-light: #8a8a8a; --ink-faint: #c8c8c8;
+  --paper: #fcfcfa; --paper-edge: #f3f1e8;
+  --yellow: #fff2a8; --yellow-dim: #ffe771; --yellow-edge: #e6c732;
+  --green-soft: #c9e6b8; --red-soft: #f4b8b0; --blue-soft: #b8d4f0; --orange-soft: #f5d0a0;
+}
+* { box-sizing: border-box; }
+body { font-family: 'Patrick Hand', cursive; background: var(--paper); background-image: radial-gradient(circle at 25% 30%, rgba(0,0,0,0.015) 0%, transparent 50%), radial-gradient(circle at 75% 70%, rgba(0,0,0,0.015) 0%, transparent 50%); color: var(--ink); font-size: 16px; line-height: 1.4; margin: 0; padding: 24px 32px 80px; }
+h1, h2, .var-label, .section-title { font-family: 'Caveat', cursive; }
+.title-block { border: 2.5px solid var(--ink); border-radius: 10px; padding: 18px 24px 16px; background: var(--paper); box-shadow: 5px 5px 0 var(--ink); margin-bottom: 28px; }
+.title-block h1 { font-size: 38px; margin: 0 0 4px; line-height: 1.1; }
+.title-block .meta { font-size: 15px; color: var(--ink-soft); display: flex; gap: 18px; flex-wrap: wrap; margin-top: 4px; }
+.title-block .meta b { color: var(--ink); }
+.title-block .meta .badge-etapa { background: var(--yellow); border: 1.5px solid var(--ink); padding: 2px 12px; border-radius: 100px; font-family: 'Caveat', cursive; font-size: 18px; transform: rotate(-1.5deg); display: inline-block; }
+.overview-card { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; margin-top: 14px; padding: 12px 16px; border: 1.5px dashed var(--ink-light); border-radius: 6px; background: var(--paper-edge); font-size: 14.5px; }
+.overview-card b { color: var(--ink); }
+.overview-card .label { color: var(--ink-soft); }
+.floor-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; padding: 10px 14px; border: 1.5px dashed var(--ink-light); border-radius: 6px; background: var(--paper-edge); position: sticky; top: 8px; z-index: 10; }
+.floor-nav a { padding: 4px 12px; text-decoration: none; color: var(--ink); border: 1.5px solid var(--ink); border-radius: 100px; font-size: 14px; background: var(--paper); }
+.floor-nav a:hover { background: var(--yellow); }
+.section { margin-bottom: 36px; }
+.section-head { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px dashed var(--ink-light); }
+.section-num { font-family: 'Caveat', cursive; font-size: 64px; font-weight: 700; line-height: 0.85; color: var(--ink); min-width: 56px; text-align: center; background: var(--yellow); border: 2px solid var(--ink); border-radius: 8px; padding: 4px 8px; box-shadow: 3px 3px 0 var(--ink); transform: rotate(-2deg); }
+.section-info { flex: 1; }
+.section-title { font-size: 32px; margin: 0 0 4px; line-height: 1.05; }
+.section-sentiment { display: inline-block; padding: 1px 10px; border-radius: 100px; border: 1.2px solid var(--ink); font-size: 13px; margin-left: 8px; vertical-align: middle; }
+.section-sentiment.neutra { background: var(--paper-edge); }
+.section-sentiment.pos { background: var(--green-soft); }
+.section-desc { font-size: 14.5px; color: var(--ink-soft); max-width: 720px; }
+.vars { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+.var-card { position: relative; border: 2px solid var(--ink); border-radius: 8px; padding: 14px 14px 10px; background: var(--paper); box-shadow: 3px 3px 0 var(--ink); }
+.var-card::before { content: ''; position: absolute; top: -9px; left: 18px; width: 56px; height: 18px; background: var(--yellow-dim); border: 1px solid var(--ink); transform: rotate(-3deg); z-index: 0; }
+.var-label { font-size: 22px; font-weight: 700; margin: 0; position: relative; z-index: 1; }
+.var-tag { display: inline-block; font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700; background: var(--ink); color: var(--paper); width: 28px; height: 28px; text-align: center; line-height: 26px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+.var-desc { font-size: 13.5px; color: var(--ink-soft); line-height: 1.35; margin: 4px 0 10px; min-height: 36px; }
+.annotate { font-family: 'Kalam', cursive; font-style: italic; font-size: 13px; color: var(--ink-soft); margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--ink-faint); }
+.annotate::before { content: '↳ '; color: var(--ink-light); }
+.sk-frame { border: 1.8px solid var(--ink); border-radius: 5px; padding: 8px; background: var(--paper); display: flex; flex-direction: column; gap: 6px; min-height: 200px; font-size: 12px; position: relative; }
+.sk-row { display: flex; gap: 6px; align-items: center; }
+.sk-col { display: flex; flex-direction: column; gap: 4px; }
+.sk-grow { flex: 1; }
+.sk-box { border: 1.5px solid var(--ink); border-radius: 4px; padding: 4px 6px; background: var(--paper); font-size: 11.5px; min-height: 18px; display: flex; align-items: center; gap: 4px; }
+.sk-box.dashed { border-style: dashed; border-color: var(--ink-light); }
+.sk-box.fill { background: var(--yellow); }
+.sk-box.fillsoft { background: var(--paper-edge); }
+.sk-box.tiny { padding: 2px 5px; font-size: 11px; }
+.sk-btn { border: 1.5px solid var(--ink); border-radius: 100px; padding: 3px 9px; background: var(--paper); font-size: 11.5px; font-family: inherit; }
+.sk-btn.primary { background: var(--yellow); font-weight: 700; }
+.sk-btn.ghost { border-style: dashed; color: var(--ink-soft); }
+.sk-btn.fullwidth { width: 100%; padding: 6px 12px; font-size: 12px; font-weight: 700; }
+.sk-chip { border: 1.2px solid var(--ink); border-radius: 100px; padding: 1px 7px; font-size: 10.5px; background: var(--paper); display: inline-block; }
+.sk-chip.active { background: var(--yellow); font-weight: 700; }
+.sk-chip.muted { color: var(--ink-light); border-color: var(--ink-faint); }
+.sk-line { height: 1.2px; background: var(--ink-light); margin: 2px 0; }
+.sk-line.dash { background: transparent; border-top: 1.2px dashed var(--ink-light); }
+.sk-mini-card { border: 1.5px solid var(--ink); border-radius: 5px; padding: 5px 7px; background: var(--paper); font-size: 11px; }
+.sk-mini-card.fillsoft { background: var(--paper-edge); }
+.sk-stack > * + * { margin-top: 5px; }
+.sk-tag { font-size: 10px; color: var(--ink-light); font-style: italic; }
+.sk-tab { border: 1.5px solid var(--ink); border-bottom: none; border-radius: 5px 5px 0 0; padding: 3px 9px; background: var(--paper); font-size: 11px; }
+.sk-tab.active { background: var(--yellow); font-weight: 700; }
+
+.sk-form-group { padding: 6px 8px; border: 1.5px solid var(--ink); border-radius: 5px; background: var(--paper-edge); font-size: 11px; }
+.sk-form-group .gtitle { font-weight: 700; font-size: 11px; margin-bottom: 4px; }
+
+.sk-field { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.sk-field .label { font-size: 9px; color: var(--ink-light); text-transform: uppercase; }
+
+.sk-bottombar { background: var(--ink); color: var(--paper); padding: 5px 8px; display: flex; align-items: center; gap: 6px; font-size: 11px; }
+.sk-bottombar .sk-btn { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+.sk-bottombar .sk-btn.primary { background: var(--yellow); border-color: var(--ink); }
+
+.var-card.chosen { box-shadow: 4px 4px 0 var(--ink), inset 0 0 0 2.5px var(--green-soft); }
+.chosen-mark { position: absolute; top: -12px; right: 18px; background: var(--green-soft); border: 1.5px solid var(--ink); padding: 2px 12px; border-radius: 100px; font-family: 'Caveat', cursive; font-size: 16px; font-weight: 700; transform: rotate(2deg); z-index: 1; }
+.footer-note { margin-top: 32px; padding: 14px 18px; border: 1.8px dashed var(--ink); border-radius: 6px; background: var(--paper-edge); font-size: 14.5px; color: var(--ink-soft); }
+.footer-note b { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <h1>Wireframe base — <span style="color: var(--ink-soft);">novo-pedido-manual</span></h1>
+  <div class="meta">
+    <span class="badge-etapa">Etapa 1 · grid de regiões</span>
+    <span><b>Feature:</b> logistica-fbm</span>
+    <span><b>Hipótese:</b> pool-bh-coleta-unificada</span>
+    <span><b>Tela:</b> novo-pedido-manual (cauda)</span>
+    <span><b>Persona:</b> Seller cadastrando pedido pontual</span>
+  </div>
+  <div class="overview-card">
+    <div><span class="label">Journey:</span> <b>seller-pedido-happy</b> Fase 1B (cadastro manual)</div>
+    <div><span class="label">Cenários previstos (Etapa 2):</span> <b>3</b> — form vazio · validação falhando · pedido salvo</div>
+    <div><span class="label">Regiões × variações:</span> <b>4 × 3 = 12 mini-sketches</b></div>
+    <div><span class="label">Combinação validada ✓:</span> <b>1B · 2A · 3B · 4A</b> — pronta para Etapa 2</div>
+  </div>
+</div>
+
+<nav class="floor-nav">
+  <a href="#r1">1 · Header</a>
+  <a href="#r2">2 · Identidade</a>
+  <a href="#r3">3 · Entrega + itens</a>
+  <a href="#r4">4 · Footer</a>
+</nav>
+
+<!-- R1 -->
+<section id="r1" class="section">
+  <div class="section-head">
+    <div class="section-num">1</div>
+    <div class="section-info">
+      <h2 class="section-title">Header <span class="section-sentiment neutra">neutra</span></h2>
+      <p class="section-desc">Identifica que é "novo pedido manual". Container: página · modal · drawer.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">A</span>Título + breadcrumb</div>
+      <div class="var-desc">Página dedicada com breadcrumb "Pedidos > Novo manual". Mais espaço, contexto preservado.</div>
+      <div class="sk-frame">
+        <div style="font-size:10.5px; color:var(--ink-soft);">
+          <span style="text-decoration:underline;">Pedidos</span> ›
+          <span><b>Novo pedido manual</b></span>
+        </div>
+        <div style="font-family:'Caveat',cursive; font-size:24px; font-weight:700;">Novo pedido manual</div>
+        <div class="sk-line dash"></div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· form ···</div>
+      </div>
+      <div class="annotate">contexto preservado; ocupa página inteira</div>
+    </article>
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">B</span>Página full com nav</div>
+      <div class="var-desc">Página full-screen com navegação principal visível. Maximiza foco no form.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div style="font-family:'Caveat',cursive; font-size:18px; font-weight:700;">Novo pedido manual</div>
+          <div class="sk-grow"></div>
+          <span class="sk-tag">rascunho salvo automático</span>
+        </div>
+        <div class="sk-line"></div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· form com bastante espaço ···</div>
+      </div>
+      <div class="annotate">foco máximo no form; sem breadcrumb, "voltar" exige nav lateral</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Modal/drawer de criação</div>
+      <div class="var-desc">Container modal sobre fila de pedidos. Volta automática à fila ao salvar.</div>
+      <div class="sk-frame">
+        <div style="background:var(--ink); opacity:0.1; position:absolute; inset:0; border-radius:5px;"></div>
+        <div style="margin:auto; width:88%; background:var(--paper); border:2px solid var(--ink); border-radius:5px; padding:8px; box-shadow:4px 4px 0 var(--ink); min-height:140px;">
+          <div class="sk-row">
+            <div style="font-family:'Caveat',cursive; font-size:18px; font-weight:700;">Novo pedido manual</div>
+            <div class="sk-grow"></div>
+            <span class="sk-btn ghost" style="font-size:14px; padding:0 8px;">×</span>
+          </div>
+          <div class="sk-line dash"></div>
+          <div style="flex:1; font-size:10px; color:var(--ink-light); font-style:italic; text-align:center; padding:14px;">··· form compacto ···</div>
+        </div>
+      </div>
+      <div class="annotate">retorno fluido à fila; espaço comprimido para form com várias seções</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- R2 -->
+<section id="r2" class="section">
+  <div class="section-head">
+    <div class="section-num">2</div>
+    <div class="section-info">
+      <h2 class="section-title">Identidade do pedido <span class="section-sentiment neutra">essencial</span></h2>
+      <p class="section-desc">Canal de origem · ID externo · comprador (nome/email). Identifica o pedido na fila depois.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">A</span>3 campos lado a lado</div>
+      <div class="var-desc">Canal · ID externo · comprador numa linha. Compacto.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-field">
+            <div class="label">canal</div>
+            <div class="sk-box tiny fillsoft">Amazon ▾</div>
+          </div>
+          <div class="sk-field">
+            <div class="label">ID externo</div>
+            <div class="sk-box tiny dashed">123-456-789</div>
+          </div>
+          <div class="sk-field">
+            <div class="label">comprador</div>
+            <div class="sk-box tiny dashed">Maria Silva</div>
+          </div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· entrega + itens ···</div>
+      </div>
+      <div class="annotate">denso e rápido; 3 campos numa linha pode apertar mobile</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Form vertical agrupado</div>
+      <div class="var-desc">"De onde vem" (canal · ID) e "Quem é o comprador" (nome · email) como sub-grupos. Didático.</div>
+      <div class="sk-frame">
+        <div class="sk-form-group">
+          <div class="gtitle">De onde vem</div>
+          <div class="sk-row">
+            <div class="sk-field">
+              <div class="label">canal</div>
+              <div class="sk-box tiny fillsoft">Amazon ▾</div>
+            </div>
+            <div class="sk-field">
+              <div class="label">ID externo</div>
+              <div class="sk-box tiny dashed">123-456</div>
+            </div>
+          </div>
+        </div>
+        <div class="sk-form-group">
+          <div class="gtitle">Quem é o comprador</div>
+          <div class="sk-row">
+            <div class="sk-field">
+              <div class="label">nome</div>
+              <div class="sk-box tiny dashed">Maria Silva</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">didático e agrupado; consome mais altura</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Stepper visual</div>
+      <div class="var-desc">1. Canal · 2. Comprador. Guiado em 2 passos antes de entrar no resto do form.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div style="width:18px; height:18px; border:1.5px solid var(--ink); border-radius:50%; background:var(--ink); color:var(--paper); font-size:10px; display:flex; align-items:center; justify-content:center; font-weight:700;">1</div>
+          <span style="font-size:11px; font-weight:700;">Canal</span>
+          <div class="sk-line" style="flex:0.3; background:var(--ink);"></div>
+          <div style="width:18px; height:18px; border:1.5px solid var(--ink); border-radius:50%; background:var(--yellow); font-size:10px; display:flex; align-items:center; justify-content:center; font-weight:700;">2</div>
+          <span style="font-size:11px; font-weight:700;">Comprador</span>
+          <div class="sk-line dash" style="flex:0.3;"></div>
+          <span style="font-size:11px; color:var(--ink-light);">3. Resto</span>
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="sk-mini-card fillsoft">
+          <div style="font-size:10.5px;">Comprador:</div>
+          <div class="sk-row">
+            <div class="sk-box tiny" style="flex:1;">Maria Silva</div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">guiado e didático; lento para sellers experientes</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- R3 -->
+<section id="r3" class="section">
+  <div class="section-head">
+    <div class="section-num">3</div>
+    <div class="section-info">
+      <h2 class="section-title">Entrega + itens (consolidado) <span class="section-sentiment neutra">núcleo</span></h2>
+      <p class="section-desc">Endereço + itens + valor numa região consolidada. Decide layout: lado a lado, empilhado, ou tabs.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">A</span>Sub-blocos lado a lado</div>
+      <div class="var-desc">Endereço esquerda · itens direita. Visualiza em paralelo (escola: form 2 colunas).</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="align-items:stretch;">
+          <div class="sk-form-group" style="flex:1;">
+            <div class="gtitle">Endereço de entrega</div>
+            <div class="sk-stack">
+              <div class="sk-box tiny dashed">Morada</div>
+              <div class="sk-row">
+                <div class="sk-box tiny dashed" style="flex:0.4;">CEP</div>
+                <div class="sk-box tiny dashed" style="flex:1;">Cidade</div>
+              </div>
+              <div class="sk-box tiny dashed">País</div>
+            </div>
+          </div>
+          <div class="sk-form-group" style="flex:1;">
+            <div class="gtitle">Itens · €87,50</div>
+            <div class="sk-stack">
+              <div class="sk-box tiny fillsoft" style="font-size:10px;">B-1042 · 1×</div>
+              <div class="sk-box tiny fillsoft" style="font-size:10px;">B-2017 · 1×</div>
+              <div class="sk-btn ghost" style="font-size:10px;">+ adicionar item</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">economiza vertical; em mobile/drawer estreito quebra horrivelmente</div>
+    </article>
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">B</span>Empilhado vertical</div>
+      <div class="var-desc">Endereço acima · itens abaixo. Convenção responsiva, escala bem em qualquer largura.</div>
+      <div class="sk-frame">
+        <div class="sk-form-group">
+          <div class="gtitle">Endereço de entrega</div>
+          <div class="sk-row">
+            <div class="sk-box tiny dashed" style="flex:1;">Morada</div>
+            <div class="sk-box tiny dashed" style="flex:0.4;">CEP</div>
+          </div>
+        </div>
+        <div class="sk-form-group">
+          <div class="gtitle">Itens · €87,50</div>
+          <div class="sk-stack">
+            <div class="sk-row" style="font-size:10px;">
+              <span style="font-weight:700;">1×</span>
+              <span style="flex:1;">B-1042 · Camisola Azul M</span>
+              <span>€34,90</span>
+            </div>
+            <div class="sk-row" style="font-size:10px;">
+              <span style="font-weight:700;">1×</span>
+              <span style="flex:1;">B-2017 · Cinto Couro</span>
+              <span>€52,60</span>
+            </div>
+            <div class="sk-btn ghost" style="font-size:10px;">+ adicionar item</div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">responsivo e claro; consome mais altura</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Tabs</div>
+      <div class="var-desc">Tabs (Endereço · Itens · Valor). Foco em uma seção por vez. Clean para form longo.</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="align-items:flex-end;">
+          <div class="sk-tab active">Endereço</div>
+          <div class="sk-tab">Itens · 2</div>
+          <div class="sk-tab">Valor · €87,50</div>
+        </div>
+        <div class="sk-line" style="margin-top:0;"></div>
+        <div class="sk-form-group" style="border:0; background:transparent;">
+          <div class="sk-stack">
+            <div class="sk-box tiny dashed">Morada</div>
+            <div class="sk-row">
+              <div class="sk-box tiny dashed" style="flex:0.4;">CEP</div>
+              <div class="sk-box tiny dashed" style="flex:1;">Cidade</div>
+            </div>
+            <div class="sk-box tiny dashed">País</div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">foco por seção; submeter exige ter passado por todas as tabs — risco de pular</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- R4 -->
+<section id="r4" class="section">
+  <div class="section-head">
+    <div class="section-num">4</div>
+    <div class="section-info">
+      <h2 class="section-title">Footer / submit <span class="section-sentiment pos">decisiva</span></h2>
+      <p class="section-desc">Cancelar · Salvar rascunho · Criar pedido. Auto-save de rascunho durante o form preserva trabalho.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">A</span>Sticky bottom alinhado</div>
+      <div class="var-desc">Cancelar esquerda · Salvar rascunho meio · Criar pedido primary direita. Convenção familiar.</div>
+      <div class="sk-frame">
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· form ···</div>
+        <div class="sk-line dash"></div>
+        <div class="sk-bottombar" style="margin:-8px; margin-top:0; border-radius:0 0 4px 4px;">
+          <span class="sk-btn" style="font-size:11px;">cancelar</span>
+          <div class="sk-grow"></div>
+          <span class="sk-btn" style="font-size:11px;">salvar rascunho</span>
+          <span class="sk-btn primary" style="font-size:11.5px;">criar pedido</span>
+        </div>
+      </div>
+      <div class="annotate">consistente com outras telas; "salvar rascunho" pode ser clicado por engano</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Salvar full-width como CTA dominante</div>
+      <div class="var-desc">"Criar pedido" full-width; secundárias acima. Clareza máxima do CTA.</div>
+      <div class="sk-frame">
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· form ···</div>
+        <div class="sk-line dash"></div>
+        <div class="sk-row">
+          <span class="sk-btn ghost" style="font-size:10.5px;">cancelar</span>
+          <div class="sk-grow"></div>
+          <span class="sk-tag" style="text-decoration:underline;">salvar rascunho</span>
+        </div>
+        <span class="sk-btn primary fullwidth">Criar pedido</span>
+      </div>
+      <div class="annotate">CTA inequívoco; rascunho subordinado pode ficar invisível</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Centralizado simétrico</div>
+      <div class="var-desc">3 botões centralizados (cancelar · rascunho · criar). Estilo wizard.</div>
+      <div class="sk-frame">
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· form ···</div>
+        <div class="sk-line dash"></div>
+        <div class="sk-row" style="justify-content:center;">
+          <span class="sk-btn ghost" style="font-size:11px;">cancelar</span>
+          <span class="sk-btn" style="font-size:11px;">rascunho</span>
+          <span class="sk-btn primary" style="font-size:11.5px;">criar</span>
+        </div>
+      </div>
+      <div class="annotate">simétrico; "criar" precisa cor para destacar</div>
+    </article>
+
+  </div>
+</section>
+
+<div class="footer-note">
+  <b>Resumo:</b> 4 regiões × 3 variações = <b>12 mini-sketches</b> para validar.<br>
+  <b>Pontos críticos detectados</b>: (1) <b>Tela de cauda</b> — simplicidade > sofisticação. Form direto basta. (2) <b>Auto-save de rascunho</b> universal em todas variações. (3) <b>Validação inline</b> (cenário Etapa 2) — campos obrigatórios sinalizam erro ao tentar submeter.<br>
+  <b>Combinação validada ✓</b>: <b>1B · 2A · 3B · 4A</b><br>
+  <b>Etapa 1 da onda 1 completa</b> — todas as 12 telas do v1.5 com combinações validadas.
+</div>
+
+</body>
+</html>

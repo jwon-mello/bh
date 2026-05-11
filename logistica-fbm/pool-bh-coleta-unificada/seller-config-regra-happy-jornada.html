@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo navegável de jornada — seller-config-regra-happy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a; --ink-soft: #3d3d3d; --ink-light: #8a8a8a; --ink-faint: #c8c8c8;
+  --paper: #fcfcfa; --paper-edge: #f3f1e8;
+  --yellow: #fff2a8; --yellow-dim: #ffe771; --yellow-edge: #e6c732;
+  --green-soft: #c9e6b8; --red-soft: #f4b8b0; --blue-soft: #b8d4f0; --orange-soft: #f5d0a0;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: 'Patrick Hand', cursive; background: var(--paper); color: var(--ink); font-size: 15px; line-height: 1.4; }
+h1, h2, h3, .h-caveat { font-family: 'Caveat', cursive; }
+
+.bh-shell { display: grid; grid-template-rows: 56px 1fr; grid-template-columns: 240px 1fr; grid-template-areas: "topbar topbar" "sidebar main"; min-height: 100vh; }
+
+.bh-topbar { grid-area: topbar; position: sticky; top: 0; z-index: 100; background: var(--paper); border-bottom: 2px solid var(--ink); display: flex; align-items: center; padding: 0 18px; gap: 18px; }
+.bh-logo { font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700; background: var(--yellow); border: 1.8px solid var(--ink); border-radius: 100px; padding: 2px 14px; transform: rotate(-3deg); }
+.bh-breadcrumb { font-size: 13.5px; color: var(--ink-soft); flex: 1; }
+.bh-breadcrumb b { color: var(--ink); font-weight: 700; }
+.bh-breadcrumb .sep { color: var(--ink-light); margin: 0 6px; }
+.bh-search { width: 220px; border: 1.5px dashed var(--ink-light); border-radius: 100px; padding: 4px 14px; font-size: 12.5px; color: var(--ink-light); background: var(--paper-edge); }
+.bh-user { display: flex; align-items: center; gap: 8px; font-size: 13px; border: 1.5px solid var(--ink); border-radius: 100px; padding: 3px 12px 3px 4px; background: var(--paper); }
+.bh-user .avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--blue-soft); border: 1.5px solid var(--ink); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; }
+
+.bh-sidebar { grid-area: sidebar; position: sticky; top: 56px; height: calc(100vh - 56px); background: var(--paper-edge); border-right: 2px solid var(--ink); overflow-y: auto; padding: 12px 8px; }
+.nav-section { margin-bottom: 14px; }
+.nav-group-title { font-size: 10.5px; color: var(--ink-light); text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 10px; }
+.nav-item { display: flex; align-items: center; gap: 8px; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--ink-soft); margin-bottom: 1px; }
+.nav-item:hover { background: var(--paper); }
+.nav-item.active { background: var(--yellow); color: var(--ink); font-weight: 700; box-shadow: 2px 2px 0 var(--ink); transform: translate(-1px, -1px); }
+.nav-item .badge { margin-left: auto; background: var(--red-soft); border: 1.2px solid var(--ink); border-radius: 100px; padding: 0 6px; font-size: 10px; font-weight: 700; }
+.nav-item .ico { width: 14px; font-size: 12px; opacity: 0.7; }
+.nav-item.pulse { box-shadow: 0 0 0 0 var(--yellow-edge); animation: pulse-anim 1.5s infinite; }
+@keyframes pulse-anim { 0% { box-shadow: 0 0 0 0 rgba(230, 199, 50, 0.6); } 70% { box-shadow: 0 0 0 8px rgba(230, 199, 50, 0); } 100% { box-shadow: 0 0 0 0 rgba(230, 199, 50, 0); } }
+
+.bh-main { grid-area: main; padding: 20px 28px 100px; overflow-x: hidden; }
+
+.journey-stepper-wrap { border: 1.8px solid var(--ink); border-radius: 6px; background: var(--paper); padding: 10px 16px; margin-bottom: 16px; box-shadow: 3px 3px 0 var(--ink); }
+.journey-stepper-wrap .title { font-family: 'Caveat', cursive; font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.journey-stepper { display: flex; gap: 4px; }
+.journey-stepper .step { flex: 1; padding: 4px 6px; border: 1.4px solid var(--ink-light); border-radius: 4px; background: var(--paper); font-size: 10.5px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.journey-stepper .step:hover { background: var(--yellow-dim); }
+.journey-stepper .step.done { background: var(--paper-edge); border-color: var(--ink); color: var(--ink-soft); }
+.journey-stepper .step.current { background: var(--yellow); border-color: var(--ink); font-weight: 700; box-shadow: 2px 2px 0 var(--ink); }
+.journey-stepper .step.final { background: var(--green-soft); border-color: var(--ink); font-weight: 700; }
+.journey-stepper .step .num { font-family: 'Caveat', cursive; font-weight: 700; font-size: 13px; }
+
+.view { display: none; }
+.view.active { display: block; animation: fadeIn 0.2s; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.journey-nav-bar { position: fixed; bottom: 0; left: 240px; right: 0; background: var(--paper-edge); border-top: 1.8px solid var(--ink); padding: 10px 28px; display: flex; gap: 10px; align-items: center; z-index: 30; }
+.journey-nav-bar .meta-tag { font-size: 11.5px; color: var(--ink-light); font-style: italic; }
+
+.page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.page-header h2 { font-size: 24px; margin: 0; }
+.page-header .ctas { margin-left: auto; display: flex; gap: 6px; }
+
+.card { border: 1.5px solid var(--ink); border-radius: 6px; padding: 12px 14px; background: var(--paper); box-shadow: 3px 3px 0 var(--ink); margin-bottom: 14px; }
+.card .title { font-family: 'Caveat', cursive; font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.card.green { background: var(--green-soft); }
+.card.warn { background: var(--orange-soft); }
+.card.fillsoft { background: var(--paper-edge); }
+.card.info { background: var(--blue-soft); }
+
+.btn { border: 1.5px solid var(--ink); border-radius: 100px; padding: 4px 12px; background: var(--paper); font-family: inherit; font-size: 13px; cursor: pointer; }
+.btn:hover { transform: translate(-1px, -1px); }
+.btn.primary { background: var(--yellow); font-weight: 700; }
+.btn.ghost { border-style: dashed; color: var(--ink-soft); }
+.btn.disabled { background: var(--paper-edge); color: var(--ink-light); border-color: var(--ink-faint); cursor: not-allowed; }
+
+.chip { border: 1.2px solid var(--ink); border-radius: 100px; padding: 1px 8px; font-size: 11.5px; background: var(--paper); display: inline-block; }
+.chip.green { background: var(--green-soft); }
+.chip.warn { background: var(--orange-soft); }
+.chip.danger { background: var(--red-soft); }
+.chip.info { background: var(--blue-soft); }
+.chip.muted { color: var(--ink-light); }
+.chip.active { background: var(--yellow); font-weight: 700; }
+
+.tag { font-size: 11.5px; color: var(--ink-light); font-style: italic; }
+.line-dash { border-top: 1.2px dashed var(--ink-light); margin: 6px 0; }
+
+.under-construction { border: 1.8px dashed var(--ink-light); border-radius: 8px; padding: 40px; background: var(--paper-edge); text-align: center; }
+.under-construction .big { font-family: 'Caveat', cursive; font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+.under-construction .sub { font-size: 13.5px; color: var(--ink-soft); }
+
+/* ===== FASE 1 · cursor highlight ===== */
+.cursor-hint { position: relative; display: inline-block; }
+.cursor-hint::after { content: '👈 click aqui'; position: absolute; left: calc(100% + 8px); top: 50%; transform: translateY(-50%); background: var(--ink); color: var(--paper); padding: 2px 8px; border-radius: 100px; font-size: 11px; white-space: nowrap; animation: bounce 1s infinite; }
+@keyframes bounce { 0%, 100% { transform: translateY(-50%) translateX(0); } 50% { transform: translateY(-50%) translateX(-4px); } }
+
+/* ===== CONFIG-HUB ===== */
+.tabs-row { display: flex; gap: 4px; border-bottom: 1.5px solid var(--ink); margin-bottom: 14px; }
+.tab { border: 1.5px solid var(--ink); border-bottom: none; border-radius: 5px 5px 0 0; padding: 5px 14px; background: var(--paper); font-size: 13px; cursor: pointer; position: relative; bottom: -1.5px; }
+.tab.active { background: var(--yellow); font-weight: 700; }
+
+.config-list .row { display: flex; gap: 8px; align-items: center; padding: 8px 12px; border: 1.5px solid var(--ink); border-radius: 5px; background: var(--paper); margin-bottom: 6px; cursor: pointer; font-size: 13px; }
+.config-list .row:hover { background: var(--yellow-dim); transform: translate(-1px, -1px); }
+.config-list .row .ico { font-size: 16px; }
+.config-list .row .arrow { color: var(--ink-light); font-size: 14px; }
+
+.rules-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.rule-card { border: 1.5px solid var(--ink); border-radius: 6px; padding: 10px 12px; background: var(--paper); box-shadow: 2px 2px 0 var(--ink); }
+.rule-card.fill { background: var(--yellow); }
+.rule-card .row1 { display: flex; gap: 6px; align-items: center; margin-bottom: 4px; }
+.rule-card .row1 .name { font-weight: 700; flex: 1; }
+.rule-card .formula { font-size: 12px; color: var(--ink-soft); }
+.toggle { display: inline-block; width: 28px; height: 16px; border: 1.5px solid var(--ink); border-radius: 100px; background: var(--paper); position: relative; cursor: pointer; }
+.toggle::after { content: ''; position: absolute; top: 1px; left: 1px; width: 10px; height: 10px; background: var(--ink); border-radius: 50%; transition: left 0.2s; }
+.toggle.on { background: var(--yellow); }
+.toggle.on::after { left: 15px; }
+
+/* ===== MODAL OVERLAY (Fase 3 · regra-builder) ===== */
+.modal-overlay { position: fixed; inset: 0; background: rgba(26, 26, 26, 0.4); z-index: 50; display: flex; align-items: center; justify-content: center; padding: 40px; }
+.modal-overlay.hidden { display: none; }
+.modal-card { background: var(--paper); border: 2px solid var(--ink); border-radius: 8px; box-shadow: 6px 6px 0 var(--ink); padding: 20px; max-width: 640px; width: 100%; max-height: 85vh; overflow-y: auto; }
+.modal-card .modal-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1.5px dashed var(--ink-light); }
+.modal-card .modal-head h3 { font-size: 22px; margin: 0; flex: 1; }
+.modal-card .close-x { cursor: pointer; padding: 0 6px; font-size: 18px; color: var(--ink-soft); }
+
+.field-block { margin-bottom: 14px; }
+.field-block .label { font-family: 'Caveat', cursive; font-weight: 700; font-size: 16px; margin-bottom: 6px; }
+.input-field { border: 1.5px solid var(--ink); border-radius: 5px; padding: 6px 10px; background: var(--paper); font-size: 13px; min-height: 32px; display: flex; align-items: center; }
+.input-field.dashed { border-style: dashed; color: var(--ink-light); }
+.input-field.fill { background: var(--yellow); }
+
+/* R2=A · 2 cards-radio */
+.radio-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.radio-card { border: 1.5px solid var(--ink); border-radius: 5px; padding: 10px 12px; background: var(--paper); cursor: pointer; }
+.radio-card.selected { background: var(--yellow); box-shadow: 2px 2px 0 var(--ink); transform: translate(-1px, -1px); }
+.radio-card .rc-head { display: flex; gap: 6px; align-items: center; font-weight: 700; font-size: 13.5px; }
+.radio-card .dot { width: 12px; height: 12px; border: 1.5px solid var(--ink); border-radius: 50%; background: var(--paper); flex-shrink: 0; }
+.radio-card.selected .dot { background: var(--ink); }
+.radio-card .desc { font-size: 11px; color: var(--ink-soft); margin-top: 4px; }
+
+/* R3=B · chips condição */
+.cond-block { border: 1.8px solid var(--ink); border-radius: 6px; padding: 10px 12px; background: var(--paper-edge); }
+.cond-label-h { font-family: 'Caveat', cursive; font-weight: 700; font-size: 16px; margin-bottom: 6px; }
+.cond-chips { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.cond-chip { border: 1.5px solid var(--ink); border-radius: 100px; padding: 3px 10px; font-size: 13px; cursor: pointer; background: var(--paper); }
+.cond-chip.active { background: var(--yellow); font-weight: 700; box-shadow: 2px 2px 0 var(--ink); }
+.cond-chip.muted { border-style: dashed; color: var(--ink-light); }
+
+/* R4=A · dropdowns inline ação */
+.action-block { border: 1.8px solid var(--ink); border-radius: 6px; padding: 10px 12px; background: var(--paper-edge); margin-top: 10px; }
+
+.dd-inline { display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--ink); border-radius: 5px; padding: 3px 10px; background: var(--paper); font-size: 13px; cursor: pointer; }
+.dd-inline.fill { background: var(--yellow); font-weight: 700; }
+
+/* R5=C · footer centralizado */
+.modal-footer { display: flex; justify-content: center; gap: 8px; padding-top: 12px; border-top: 1.5px dashed var(--ink-light); margin-top: 14px; }
+
+/* Simulação preview */
+.sim-preview { border: 1.5px dashed var(--ink-light); background: var(--paper-edge); border-radius: 5px; padding: 10px 12px; margin-top: 10px; font-size: 12.5px; }
+.sim-preview .h { font-family: 'Caveat', cursive; font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.sim-preview .row { display: flex; gap: 6px; padding: 2px 0; }
+.sim-preview .row b { color: var(--ink); }
+
+/* Toast */
+.toast { position: fixed; bottom: 80px; right: 20px; background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 8px; box-shadow: 4px 4px 0 rgba(0,0,0,0.2); z-index: 200; font-size: 13px; max-width: 320px; }
+.toast .close { position: absolute; top: 4px; right: 8px; cursor: pointer; opacity: 0.7; }
+.toast-confirm { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 10px 18px; border-radius: 100px; font-family: 'Caveat', cursive; font-size: 16px; box-shadow: 4px 4px 0 rgba(0,0,0,0.2); z-index: 250; display: none; gap: 8px; align-items: center; }
+.toast-confirm.show { display: flex; }
+.toast-confirm .check { background: var(--green-soft); color: var(--ink); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="bh-shell">
+
+  <header class="bh-topbar">
+    <div class="bh-logo">BH</div>
+    <nav class="bh-breadcrumb" id="crumb"><b>Início</b></nav>
+    <div class="bh-search">⌕ buscar pedidos, BHIDs, devoluções…</div>
+    <div class="bh-user"><div class="avatar">J</div>Jhonatan</div>
+  </header>
+
+  <aside class="bh-sidebar">
+    <div class="nav-section">
+      <div class="nav-item" data-view="inicio"><span class="ico">⌂</span>Início</div>
+      <div class="nav-item" data-view="catalogo"><span class="ico">▥</span>Catálogo</div>
+      <div class="nav-item" data-view="vitrine"><span class="ico">▣</span>Vitrine</div>
+      <div class="nav-item" data-view="cadastro"><span class="ico">⊞</span>Cadastro</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-group-title">Logística</div>
+      <div class="nav-item" data-view="fila-pedidos"><span class="ico">▤</span>Pedidos <span class="badge">3</span></div>
+      <div class="nav-item" data-view="painel-coletas"><span class="ico">▦</span>Coletas</div>
+      <div class="nav-item" data-view="fila-devolucoes"><span class="ico">▩</span>Devoluções <span class="badge">1</span></div>
+      <div class="nav-item" data-view="enderecos"><span class="ico">◉</span>Endereços</div>
+      <div class="nav-item" data-view="embalagens"><span class="ico">▢</span>Embalagens</div>
+      <div class="nav-item" data-view="carriers"><span class="ico">▶</span>Carriers</div>
+      <div class="nav-item" data-view="dashboard-uso"><span class="ico">▥</span>Uso & cobrança</div>
+      <div class="nav-item" data-view="config-hub" id="nav-config"><span class="ico">⚙</span>Configurações</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-group-title">Planos e preços</div>
+      <div class="nav-item" data-view="modulos"><span class="ico">▥</span>Módulos</div>
+      <div class="nav-item" data-view="subscricoes"><span class="ico">▤</span>Subscrições</div>
+      <div class="nav-item" data-view="faturas"><span class="ico">▦</span>Faturas</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-item" data-view="suporte"><span class="ico">?</span>Suporte</div>
+      <div class="nav-item" data-view="config-geral"><span class="ico">⚙</span>Configurações</div>
+    </div>
+  </aside>
+
+  <main class="bh-main">
+
+    <div class="journey-stepper-wrap" id="journey-stepper-wrap">
+      <div class="title">⚙ Jornada — Configurações + criar regra · passo <span id="step-current">1</span> de 5 (should-have)</div>
+      <div class="journey-stepper" id="journey-stepper"></div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- FASE 1 · ACESSAR CONFIGURAÇÕES                -->
+    <!-- ============================================ -->
+    <div class="view active" id="view-inicio">
+      <div class="page-header">
+        <h2 class="h-caveat">Início</h2>
+      </div>
+
+      <div class="card info">
+        <div style="font-size:13.5px;"><b>Cenário:</b> seller já operando há 2 meses · operação fluindo bem · agora quer <b>automatizar</b> uma regra recorrente que faz manualmente todo dia (pedidos da Amazon despachar sempre de Lisboa).</div>
+      </div>
+
+      <div class="card">
+        <div class="title">Como chegar lá</div>
+        <div style="font-size:13px;">Acesse <b>Logística › Configurações</b> na sidebar à esquerda · é o hub onde vivem todas as configurações e regras condicionais.</div>
+        <div class="line-dash"></div>
+        <div style="font-size:12.5px; color:var(--ink-soft);">↗ a sidebar tem o item <b>Configurações</b> em destaque · clique nele para abrir o hub.</div>
+      </div>
+
+      <div class="card fillsoft">
+        <div class="title">💡 Cenário desta journey</div>
+        <div style="font-size:12.5px;">
+          Seller quer criar a regra: <b>"se canal = Amazon, então origem = Lisboa"</b>.<br>
+          Isso elimina o passo manual de roteamento na Fase 2 do happy path (decisão #28 do PRD · should-have).
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- FASE 2 · CONFIG-HUB                            -->
+    <!-- ============================================ -->
+    <div class="view" id="view-config-hub">
+      <div class="page-header">
+        <h2 class="h-caveat">Configurações · Logística</h2>
+        <div class="ctas">
+          <button class="btn ghost">⌯ exportar setup</button>
+        </div>
+      </div>
+
+      <div class="tabs-row">
+        <div class="tab">Configurações · 5</div>
+        <div class="tab active">Regras · 3</div>
+      </div>
+
+      <div class="rules-grid">
+        <div class="rule-card">
+          <div class="row1">
+            <span class="name">Roteamento UK</span>
+            <span class="chip muted">roteamento</span>
+            <span class="toggle on"></span>
+          </div>
+          <div class="formula"><b>SE</b> país = UK · <b>ENTÃO</b> origem = Porto</div>
+        </div>
+        <div class="rule-card">
+          <div class="row1">
+            <span class="name">Caixa M default</span>
+            <span class="chip muted">embalagem</span>
+            <span class="toggle on"></span>
+          </div>
+          <div class="formula"><b>SE</b> peso &lt; 2kg · <b>ENTÃO</b> caixa = M</div>
+        </div>
+        <div class="rule-card">
+          <div class="row1">
+            <span class="name">Express PT urgente</span>
+            <span class="chip muted">roteamento</span>
+            <span class="toggle"></span>
+          </div>
+          <div class="formula"><b>SE</b> canal = big.pt + valor &gt;€100 · <b>ENTÃO</b> DPD Express</div>
+        </div>
+        <div class="rule-card fill" id="new-rule-cta" onclick="goToNextPhase()" style="cursor:pointer; display:flex; align-items:center; justify-content:center; text-align:center; flex-direction:column;">
+          <div style="font-family:'Caveat',cursive; font-size:32px; font-weight:700;">+</div>
+          <div style="font-size:13px; font-weight:700;">Criar regra</div>
+          <div class="tag">click para abrir builder</div>
+        </div>
+      </div>
+
+      <div class="card fillsoft">
+        <div class="title">Configurações estáticas (atalhos)</div>
+        <div class="config-list">
+          <div class="row">
+            <span class="ico">📍</span>
+            <span style="flex:1;"><b>Endereços</b></span>
+            <span class="chip green">3 ✓</span>
+            <span class="arrow">→</span>
+          </div>
+          <div class="row">
+            <span class="ico">📦</span>
+            <span style="flex:1;"><b>Embalagens</b></span>
+            <span class="chip green">P/M/G ✓</span>
+            <span class="arrow">→</span>
+          </div>
+          <div class="row">
+            <span class="ico">🚚</span>
+            <span style="flex:1;"><b>Carriers</b></span>
+            <span class="chip warn">⚠ contrato vence 30d</span>
+            <span class="arrow">→</span>
+          </div>
+          <div class="row">
+            <span class="ico">📅</span>
+            <span style="flex:1;"><b>Coletas</b></span>
+            <span class="chip green">5 janelas ✓</span>
+            <span class="arrow">→</span>
+          </div>
+          <div class="row">
+            <span class="ico">🛒</span>
+            <span style="flex:1;"><b>Canais</b></span>
+            <span class="chip green">Vitrine · Amazon · Cdiscount</span>
+            <span class="arrow">→</span>
+          </div>
+        </div>
+        <div class="tag" style="margin-top:6px;">↳ click numa config abre o wizard correspondente em modo edição (sub-fluxo separado).</div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- FASE 3 · REGRA-BUILDER (modal centralizado)   -->
+    <!-- ============================================ -->
+    <div class="view" id="view-builder">
+      <!-- Background do hub permanece visível por trás do modal -->
+      <div class="page-header">
+        <h2 class="h-caveat">Configurações · Logística</h2>
+      </div>
+
+      <div class="tabs-row">
+        <div class="tab">Configurações · 5</div>
+        <div class="tab active">Regras · 3</div>
+      </div>
+
+      <div style="opacity:0.4; pointer-events:none;">
+        <div class="rules-grid">
+          <div class="rule-card"><div class="row1"><span class="name">Roteamento UK</span><span class="toggle on"></span></div></div>
+          <div class="rule-card"><div class="row1"><span class="name">Caixa M default</span><span class="toggle on"></span></div></div>
+          <div class="rule-card"><div class="row1"><span class="name">Express PT urgente</span><span class="toggle"></span></div></div>
+        </div>
+      </div>
+
+      <!-- MODAL -->
+      <div class="modal-overlay">
+        <div class="modal-card">
+          <div class="modal-head">
+            <h3 class="h-caveat">Criar regra</h3>
+            <span class="chip muted">1 condição → 1 ação</span>
+            <span class="close-x">×</span>
+          </div>
+
+          <div class="field-block">
+            <div class="label">1. Nome</div>
+            <div class="input-field dashed">"Roteamento Amazon" <span class="tag" style="margin-left:auto;">↷ sugerido pelo BH com base na categoria</span></div>
+          </div>
+
+          <div class="field-block">
+            <div class="label">2. Categoria</div>
+            <div class="radio-cards">
+              <div class="radio-card selected">
+                <div class="rc-head"><div class="dot"></div>Roteamento</div>
+                <div class="desc">de qual origem · qual carrier</div>
+              </div>
+              <div class="radio-card">
+                <div class="rc-head"><div class="dot"></div>Embalagem</div>
+                <div class="desc">qual caixa default</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-block">
+            <div class="cond-block">
+              <div class="cond-label-h">3. SE (condição)</div>
+              <div class="cond-chips">
+                <span class="cond-chip active">canal</span>
+                <span class="tag">é</span>
+                <span class="cond-chip active">Amazon</span>
+                <span class="cond-chip muted">+ adicionar</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-block">
+            <div class="action-block">
+              <div class="cond-label-h">4. ENTÃO (ação)</div>
+              <div class="cond-chips">
+                <span class="dd-inline">definir origem ▾</span>
+                <span class="tag">=</span>
+                <span class="dd-inline fill">Lisboa ▾</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="sim-preview">
+            <div class="h">↗ Simulação · sem simular ainda</div>
+            <div class="tag">click em <b>Simular</b> abaixo para testar contra pedidos passados (pré-validação antes de salvar).</div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn ghost">cancelar</button>
+            <button class="btn" onclick="showSimResult()">Simular</button>
+            <button class="btn primary disabled" id="btn-save-disabled">Salvar regra</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- FASE 4 · SIMULAÇÃO + SALVAR                   -->
+    <!-- ============================================ -->
+    <div class="view" id="view-simular">
+      <div class="page-header">
+        <h2 class="h-caveat">Configurações · Logística</h2>
+      </div>
+
+      <div class="tabs-row">
+        <div class="tab">Configurações · 5</div>
+        <div class="tab active">Regras · 3</div>
+      </div>
+
+      <div style="opacity:0.4; pointer-events:none;">
+        <div class="rules-grid">
+          <div class="rule-card"><div class="row1"><span class="name">Roteamento UK</span><span class="toggle on"></span></div></div>
+          <div class="rule-card"><div class="row1"><span class="name">Caixa M default</span><span class="toggle on"></span></div></div>
+          <div class="rule-card"><div class="row1"><span class="name">Express PT urgente</span><span class="toggle"></span></div></div>
+        </div>
+      </div>
+
+      <div class="modal-overlay">
+        <div class="modal-card">
+          <div class="modal-head">
+            <h3 class="h-caveat">Criar regra · Simulação</h3>
+            <span class="chip green">guard-rail</span>
+            <span class="close-x">×</span>
+          </div>
+
+          <div class="field-block">
+            <div class="card fillsoft" style="margin: 0;">
+              <div class="title">Regra a salvar</div>
+              <div style="font-size:13px;">
+                <b>Roteamento Amazon</b> · categoria <b>roteamento</b><br>
+                <b>SE</b> canal = Amazon · <b>ENTÃO</b> origem = Lisboa
+              </div>
+            </div>
+          </div>
+
+          <div class="sim-preview" style="background:var(--green-soft);">
+            <div class="h">✓ Simulação · validado contra últimos 30 dias</div>
+            <div class="row"><span style="flex:1;">Pedidos Amazon nos últimos 30 dias:</span><b>47</b></div>
+            <div class="row"><span style="flex:1;">Pedidos que teriam sido afetados:</span><b>47 (100%)</b></div>
+            <div class="row"><span style="flex:1;">Mudança de origem (Porto → Lisboa):</span><b>9 pedidos</b></div>
+            <div class="row"><span style="flex:1;">Diferença de tarifa estimada:</span><b style="color:var(--ink);">+€32,40 economia/mês</b></div>
+            <div class="line-dash"></div>
+            <div style="font-size:11.5px; color:var(--ink-soft);">↳ <b>nenhum conflito</b> com regras existentes detectado · ok para salvar</div>
+          </div>
+
+          <div class="card warn" style="margin-bottom: 0;">
+            <div style="font-size:12.5px;">
+              <b>⚠ Tempo decorrido:</b> simulação rodou em 2,3s contra 47 pedidos reais do histórico. Ao salvar, regra entra em vigor <b>imediatamente</b> para novos pedidos. Pedidos já roteados não são afetados retroativamente.
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn ghost">cancelar</button>
+            <button class="btn">re-simular</button>
+            <button class="btn primary" onclick="goToNextPhase()">Salvar regra ✓</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- FASE 5 · REGRA ATIVA                          -->
+    <!-- ============================================ -->
+    <div class="view" id="view-ativa">
+      <div class="page-header">
+        <h2 class="h-caveat">Configurações · Logística</h2>
+        <div class="ctas">
+          <button class="btn ghost">⌯ exportar setup</button>
+        </div>
+      </div>
+
+      <div class="tabs-row">
+        <div class="tab">Configurações · 5</div>
+        <div class="tab active">Regras · 4</div>
+      </div>
+
+      <div class="rules-grid">
+        <div class="rule-card" style="border: 2.5px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); transform: translate(-1px, -1px); background: var(--green-soft);">
+          <div class="row1">
+            <span class="name">⭐ Roteamento Amazon</span>
+            <span class="chip muted">roteamento</span>
+            <span class="toggle on"></span>
+          </div>
+          <div class="formula"><b>SE</b> canal = Amazon · <b>ENTÃO</b> origem = Lisboa</div>
+          <div class="tag" style="margin-top:4px;">↳ recém-criada · 47 pedidos/mês afetados · economia est. €32,40/mês</div>
+        </div>
+        <div class="rule-card">
+          <div class="row1">
+            <span class="name">Roteamento UK</span>
+            <span class="chip muted">roteamento</span>
+            <span class="toggle on"></span>
+          </div>
+          <div class="formula"><b>SE</b> país = UK · <b>ENTÃO</b> origem = Porto</div>
+        </div>
+        <div class="rule-card">
+          <div class="row1">
+            <span class="name">Caixa M default</span>
+            <span class="chip muted">embalagem</span>
+            <span class="toggle on"></span>
+          </div>
+          <div class="formula"><b>SE</b> peso &lt; 2kg · <b>ENTÃO</b> caixa = M</div>
+        </div>
+        <div class="rule-card">
+          <div class="row1">
+            <span class="name">Express PT urgente</span>
+            <span class="chip muted">roteamento</span>
+            <span class="toggle"></span>
+          </div>
+          <div class="formula"><b>SE</b> canal = big.pt + valor &gt;€100 · <b>ENTÃO</b> DPD Express</div>
+        </div>
+      </div>
+
+      <div class="card green">
+        <div class="title">✓ Regra "Roteamento Amazon" ativa</div>
+        <div style="font-size:13px;">
+          A partir de agora, todos os novos pedidos Amazon serão automaticamente roteados de Lisboa, sem intervenção manual na Fase 2 do happy path.
+        </div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px;">
+          <b>↳ próximos passos sugeridos:</b><br>
+          · Acompanhe o impacto real no <span style="text-decoration:underline; cursor:pointer;" onclick="goToView('dashboard-uso')">dashboard de uso &amp; cobrança</span> (seção tendências)<br>
+          · Crie outras regras para reduzir mais trabalho manual<br>
+          · Configure regras de embalagem (caixa por peso/categoria)
+        </div>
+      </div>
+
+      <div class="card fillsoft">
+        <div class="title">📊 Telemetria da journey</div>
+        <div style="font-size:12.5px;">
+          <div><b>Tempo total digital:</b> ~2 min (hub → builder → simular → salvar)</div>
+          <div><b>Trabalho economizado:</b> ~30 segundos/pedido Amazon · ~47 pedidos/mês = 23 min/mês</div>
+          <div><b>Risco:</b> baixo · simulação validou 100% dos casos sem conflito</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STUBS -->
+    <div class="view" id="view-dashboard-uso"><div class="under-construction"><div class="big">Uso & cobrança</div><div class="sub">Stub. Tendências (Seção 5) mostra impacto das regras criadas ao longo do tempo.</div></div></div>
+    <div class="view" id="view-fila-pedidos"><div class="under-construction"><div class="big">Pedidos</div><div class="sub">Pedidos Amazon novos terão origem Lisboa pré-marcada (regra criada nesta journey).</div></div></div>
+    <div class="view" id="view-painel-coletas"><div class="under-construction"><div class="big">Coletas</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-fila-devolucoes"><div class="under-construction"><div class="big">Devoluções</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-faturas"><div class="under-construction"><div class="big">Faturas</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-catalogo"><div class="under-construction"><div class="big">Catálogo</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-vitrine"><div class="under-construction"><div class="big">Vitrine</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-cadastro"><div class="under-construction"><div class="big">Cadastro</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-enderecos"><div class="under-construction"><div class="big">Endereços</div><div class="sub">3 origens cadastradas: Lisboa (default) · Porto · Faro.</div></div></div>
+    <div class="view" id="view-embalagens"><div class="under-construction"><div class="big">Embalagens</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-carriers"><div class="under-construction"><div class="big">Carriers</div><div class="sub">DPD · GLS via Pool BH · contrato GLS Iberian 2026 ativo.</div></div></div>
+    <div class="view" id="view-modulos"><div class="under-construction"><div class="big">Módulos</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-subscricoes"><div class="under-construction"><div class="big">Subscrições</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-suporte"><div class="under-construction"><div class="big">Suporte</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-config-geral"><div class="under-construction"><div class="big">Configurações gerais</div><div class="sub">Stub.</div></div></div>
+
+  </main>
+
+</div>
+
+<div class="journey-nav-bar" id="journey-nav-bar">
+  <button class="btn back" id="btn-back" onclick="goToPrevPhase()">← passo anterior</button>
+  <span class="meta-tag" id="phase-tag"></span>
+  <div style="flex:1;"></div>
+  <span id="phase-ctas"></span>
+  <button class="btn next" id="btn-next" onclick="goToNextPhase()">avançar →</button>
+</div>
+
+<div class="toast" id="toast">
+  <span class="close" onclick="hideToast()">×</span>
+  <b>Como navegar:</b><br>
+  · Fase 1: click em <b>Configurações</b> na sidebar.<br>
+  · Fase 2: click no card amarelo <b>+ Criar regra</b>.<br>
+  · Fases 3-4: simule antes de salvar (guard-rail).<br>
+  · Sidebar permite sair do fluxo a qualquer momento.
+</div>
+
+<div class="toast-confirm" id="toast-confirm"><span class="check">✓</span><span>Regra "Roteamento Amazon" salva e ativa</span></div>
+
+<script>
+const journeyPhases = [
+  { id: 'inicio',    view: 'inicio',     label: 'Acessar config' },
+  { id: 'hub',       view: 'config-hub', label: 'Hub de configs' },
+  { id: 'builder',   view: 'builder',    label: 'Builder de regra' },
+  { id: 'simular',   view: 'simular',    label: 'Simular' },
+  { id: 'ativa',     view: 'ativa',      label: 'Regra ativa' },
+];
+
+const phaseMeta = {
+  inicio:  { tag: '<b>Fase 1 · Acessar Configurações</b> · click no item <b>Configurações</b> na sidebar.', ctas: '', nextLabel: 'simular click →' },
+  hub:     { tag: '<b>Fase 2 · Hub</b> · 3 regras criadas · click em <b>+ Criar regra</b> para abrir o builder.', ctas: '', nextLabel: 'abrir builder →' },
+  builder: { tag: '<b>Fase 3 · Builder</b> · 1 condição → 1 ação · simule antes de salvar.', ctas: '<button class="btn ghost">cancelar</button>', nextLabel: 'Simular →' },
+  simular: { tag: '<b>Fase 4 · Simulação</b> · regra validada contra histórico · zero conflitos.', ctas: '<button class="btn ghost">re-simular</button>', nextLabel: 'Salvar regra ✓' },
+  ativa:   { tag: '<b>Fase 5 · Regra ativa</b> · 47 pedidos/mês automatizados · ciclo encerrado.', ctas: '', nextHide: true },
+};
+
+const breadcrumbMap = {
+  inicio: ['Início'],
+  'config-hub': ['Logística', 'Configurações'],
+  builder: ['Logística', 'Configurações', 'Regras', 'Criar'],
+  simular: ['Logística', 'Configurações', 'Regras', 'Criar · Simulação'],
+  ativa: ['Logística', 'Configurações'],
+  'dashboard-uso': ['Logística', 'Uso & cobrança'],
+  'fila-pedidos': ['Logística', 'Pedidos'],
+  'painel-coletas': ['Logística', 'Coletas'],
+  'fila-devolucoes': ['Logística', 'Devoluções'],
+  faturas: ['Planos e preços', 'Faturas'],
+  catalogo: ['Catálogo'], vitrine: ['Vitrine'], cadastro: ['Cadastro'],
+  enderecos: ['Logística', 'Endereços'], embalagens: ['Logística', 'Embalagens'],
+  carriers: ['Logística', 'Carriers'],
+  modulos: ['Planos e preços', 'Módulos'], subscricoes: ['Planos e preços', 'Subscrições'],
+  suporte: ['Suporte'], 'config-geral': ['Configurações'],
+};
+
+let state = { phaseIndex: 0, inJourney: true };
+
+function renderStepper() {
+  const wrap = document.getElementById('journey-stepper');
+  wrap.innerHTML = '';
+  journeyPhases.forEach((p, i) => {
+    let cls = '';
+    if (i === journeyPhases.length - 1 && state.phaseIndex >= journeyPhases.length - 1) cls = 'final';
+    else if (i < state.phaseIndex) cls = 'done';
+    else if (i === state.phaseIndex) cls = 'current';
+    const el = document.createElement('div');
+    el.className = `step ${cls}`;
+    el.innerHTML = `<div class="num">${i + 1}</div><div class="lbl">${p.label}</div>`;
+    el.onclick = () => goToPhase(i);
+    wrap.appendChild(el);
+  });
+  document.getElementById('step-current').textContent = state.phaseIndex + 1;
+}
+
+function renderJourneyNav() {
+  const back = document.getElementById('btn-back');
+  const next = document.getElementById('btn-next');
+  back.disabled = state.phaseIndex === 0;
+  const phase = journeyPhases[state.phaseIndex];
+  const meta = phaseMeta[phase.id];
+  document.getElementById('phase-tag').innerHTML = meta ? '↳ ' + meta.tag : '';
+  document.getElementById('phase-ctas').innerHTML = meta && meta.ctas ? meta.ctas : '';
+  if (meta && meta.nextHide) {
+    next.style.display = 'none';
+  } else {
+    next.style.display = '';
+    next.textContent = meta && meta.nextLabel ? meta.nextLabel : 'avançar →';
+  }
+}
+
+function goToPhase(index) {
+  if (index < 0 || index >= journeyPhases.length) return;
+  state.phaseIndex = index;
+  state.inJourney = true;
+  const phase = journeyPhases[index];
+  showView(phase.view);
+  renderStepper();
+  renderJourneyNav();
+  renderBreadcrumb(breadcrumbMap[phase.view]);
+
+  // Sidebar active: Configurações (exceto na Fase 1 onde estamos no Início)
+  if (phase.id === 'inicio') {
+    setSidebarActive('inicio');
+    document.getElementById('nav-config').classList.add('pulse');
+  } else {
+    setSidebarActive('config-hub');
+    document.getElementById('nav-config').classList.remove('pulse');
+  }
+
+  // Toast de confirmação quando chega na Fase 5
+  if (phase.id === 'ativa') {
+    const tc = document.getElementById('toast-confirm');
+    tc.classList.add('show');
+    setTimeout(() => tc.classList.remove('show'), 4000);
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goToNextPhase() { goToPhase(state.phaseIndex + 1); }
+function goToPrevPhase() { goToPhase(state.phaseIndex - 1); }
+
+function goToView(viewId) {
+  const journeyViews = ['inicio', 'config-hub', 'builder', 'simular', 'ativa'];
+  state.inJourney = journeyViews.includes(viewId);
+  showView(viewId);
+
+  if (viewId === 'config-hub') {
+    setSidebarActive('config-hub');
+    document.getElementById('nav-config').classList.remove('pulse');
+  } else if (state.inJourney) {
+    setSidebarActive(viewId === 'inicio' ? 'inicio' : 'config-hub');
+  } else {
+    setSidebarActive(viewId);
+    document.getElementById('nav-config').classList.remove('pulse');
+  }
+
+  renderBreadcrumb(breadcrumbMap[viewId]);
+  document.getElementById('journey-stepper-wrap').style.display = state.inJourney ? 'block' : 'none';
+  document.getElementById('journey-nav-bar').style.display = state.inJourney ? 'flex' : 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showView(viewId) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const el = document.getElementById('view-' + viewId);
+  if (el) el.classList.add('active');
+  document.getElementById('journey-stepper-wrap').style.display = state.inJourney ? 'block' : 'none';
+  document.getElementById('journey-nav-bar').style.display = state.inJourney ? 'flex' : 'none';
+}
+
+function setSidebarActive(viewId) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const sb = document.querySelector(`.nav-item[data-view="${viewId}"]`);
+  if (sb) sb.classList.add('active');
+}
+
+function renderBreadcrumb(crumb) {
+  if (!crumb) return;
+  document.getElementById('crumb').innerHTML = crumb.map((c, i) => i === crumb.length - 1 ? `<b>${c}</b>` : c).join('<span class="sep">›</span>');
+}
+
+function showSimResult() {
+  // Atalho — abre fase 4 (simulação)
+  goToNextPhase();
+}
+
+document.querySelectorAll('.nav-item[data-view]').forEach(item => {
+  item.addEventListener('click', (e) => {
+    // Se está na Fase 1 (Início) e clica em Configurações, avança journey
+    if (state.phaseIndex === 0 && item.dataset.view === 'config-hub') {
+      goToNextPhase();
+    } else {
+      goToView(item.dataset.view);
+    }
+  });
+});
+
+function hideToast() { document.getElementById('toast').style.display = 'none'; }
+setTimeout(hideToast, 14000);
+
+renderStepper();
+renderJourneyNav();
+document.getElementById('nav-config').classList.add('pulse');
+</script>
+
+</body>
+</html>

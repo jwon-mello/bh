@@ -1,0 +1,1018 @@
+<!doctype html>
+<html lang="pt-pt">
+<head>
+<meta charset="utf-8">
+<title>BIG logistics · Dashboard operacional · Pool BH coleta unificada · Happy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a; --ink-soft: #3d3d3d; --ink-light: #8a8a8a;
+  --paper: #fcfcfa; --yellow: #fff2a8; --yellow-dim: #ffe771; --yellow-edge: #e6c732;
+  --red-soft: #ffd0c9; --green-soft: #d1f0d8;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: 'Patrick Hand', cursive;
+  background: var(--paper);
+  background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.02) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--ink);
+  padding: 40px 60px 80px;
+  line-height: 1.45;
+}
+h1, h2, h3, .section-title, .var-label, .section-num { font-family: 'Caveat', cursive; letter-spacing: 0.4px; }
+.title-block { border-bottom: 2px solid var(--ink); padding-bottom: 18px; margin-bottom: 28px; }
+.title-block h1 { font-size: 44px; font-weight: 700; margin: 0; }
+.title-block .meta { color: var(--ink-light); font-size: 15px; margin-top: 6px; display: flex; flex-wrap: wrap; gap: 18px; }
+.title-block .meta b { color: var(--ink-soft); font-weight: 400; font-family: 'Patrick Hand', cursive; }
+.hyp-badge {
+  display: inline-block; background: var(--yellow); border: 1.5px solid var(--ink);
+  padding: 3px 10px; border-radius: 100px; font-size: 16px; font-family: 'Caveat', cursive;
+  transform: rotate(-1deg); margin-left: 8px;
+}
+.floor-nav { display: flex; gap: 6px 14px; flex-wrap: wrap; padding: 14px 20px; margin-bottom: 48px; border: 1.8px dashed var(--ink); border-radius: 6px; }
+.floor-nav a { color: var(--ink); text-decoration: none; font-size: 17px; padding: 2px 8px; border-radius: 3px; border-bottom: 2px solid transparent; }
+.floor-nav a:hover { background: var(--yellow); border-bottom-color: var(--ink); }
+.section { margin-bottom: 68px; scroll-margin-top: 20px; }
+.section-head { display: flex; align-items: flex-end; gap: 18px; margin-bottom: 10px; flex-wrap: wrap; }
+.section-num { font-size: 84px; line-height: 0.9; font-weight: 700; color: var(--ink); }
+.section-title { font-size: 34px; font-weight: 700; margin: 0; }
+.section-sentiment {
+  font-family: 'Patrick Hand', cursive; font-size: 13px; padding: 3px 10px;
+  border: 1.5px solid var(--ink); border-radius: 100px;
+  text-transform: lowercase; transform: rotate(-1.5deg);
+}
+.section-sentiment.pos { background: var(--yellow); }
+.section-sentiment.neutra { background: transparent; }
+.section-sentiment.neg { background: var(--red-soft); }
+.section-desc { font-size: 17px; color: var(--ink-soft); margin: 6px 0 0 102px; max-width: 820px; }
+.highlight { background: linear-gradient(180deg, transparent 55%, var(--yellow) 55%, var(--yellow) 92%, transparent 92%); padding: 0 2px; }
+.vars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 28px; }
+.var-card {
+  position: relative; border: 1.8px solid var(--ink); border-radius: 6px;
+  padding: 26px 18px 18px 18px; background: var(--paper); box-shadow: 4px 4px 0 var(--ink);
+}
+.var-card::before {
+  content: ""; position: absolute; top: -10px; left: 22px;
+  width: 56px; height: 20px; background: var(--yellow);
+  border: 1px solid var(--yellow-edge); transform: rotate(-3deg); opacity: 0.9;
+}
+.var-card.chosen { box-shadow: 4px 4px 0 var(--ink), inset 0 0 0 2.5px var(--green-soft); }
+.chosen-mark {
+  position: absolute; top: -12px; right: 18px;
+  background: var(--green-soft); border: 1.5px solid var(--ink);
+  padding: 2px 12px; border-radius: 100px;
+  font-family: 'Caveat', cursive; font-size: 16px; font-weight: 700;
+  transform: rotate(2deg); z-index: 1;
+}
+.var-label { font-size: 28px; font-weight: 700; display: flex; align-items: baseline; gap: 10px; margin: 0 0 2px 0; }
+.var-tag { font-family: 'Patrick Hand', cursive; font-size: 13px; padding: 1px 10px; border: 1.5px solid var(--ink); border-radius: 100px; background: var(--paper); }
+.var-desc { font-size: 15px; color: var(--ink-soft); margin-bottom: 14px; min-height: 42px; }
+.sk-frame {
+  border: 1.8px solid var(--ink); border-radius: 4px; padding: 10px; background: var(--paper);
+  display: flex; flex-direction: column; gap: 7px; min-height: 360px; font-size: 13px;
+}
+.sk-row { display: flex; gap: 6px; align-items: center; }
+.sk-col { display: flex; flex-direction: column; gap: 5px; }
+.sk-grow { flex: 1; }
+.sk-box { border: 1.5px solid var(--ink); border-radius: 3px; padding: 5px 8px; font-family: 'Patrick Hand', cursive; background: var(--paper); font-size: 12.5px; }
+.sk-box.dashed { border-style: dashed; }
+.sk-box.fill { background: var(--yellow); }
+.sk-box.fillsoft { background: #f0efe9; }
+.sk-box.tiny { padding: 3px 6px; font-size: 11.5px; }
+.sk-box.greenish { background: var(--green-soft); }
+.sk-box.reddish { background: var(--red-soft); }
+.sk-box small { color: var(--ink-light); font-size: 10.5px; display: block; line-height: 1.2; }
+.sk-btn { display: inline-block; border: 1.5px solid var(--ink); border-radius: 100px; padding: 3px 12px; font-family: 'Patrick Hand', cursive; font-size: 12px; background: var(--paper); box-shadow: 2px 2px 0 var(--ink); }
+.sk-btn.primary { background: var(--yellow); }
+.sk-btn.ghost { border-style: dashed; box-shadow: none; }
+.sk-chip { display: inline-block; border: 1.2px solid var(--ink); border-radius: 100px; padding: 1px 7px; font-size: 10.5px; background: var(--paper); white-space: nowrap; }
+.sk-chip.active { background: var(--yellow); }
+.sk-chip.green { background: var(--green-soft); }
+.sk-chip.red { background: var(--red-soft); }
+.sk-chip.muted { background: #f0efe9; color: var(--ink-soft); }
+.sk-line { height: 1.5px; background: var(--ink); margin: 3px 0; }
+.sk-line.dash { background: none; border-top: 1.5px dashed var(--ink); height: 0; }
+
+/* Card primitives */
+.sk-card {
+  border: 1.5px solid var(--ink); border-radius: 4px;
+  padding: 7px 8px; background: var(--paper);
+  display: flex; flex-direction: column; gap: 4px; font-size: 11.5px;
+}
+.sk-card .ct { font-weight: 700; font-size: 12px; }
+.sk-card .desc { color: var(--ink-light); font-size: 10.5px; line-height: 1.25; }
+.sk-card .big { font-size: 24px; font-family: 'Caveat', cursive; font-weight: 700; }
+.sk-card.warn { background: #fff7ee; }
+.sk-card.danger { background: var(--red-soft); }
+.sk-card.success { background: var(--green-soft); }
+.sk-card.muted { background: #f5f4ee; }
+
+/* Donut placeholder */
+.sk-donut {
+  width: 64px; height: 64px; border-radius: 100px;
+  border: 8px solid var(--ink); position: relative;
+  background: conic-gradient(var(--yellow) 0deg 144deg, #f0efe9 144deg 252deg, var(--paper) 252deg 360deg);
+  margin: 0 auto;
+}
+.sk-donut::after {
+  content: ""; position: absolute; inset: 6px;
+  background: var(--paper); border-radius: 100px;
+}
+.sk-donut.alt { background: conic-gradient(var(--yellow) 0deg 216deg, #f0efe9 216deg 360deg); }
+.sk-donut.tri { background: conic-gradient(var(--yellow) 0deg 234deg, #f0efe9 234deg 360deg); }
+
+/* Sparkline */
+.sk-spark {
+  height: 24px; flex: 1; position: relative;
+  background:
+    linear-gradient(90deg, transparent 0 5%, var(--ink) 5% 6%, transparent 6% 100%),
+    linear-gradient(90deg, transparent 0 25%, var(--ink) 25% 26%, transparent 26% 100%),
+    linear-gradient(90deg, transparent 0 45%, var(--ink) 45% 46%, transparent 46% 100%),
+    linear-gradient(90deg, transparent 0 65%, var(--ink) 65% 66%, transparent 66% 100%),
+    linear-gradient(90deg, transparent 0 85%, var(--ink) 85% 86%, transparent 86% 100%);
+  border-bottom: 1px solid var(--ink-light);
+}
+
+/* Bar chart */
+.sk-bars { display: flex; align-items: flex-end; gap: 3px; height: 40px; }
+.sk-bars .b { flex: 1; background: var(--ink); border-radius: 2px 2px 0 0; }
+.sk-bars .b.muted { background: var(--ink-light); }
+.sk-bars .b.proj { background: repeating-linear-gradient(45deg, var(--ink-light) 0 3px, transparent 3px 6px); border: 1px dashed var(--ink); }
+
+/* Funnel */
+.sk-funnel { display: flex; align-items: stretch; gap: 2px; }
+.sk-funnel .fbar {
+  flex: 1; border: 1.2px solid var(--ink); padding: 5px 4px;
+  font-size: 10px; text-align: center; background: var(--paper);
+  display: flex; flex-direction: column; gap: 1px; min-height: 50px;
+}
+.sk-funnel .fbar .num { font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700; line-height: 1; }
+.sk-funnel .fbar.warn { background: #fff7ee; }
+.sk-funnel .fbar.curr { background: var(--yellow); }
+
+/* Heatmap */
+.sk-heatmap { display: grid; grid-template-columns: 60px repeat(4, 1fr); gap: 2px; font-size: 10px; }
+.sk-heatmap .hm-h { padding: 3px; font-weight: 700; text-align: center; }
+.sk-heatmap .hm-row-l { padding: 3px; font-weight: 700; }
+.sk-heatmap .hm-cell { padding: 4px; border: 1px solid var(--ink); text-align: center; }
+.sk-heatmap .hm-cell.g { background: var(--green-soft); }
+.sk-heatmap .hm-cell.y { background: var(--yellow); }
+.sk-heatmap .hm-cell.r { background: var(--red-soft); }
+.sk-heatmap .hm-cell.muted { background: #f0efe9; color: var(--ink-light); }
+
+/* Tabs */
+.sk-tabs { display: flex; gap: 0; border-bottom: 1.5px solid var(--ink); margin-bottom: 6px; }
+.sk-tabs .t {
+  padding: 4px 10px; font-size: 11px; border: 1.2px solid var(--ink);
+  border-bottom: none; border-radius: 4px 4px 0 0; background: var(--paper);
+  margin-bottom: -1.5px; font-family: 'Patrick Hand', cursive;
+}
+.sk-tabs .t.active { background: var(--yellow); font-weight: 700; }
+
+/* Sidebar layout */
+.sk-split { display: flex; gap: 6px; flex: 1; min-height: 0; }
+.sk-split .side { width: 100px; border-right: 1.5px dashed var(--ink); padding-right: 6px; display: flex; flex-direction: column; gap: 4px; }
+.sk-split .main { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+
+/* Timeline */
+.sk-timeline { display: flex; flex-direction: column; gap: 4px; }
+.sk-timeline .tl-item {
+  display: flex; gap: 6px; align-items: flex-start;
+  border-left: 2px solid var(--ink); padding: 2px 0 4px 8px; font-size: 11px;
+}
+.sk-timeline .tl-item .tl-time { font-family: 'Caveat', cursive; font-weight: 700; min-width: 38px; }
+
+.annotate {
+  font-family: 'Caveat', cursive; font-size: 16px; color: var(--ink-soft);
+  font-style: italic; margin-top: 14px; padding-left: 10px;
+  border-left: 2px solid var(--ink); transform: rotate(-0.3deg);
+}
+.overview-card {
+  border: 1.8px dashed var(--ink); border-radius: 6px;
+  padding: 18px 22px; margin-top: 4px; background: var(--paper);
+  display: flex; gap: 20px; align-items: flex-start;
+}
+.overview-card .ov-body { flex: 1; }
+.overview-card .ov-body p { margin: 6px 0; font-size: 15px; }
+.overview-card .ov-meta {
+  font-family: 'Caveat', cursive; font-size: 18px; color: var(--ink-soft);
+  font-style: italic; padding-left: 14px; border-left: 2px solid var(--ink);
+  min-width: 220px; max-width: 260px;
+}
+.footer-note {
+  margin-top: 68px; padding-top: 20px; border-top: 2px solid var(--ink);
+  font-family: 'Caveat', cursive; font-size: 20px; color: var(--ink-soft);
+}
+.footer-note b { font-weight: 700; color: var(--ink); }
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <h1>BIG logistics · Dashboard operacional <span class="hyp-badge">Pool BH coleta unificada</span></h1>
+  <div class="meta">
+    <span><b>caminho:</b> seller-dashboard-uso-cobranca-happy</span>
+    <span><b>persona:</b> Seller PF/PJ ativo, rotina diária de comando central</span>
+    <span><b>canal:</b> desktop</span>
+    <span><b>localização:</b> BH > Logística > Uso & cobrança</span>
+    <span><b>fases:</b> 6 (filtro global + 5 painéis)</span>
+  </div>
+</div>
+
+<nav class="floor-nav">
+  <a href="#f1">1 · Filtro global</a>
+  <a href="#f2">2 · Ações pendentes</a>
+  <a href="#f3">3 · Operação corrente</a>
+  <a href="#f4">4 · Saúde</a>
+  <a href="#f5">5 · Uso & cobrança</a>
+  <a href="#f6">6 · Tendências</a>
+</nav>
+
+<div class="overview-card" style="background:#f0faf2; border-color:var(--ink)">
+  <div class="ov-body">
+    <p><b>✓ Combinação validada em 2026-05-08:</b> <b>1B · 2C · 3A · 4B · 5B+filtro · 6C</b>. Variações marcadas com <span style="background:var(--green-soft); padding:1px 6px; border:1.2px solid var(--ink); border-radius:100px; font-family:'Caveat',cursive; font-size:14px">✓ escolhida</span> abaixo.</p>
+    <p>Adição em 5B: <b>filtro de data</b> no topo da seção (ciclo atual default + opções 30d / 90d / ciclo anterior / personalizado). Projeção só faz sentido em "ciclo atual"; outros períodos exibem dado fechado.</p>
+    <p>As demais variações ficam preservadas como referência da exploração — leitura top-down compara escolhas. Seções 4 e 6 são <b>should-have</b> (dependem de telemetria), demais são must-have.</p>
+  </div>
+  <div class="ov-meta">↳ próximo passo: outro caminho (estado vazio · pico · falha) ou outro wireframe da onda 1 (Setup, Pedidos).</div>
+</div>
+
+<!-- FASE 1 — Filtro global -->
+<section class="section" id="f1">
+  <div class="section-head">
+    <span class="section-num">1</span>
+    <h2 class="section-title">Filtro global de origem (header)</h2>
+    <span class="section-sentiment neutra">neutra</span>
+  </div>
+  <p class="section-desc">Para sellers <span class="highlight">multi-origem</span>, header expõe a escolha entre visão agregada e por origem específica. Oculto para sellers de 1 origem. Persiste em LocalStorage. Define o contexto das 5 seções abaixo.</p>
+
+  <div class="vars">
+
+    <!-- 1.A -->
+    <div class="var-card">
+      <div class="var-label">Dropdown clássico <span class="var-tag">A</span></div>
+      <div class="var-desc">Header com breadcrumb + dropdown único no canto direito. Padrão de admin/dashboard tradicional.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">BH</div>
+          <span style="font-size:11px; color:var(--ink-light)">› Logística › Uso & cobrança</span>
+          <div class="sk-grow"></div>
+          <span class="sk-box tiny fill">Todas as origens (3) ▾</span>
+        </div>
+        <div class="sk-line"></div>
+        <div style="font-family:'Caveat',cursive; font-size:18px; color:var(--ink-light); text-align:center; padding: 30px 0">
+          [ conteúdo das 5 seções ]
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="font-size:10.5px; color:var(--ink-light); text-align:center">atualizado há 12s</div>
+      </div>
+      <div class="annotate">↳ padrão familiar. Mas escondido — sellers iniciantes podem nunca descobrir o filtro existe.</div>
+    </div>
+
+    <!-- 1.B -->
+    <div class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label">Tabs horizontais <span class="var-tag">B</span></div>
+      <div class="var-desc">Cada origem vira uma tab persistente no header. "Todas" é a primeira tab e default. Sempre visível, alternar com 1 click.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">BH</div>
+          <span style="font-size:11px; color:var(--ink-light)">› Logística › Uso & cobrança</span>
+        </div>
+        <div class="sk-tabs" style="margin-top:6px">
+          <div class="t active">Todas (3)</div>
+          <div class="t">Lisboa</div>
+          <div class="t">Porto</div>
+          <div class="t">Coimbra</div>
+        </div>
+        <div style="font-family:'Caveat',cursive; font-size:18px; color:var(--ink-light); text-align:center; padding: 30px 0">
+          [ conteúdo recalcula por tab ]
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="font-size:10.5px; color:var(--ink-light); text-align:center">atualizado há 12s</div>
+      </div>
+      <div class="annotate">↳ sempre visível. Quebra com 6+ origens (overflow horizontal); ocupa altura útil do dashboard.</div>
+    </div>
+
+    <!-- 1.C -->
+    <div class="var-card">
+      <div class="var-label">Sidebar lateral <span class="var-tag">C</span></div>
+      <div class="var-desc">Coluna fixa à esquerda com lista de origens + mini-saúde (ações pendentes por origem) ao lado de cada nome.</div>
+      <div class="sk-frame">
+        <div class="sk-split" style="flex:1">
+          <div class="side">
+            <div style="font-family:'Caveat',cursive; font-weight:700">Origens</div>
+            <div class="sk-card warn" style="padding:5px 6px">
+              <div class="ct">Todas (3)</div>
+              <div class="desc">7 ações</div>
+            </div>
+            <div class="sk-card" style="padding:5px 6px">
+              <div class="ct">Lisboa</div>
+              <div class="desc">3 ações</div>
+            </div>
+            <div class="sk-card danger" style="padding:5px 6px">
+              <div class="ct">Porto ⚠</div>
+              <div class="desc">4 ações</div>
+            </div>
+            <div class="sk-card success" style="padding:5px 6px">
+              <div class="ct">Coimbra</div>
+              <div class="desc">limpo</div>
+            </div>
+          </div>
+          <div class="main">
+            <div style="font-family:'Caveat',cursive; font-size:16px; color:var(--ink-light); text-align:center; padding: 60px 0">
+              [ 5 seções ]
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">↳ rica em metadados — vê problema isolado por origem antes de filtrar. Mas pesa em viewport pequeno e quebra grid das 5 seções.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FASE 2 — Ações pendentes -->
+<section class="section" id="f2">
+  <div class="section-head">
+    <span class="section-num">2</span>
+    <h2 class="section-title">Ações pendentes</h2>
+    <span class="section-sentiment neg">negativa</span>
+  </div>
+  <p class="section-desc">O que <span class="highlight">precisa de ação do seller agora</span>. 4 categorias: SLA em risco, RMAs, cancelados pendentes de retirada, falhas de integração. Estado vazio = "dia limpo" (copy positiva).</p>
+
+  <div class="vars">
+
+    <!-- 2.A -->
+    <div class="var-card">
+      <div class="var-label">4 cards lado-a-lado <span class="var-tag">A</span></div>
+      <div class="var-desc">1 card por categoria, lado-a-lado. Cada um: count grande + ícone + top 5 + "ver todos". Comparação visual das prioridades.</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="gap:5px; align-items:stretch">
+          <div class="sk-card danger" style="flex:1">
+            <span class="sk-chip red" style="align-self:flex-start">SLA</span>
+            <div class="big">3</div>
+            <div class="desc">⚠ Amazon DE · 4h</div>
+            <div class="desc">⚠ bol · 6h</div>
+            <div class="desc">⚠ big.pt · 8h</div>
+            <div class="desc" style="margin-top:auto"><u>ver todos →</u></div>
+          </div>
+          <div class="sk-card warn" style="flex:1">
+            <span class="sk-chip" style="align-self:flex-start">RMA</span>
+            <div class="big">1</div>
+            <div class="desc">aguarda inspeção</div>
+            <div class="desc" style="margin-top:auto"><u>ver →</u></div>
+          </div>
+          <div class="sk-card warn" style="flex:1">
+            <span class="sk-chip" style="align-self:flex-start">CANC</span>
+            <div class="big">2</div>
+            <div class="desc">retirar pacote</div>
+            <div class="desc">zona coleta</div>
+            <div class="desc" style="margin-top:auto"><u>ver →</u></div>
+          </div>
+          <div class="sk-card" style="flex:1">
+            <span class="sk-chip muted" style="align-self:flex-start">INT</span>
+            <div class="big">0</div>
+            <div class="desc" style="color:var(--ink-light)">tudo ok</div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">↳ comparação lateral fácil. Em viewport pequeno comprime; em pico (15+ items por card) corta lista.</div>
+    </div>
+
+    <!-- 2.B -->
+    <div class="var-card">
+      <div class="var-label">Lista vertical agrupada <span class="var-tag">B</span></div>
+      <div class="var-desc">Lista única, cada categoria é um header expansível. Densidade alta, boa para volume.</div>
+      <div class="sk-frame">
+        <div class="sk-card danger" style="padding:6px 8px">
+          <div class="sk-row">
+            <span class="sk-chip red">SLA em risco · 3</span>
+            <div class="sk-grow"></div>
+            <span style="font-size:14px">▾</span>
+          </div>
+          <div class="desc" style="border-top:1px dashed var(--ink); padding-top:4px">⚠ #4521 · Amazon DE · vence 4h</div>
+          <div class="desc">⚠ #4517 · bol · vence 6h</div>
+          <div class="desc">⚠ #4502 · big.pt · vence 8h</div>
+        </div>
+        <div class="sk-card warn" style="padding:6px 8px">
+          <div class="sk-row">
+            <span class="sk-chip">RMAs aguardando · 1</span>
+            <div class="sk-grow"></div>
+            <span style="font-size:14px">▾</span>
+          </div>
+          <div class="desc" style="border-top:1px dashed var(--ink); padding-top:4px">#R-872 · aguarda inspeção</div>
+        </div>
+        <div class="sk-card" style="padding:6px 8px">
+          <div class="sk-row">
+            <span class="sk-chip">Cancelados pendentes · 2</span>
+            <div class="sk-grow"></div>
+            <span style="font-size:14px">▸</span>
+          </div>
+        </div>
+        <div class="sk-card muted" style="padding:6px 8px">
+          <div class="sk-row">
+            <span class="sk-chip muted">Falhas de integração · 0</span>
+            <div class="sk-grow"></div>
+            <span style="font-size:14px; color:var(--ink-light)">▸</span>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">↳ densidade alta, escala bem. Mas exige scroll quando categorias estão expandidas.</div>
+    </div>
+
+    <!-- 2.C -->
+    <div class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label">Tabs com contadores <span class="var-tag">C</span></div>
+      <div class="var-desc">Tabs no topo da seção mostram count por categoria. Tab ativa exibe lista detalhada da categoria. Foco em uma de cada vez.</div>
+      <div class="sk-frame">
+        <div class="sk-tabs">
+          <div class="t active">SLA (3)</div>
+          <div class="t">RMA (1)</div>
+          <div class="t">Cancel (2)</div>
+          <div class="t">Falhas (0)</div>
+        </div>
+        <div class="sk-card danger">
+          <div class="ct">#4521 · Amazon DE</div>
+          <div class="desc">vence em 4h · DPD</div>
+          <div class="sk-row" style="margin-top:3px">
+            <span class="sk-btn primary" style="padding:1px 8px; font-size:10px">Resolver</span>
+          </div>
+        </div>
+        <div class="sk-card danger">
+          <div class="ct">#4517 · bol.com</div>
+          <div class="desc">vence em 6h · GLS</div>
+        </div>
+        <div class="sk-card danger">
+          <div class="ct">#4502 · big.pt</div>
+          <div class="desc">vence em 8h · DPD</div>
+        </div>
+      </div>
+      <div class="annotate">↳ foco em 1 categoria por vez. Mas esconde outras — risco de seller esquecer RMA enquanto resolve SLA.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FASE 3 — Operação corrente -->
+<section class="section" id="f3">
+  <div class="section-head">
+    <span class="section-num">3</span>
+    <h2 class="section-title">Operação corrente</h2>
+    <span class="section-sentiment neutra">neutra</span>
+  </div>
+  <p class="section-desc">Estado <span class="highlight">do que está rodando agora</span> sem exigir ação imediata: mini-funil de pedidos por status, próxima coleta agendada, devoluções em trânsito reverso.</p>
+
+  <div class="vars">
+
+    <!-- 3.A -->
+    <div class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label">Funil + cards laterais <span class="var-tag">A</span></div>
+      <div class="var-desc">Funil horizontal de 6 barras (statuses do pedido) + card destacado "próxima coleta" + lista compacta de devoluções. 3 áreas separadas.</div>
+      <div class="sk-frame">
+        <div style="font-family:'Caveat',cursive; font-size:14px; font-weight:700">Pedidos · funil</div>
+        <div class="sk-funnel">
+          <div class="fbar"><div class="num">5</div>criado</div>
+          <div class="fbar"><div class="num">12</div>roteado</div>
+          <div class="fbar curr"><div class="num">8</div>etiquet.</div>
+          <div class="fbar warn"><div class="num">15</div>aguarda</div>
+          <div class="fbar"><div class="num">47</div>trânsito</div>
+          <div class="fbar"><div class="num">23</div>entreg.</div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="sk-card" style="background:#fff7ee">
+          <div class="sk-row">
+            <span class="sk-chip">Próxima coleta</span>
+            <span class="sk-chip muted">DPD</span>
+          </div>
+          <div class="ct">Hoje · 14h–17h</div>
+          <div class="desc">15 pacotes · Depósito Lisboa</div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="font-size:11px; font-weight:700">Devoluções em retorno (2)</div>
+        <div class="desc">#R-865 · DE → PT · ETA amanhã</div>
+        <div class="desc">#R-871 · ES → PT · ETA hoje 18h</div>
+      </div>
+      <div class="annotate">↳ leitura clara em 3 áreas, hierarquia natural. Setup de tela mais comum e previsível.</div>
+    </div>
+
+    <!-- 3.B -->
+    <div class="var-card">
+      <div class="var-label">Grid 2×2 <span class="var-tag">B</span></div>
+      <div class="var-desc">4 quadrantes: funil, próxima coleta, devoluções, micro-métricas extras (volume hoje, tempo médio entre fases).</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="align-items:stretch; gap:5px">
+          <div class="sk-card" style="flex:1">
+            <div class="ct">Pedidos · 110</div>
+            <div class="sk-funnel" style="margin-top:3px">
+              <div class="fbar" style="min-height:30px"><div class="num" style="font-size:14px">5</div></div>
+              <div class="fbar" style="min-height:30px"><div class="num" style="font-size:14px">12</div></div>
+              <div class="fbar curr" style="min-height:30px"><div class="num" style="font-size:14px">8</div></div>
+              <div class="fbar warn" style="min-height:30px"><div class="num" style="font-size:14px">15</div></div>
+              <div class="fbar" style="min-height:30px"><div class="num" style="font-size:14px">47</div></div>
+              <div class="fbar" style="min-height:30px"><div class="num" style="font-size:14px">23</div></div>
+            </div>
+          </div>
+          <div class="sk-card warn" style="flex:1">
+            <div class="ct">Próxima coleta</div>
+            <div class="big" style="font-size:18px">14h–17h</div>
+            <div class="desc">15 pacotes · DPD · Lisboa</div>
+          </div>
+        </div>
+        <div class="sk-row" style="align-items:stretch; gap:5px">
+          <div class="sk-card" style="flex:1">
+            <div class="ct">Devoluções · 2</div>
+            <div class="desc">#R-865 ETA amanhã</div>
+            <div class="desc">#R-871 ETA hoje 18h</div>
+          </div>
+          <div class="sk-card" style="flex:1">
+            <div class="ct">Hoje</div>
+            <div class="desc">Vol: 23 entregues</div>
+            <div class="desc">Médio etiq→coleta: 1h</div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">↳ densidade alta, mais informação por viewport. Mas cada quadrante encolhe; funil perde leitura clara.</div>
+    </div>
+
+    <!-- 3.C -->
+    <div class="var-card">
+      <div class="var-label">Timeline vertical <span class="var-tag">C</span></div>
+      <div class="var-desc">Lista cronológica dos pedidos do dia, ordem por hora. Cada item: hora + tracking + status em chip.</div>
+      <div class="sk-frame">
+        <div style="font-family:'Caveat',cursive; font-size:14px; font-weight:700">Hoje · cronologia</div>
+        <div class="sk-timeline">
+          <div class="tl-item">
+            <span class="tl-time">15:42</span>
+            <div>
+              <div style="font-weight:700">#4521 entregue</div>
+              <span class="sk-chip green">DPD · Berlim</span>
+            </div>
+          </div>
+          <div class="tl-item">
+            <span class="tl-time">14:55</span>
+            <div>
+              <div>#4520 saiu hub</div>
+              <span class="sk-chip">DPD</span>
+            </div>
+          </div>
+          <div class="tl-item">
+            <span class="tl-time">14:08</span>
+            <div>
+              <div>Coleta DPD · 15 pcts</div>
+              <span class="sk-chip muted">Lisboa</span>
+            </div>
+          </div>
+          <div class="tl-item">
+            <span class="tl-time">12:30</span>
+            <div>
+              <div>#4519 etiquetado</div>
+              <span class="sk-chip">GLS · Madrid</span>
+            </div>
+          </div>
+          <div class="tl-item">
+            <span class="tl-time">10:14</span>
+            <div>
+              <div>#4517 cancelado</div>
+              <span class="sk-chip red">retirar</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">↳ visão temporal — boa para investigar "o que aconteceu hoje". Mas perde funil agregado e próxima coleta saliente.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FASE 4 — Saúde -->
+<section class="section" id="f4">
+  <div class="section-head">
+    <span class="section-num">4</span>
+    <h2 class="section-title">Saúde do sistema <span class="sk-chip muted" style="font-size:13px; transform:rotate(-1deg); display:inline-block; margin-left:6px">should-have</span></h2>
+    <span class="section-sentiment neutra">neutra</span>
+  </div>
+  <p class="section-desc">Status técnico das integrações que sustentam a operação. <span class="highlight">Depende de telemetria que pode não existir no v1.5</span> — se não pronta, omitir seção em vez de exibir dado ruim.</p>
+
+  <div class="vars">
+
+    <!-- 4.A -->
+    <div class="var-card">
+      <div class="var-label">Linha de semáforos <span class="var-tag">A</span></div>
+      <div class="var-desc">6 chips em linha (carriers + integrações + imports). Cor + label + último check. Visão rápida.</div>
+      <div class="sk-frame">
+        <div style="font-family:'Caveat',cursive; font-size:14px; font-weight:700">Saúde · 6 sinais</div>
+        <div class="sk-row" style="flex-wrap:wrap; gap:5px">
+          <span class="sk-chip green">● DPD</span>
+          <span class="sk-chip green">● GLS</span>
+          <span class="sk-chip green">● Vitrine</span>
+          <span class="sk-chip green">● big.pt</span>
+        </div>
+        <div class="sk-row" style="flex-wrap:wrap; gap:5px">
+          <span class="sk-chip">● Amazon imp</span>
+          <span class="sk-chip red">● Cdiscount imp</span>
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="desc" style="font-size:11px">⚠ Cdiscount sem import há 14h · <u>ver detalhes</u></div>
+        <div style="font-family:'Caveat',cursive; font-size:14px; font-weight:700; margin-top:4px">Contratos</div>
+        <div class="sk-card warn">
+          <div class="desc">⚠ DPD próprio · fuel surcharge desatualiz. 32d</div>
+          <div class="desc">✓ GLS contrato · válido até 2027</div>
+        </div>
+      </div>
+      <div class="annotate">↳ leitura imediata. Quando algo está amarelo/vermelho exige drill-down — link "ver detalhes" precisa funcionar.</div>
+    </div>
+
+    <!-- 4.B -->
+    <div class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label">Cards com detalhes <span class="var-tag">B</span></div>
+      <div class="var-desc">Grid de cards: cada um com semáforo, último check, mensagem curta e link drill-down. Mais info por sinal.</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="gap:4px">
+          <div class="sk-card success" style="flex:1; padding:5px 6px">
+            <div class="sk-row"><span class="sk-chip green">●</span><span class="ct">DPD</span></div>
+            <div class="desc">check 38s</div>
+          </div>
+          <div class="sk-card success" style="flex:1; padding:5px 6px">
+            <div class="sk-row"><span class="sk-chip green">●</span><span class="ct">GLS</span></div>
+            <div class="desc">check 1m</div>
+          </div>
+          <div class="sk-card success" style="flex:1; padding:5px 6px">
+            <div class="sk-row"><span class="sk-chip green">●</span><span class="ct">Vitrine</span></div>
+            <div class="desc">webhook ok</div>
+          </div>
+        </div>
+        <div class="sk-row" style="gap:4px">
+          <div class="sk-card success" style="flex:1; padding:5px 6px">
+            <div class="sk-row"><span class="sk-chip green">●</span><span class="ct">big.pt</span></div>
+            <div class="desc">webhook ok</div>
+          </div>
+          <div class="sk-card warn" style="flex:1; padding:5px 6px">
+            <div class="sk-row"><span class="sk-chip">●</span><span class="ct">Amazon</span></div>
+            <div class="desc">2h sem import</div>
+          </div>
+          <div class="sk-card danger" style="flex:1; padding:5px 6px">
+            <div class="sk-row"><span class="sk-chip red">●</span><span class="ct">Cdiscount</span></div>
+            <div class="desc">14h ⚠</div>
+          </div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="sk-card warn">
+          <div class="ct">Contrato DPD próprio</div>
+          <div class="desc">⚠ fuel surcharge 32d desatualizado</div>
+          <div class="desc"><u>ver detalhes →</u></div>
+        </div>
+      </div>
+      <div class="annotate">↳ mais info por sinal sem drill-down. Mas ocupa altura — escala pior com 10+ sinais.</div>
+    </div>
+
+    <!-- 4.C -->
+    <div class="var-card">
+      <div class="var-label">Heatmap (carriers × canais) <span class="var-tag">C</span></div>
+      <div class="var-desc">Matriz: linhas = carriers, colunas = canais. Célula colorida pelo status da combinação. Visão sistêmica.</div>
+      <div class="sk-frame">
+        <div style="font-family:'Caveat',cursive; font-size:14px; font-weight:700">Saúde · matriz</div>
+        <div class="sk-heatmap">
+          <div class="hm-h"></div>
+          <div class="hm-h">Vitrine</div>
+          <div class="hm-h">big.pt</div>
+          <div class="hm-h">Amazon</div>
+          <div class="hm-h">Cdisc</div>
+          <div class="hm-row-l">DPD</div>
+          <div class="hm-cell g">●</div>
+          <div class="hm-cell g">●</div>
+          <div class="hm-cell g">●</div>
+          <div class="hm-cell r">●</div>
+          <div class="hm-row-l">GLS</div>
+          <div class="hm-cell g">●</div>
+          <div class="hm-cell g">●</div>
+          <div class="hm-cell y">●</div>
+          <div class="hm-cell muted">—</div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="desc" style="font-size:11px">vermelho = falha · amarelo = degradação · cinza = não usado</div>
+        <div class="sk-card warn">
+          <div class="desc">⚠ DPD × Cdiscount · imports falhando 14h</div>
+        </div>
+      </div>
+      <div class="annotate">↳ sistêmico — vê padrões cruzados (ex: 1 carrier ruim em todos canais). Exige interpretação e legenda; menos imediato.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FASE 5 — Uso & cobrança -->
+<section class="section" id="f5">
+  <div class="section-head">
+    <span class="section-num">5</span>
+    <h2 class="section-title">Uso & cobrança</h2>
+    <span class="section-sentiment pos">positiva</span>
+  </div>
+  <p class="section-desc">Visibilidade do consumo do ciclo + projeção da fatura. <span class="highlight">Substitui widget removido</span> e é a única superfície operacional de cobrança no dia-a-dia. Link bidirecional com Planos e preços > Faturas.</p>
+
+  <div class="vars">
+
+    <!-- 5.A -->
+    <div class="var-card">
+      <div class="var-label">Big number + 3 donuts <span class="var-tag">A</span></div>
+      <div class="var-desc">Hero centrado: contador de etiquetas + valor projetado + comparação. 3 donuts (canal · carrier · origem). Mini-gráfico de etiquetas/dia. CTA fatura.</div>
+      <div class="sk-frame">
+        <div style="text-align:center; margin-top:4px">
+          <div style="font-family:'Caveat',cursive; font-size:32px; font-weight:700; line-height:1">247 etiquetas</div>
+          <div style="font-size:14px; color:var(--ink-soft)">€61.75 + €99 assinatura = <b>€160.75 projetado</b></div>
+          <div style="font-size:11px; color:var(--ink-light); font-style:italic">vs €128 mês ant. (+25%)</div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="sk-row" style="justify-content:space-around">
+          <div style="text-align:center">
+            <div class="sk-donut"></div>
+            <div style="font-size:10px">canal</div>
+          </div>
+          <div style="text-align:center">
+            <div class="sk-donut alt"></div>
+            <div style="font-size:10px">carrier</div>
+          </div>
+          <div style="text-align:center">
+            <div class="sk-donut tri"></div>
+            <div style="font-size:10px">origem</div>
+          </div>
+        </div>
+        <div style="font-size:10px; color:var(--ink-light); text-align:center; font-style:italic">etiquetas/dia (30d)</div>
+        <div class="sk-bars">
+          <div class="b" style="height:30%"></div>
+          <div class="b" style="height:50%"></div>
+          <div class="b" style="height:40%"></div>
+          <div class="b" style="height:65%"></div>
+          <div class="b" style="height:55%"></div>
+          <div class="b" style="height:80%"></div>
+          <div class="b" style="height:70%"></div>
+          <div class="b" style="height:90%"></div>
+          <div class="b proj" style="height:75%"></div>
+          <div class="b proj" style="height:80%"></div>
+        </div>
+        <div class="sk-row" style="justify-content:center; margin-top:auto">
+          <span class="sk-btn primary">Ver fatura corrente →</span>
+        </div>
+      </div>
+      <div class="annotate">↳ hero visualmente forte. Muitos elementos competem pela atenção; donuts ficam pequenos demais com 3 lado a lado.</div>
+    </div>
+
+    <!-- 5.B -->
+    <div class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida + filtro de data</span>
+      <div class="var-label">Split 2 colunas <span class="var-tag">B</span></div>
+      <div class="var-desc">Esquerda: KPIs verticais. Direita: gráfico grande + breakdowns. <b>Filtro de data no topo</b> (default: ciclo atual; opções: 30d, 90d, ciclo anterior, intervalo personalizado).</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="align-items:center; gap:6px">
+          <span class="sk-chip muted">📅</span>
+          <span class="sk-box tiny fill">Ciclo atual · Maio 2026 ▾</span>
+          <span class="sk-chip" style="font-size:10px">30d</span>
+          <span class="sk-chip" style="font-size:10px">90d</span>
+          <span class="sk-chip" style="font-size:10px">ciclo ant.</span>
+          <span class="sk-chip" style="font-size:10px">↔ personaliz.</span>
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="sk-split">
+          <div class="side" style="width:120px">
+            <div style="font-size:10px; color:var(--ink-light)">etiquetas (ciclo)</div>
+            <div class="big" style="font-family:'Caveat',cursive; font-size:28px; font-weight:700; line-height:1">247</div>
+            <div class="sk-line dash"></div>
+            <div style="font-size:10px; color:var(--ink-light)">valor etiquetas</div>
+            <div style="font-family:'Caveat',cursive; font-size:18px; font-weight:700">€61.75</div>
+            <div class="sk-line dash"></div>
+            <div style="font-size:10px; color:var(--ink-light)">+ assinatura</div>
+            <div style="font-size:13px">€99.00</div>
+            <div class="sk-line dash"></div>
+            <div style="font-size:10px; color:var(--ink-light)">projetado</div>
+            <div style="font-family:'Caveat',cursive; font-size:18px; font-weight:700; background:var(--yellow); padding:2px 4px">€160.75</div>
+            <div style="font-size:10px; color:var(--ink-soft); font-style:italic">+25% vs mês ant.</div>
+          </div>
+          <div class="main">
+            <div style="font-size:10px; color:var(--ink-light); font-style:italic">etiquetas/dia · com projeção</div>
+            <div class="sk-bars" style="height:60px">
+              <div class="b" style="height:30%"></div>
+              <div class="b" style="height:50%"></div>
+              <div class="b" style="height:40%"></div>
+              <div class="b" style="height:65%"></div>
+              <div class="b" style="height:55%"></div>
+              <div class="b" style="height:80%"></div>
+              <div class="b" style="height:70%"></div>
+              <div class="b" style="height:90%"></div>
+              <div class="b proj" style="height:75%"></div>
+              <div class="b proj" style="height:80%"></div>
+            </div>
+            <div class="sk-line dash"></div>
+            <div style="font-size:10.5px"><b>canal:</b> Vitrine 40% · big.pt 35% · Amzn 15% · Cdisc 10%</div>
+            <div style="font-size:10.5px"><b>carrier:</b> DPD 60% · GLS 40%</div>
+            <div style="font-size:10.5px"><b>origem:</b> Lisboa 65% · Porto 35%</div>
+          </div>
+        </div>
+        <div class="sk-row" style="justify-content:flex-end; margin-top:auto">
+          <span class="sk-btn primary">Ver fatura →</span>
+        </div>
+      </div>
+      <div class="annotate">↳ técnico, fácil escanear. Filtro de data permite revisão histórica sem sair do dashboard. Projeção só faz sentido em "ciclo atual"; outros períodos exibem dado fechado.</div>
+    </div>
+
+    <!-- 5.C -->
+    <div class="var-card">
+      <div class="var-label">Card único compacto <span class="var-tag">C</span></div>
+      <div class="var-desc">KPIs em linha horizontal num único card. Gráficos e breakdowns escondidos atrás de "expandir". Compacto.</div>
+      <div class="sk-frame">
+        <div class="sk-card warn">
+          <div class="ct">Ciclo · Maio 2026</div>
+          <div class="sk-row" style="gap:14px; margin-top:6px">
+            <div>
+              <div style="font-size:10px; color:var(--ink-light)">etiq.</div>
+              <div style="font-family:'Caveat',cursive; font-size:22px; font-weight:700; line-height:1">247</div>
+            </div>
+            <div>
+              <div style="font-size:10px; color:var(--ink-light)">valor</div>
+              <div style="font-family:'Caveat',cursive; font-size:22px; font-weight:700; line-height:1">€61.75</div>
+            </div>
+            <div>
+              <div style="font-size:10px; color:var(--ink-light)">projeção</div>
+              <div style="font-family:'Caveat',cursive; font-size:22px; font-weight:700; line-height:1; background:var(--yellow); padding:0 4px">€160.75</div>
+            </div>
+            <div>
+              <div style="font-size:10px; color:var(--ink-light)">vs ant.</div>
+              <div style="font-family:'Caveat',cursive; font-size:22px; font-weight:700; line-height:1">+25%</div>
+            </div>
+          </div>
+          <div class="sk-line dash"></div>
+          <div class="sk-row" style="justify-content:space-between; align-items:center">
+            <span class="sk-chip">▸ ver detalhes (gráfico, breakdowns)</span>
+            <span class="sk-btn primary" style="font-size:11px">Ver fatura →</span>
+          </div>
+        </div>
+        <div style="font-family:'Caveat',cursive; font-size:14px; color:var(--ink-light); text-align:center; margin-top:30px; font-style:italic">[ outras seções têm mais espaço ]</div>
+      </div>
+      <div class="annotate">↳ libera viewport para outras seções. Mas exige clique para ver gráfico/breakdowns — fricção para Rotina C (revisão semanal).</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FASE 6 — Tendências -->
+<section class="section" id="f6">
+  <div class="section-head">
+    <span class="section-num">6</span>
+    <h2 class="section-title">Tendências <span class="sk-chip muted" style="font-size:13px; transform:rotate(-1deg); display:inline-block; margin-left:6px">should-have</span></h2>
+    <span class="section-sentiment pos">positiva</span>
+  </div>
+  <p class="section-desc">Visão histórica para análise (Rotina C — revisão semanal). <span class="highlight">Não para ação imediata</span>. Volume mensal, taxa de avaria/devolução, SLA cumprido, top SKUs. Depende de telemetria agregada.</p>
+
+  <div class="vars">
+
+    <!-- 6.A -->
+    <div class="var-card">
+      <div class="var-label">Grid 2×2 de gráficos <span class="var-tag">A</span></div>
+      <div class="var-desc">4 gráficos pequenos lado-a-lado: volume mensal, taxa avaria, taxa devolução, SLA cumprido. Comparação simultânea.</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="align-items:stretch; gap:5px">
+          <div class="sk-card" style="flex:1">
+            <div class="ct">Volume (6m)</div>
+            <div class="sk-bars" style="height:30px">
+              <div class="b" style="height:40%"></div>
+              <div class="b" style="height:55%"></div>
+              <div class="b" style="height:60%"></div>
+              <div class="b" style="height:70%"></div>
+              <div class="b" style="height:80%"></div>
+              <div class="b" style="height:95%"></div>
+            </div>
+            <div class="desc">+ subindo</div>
+          </div>
+          <div class="sk-card" style="flex:1">
+            <div class="ct">Avaria %</div>
+            <div class="sk-spark"></div>
+            <div class="desc">2.1% · estável</div>
+          </div>
+        </div>
+        <div class="sk-row" style="align-items:stretch; gap:5px">
+          <div class="sk-card" style="flex:1">
+            <div class="ct">Devolução %</div>
+            <div class="sk-spark"></div>
+            <div class="desc">5.3% · −0.4 pp</div>
+          </div>
+          <div class="sk-card" style="flex:1">
+            <div class="ct">SLA cumprido</div>
+            <div class="sk-spark"></div>
+            <div class="desc">96% · −1 pp</div>
+          </div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="font-size:11px"><b>Top SKUs (devolução):</b></div>
+        <div class="desc">BHID-441 · 12% (acima média)</div>
+        <div class="desc">BHID-208 · 9%</div>
+      </div>
+      <div class="annotate">↳ comparação simultânea. Cada gráfico fica pequeno; trends sutis ficam imperceptíveis.</div>
+    </div>
+
+    <!-- 6.B -->
+    <div class="var-card">
+      <div class="var-label">Tabs com 1 gráfico grande <span class="var-tag">B</span></div>
+      <div class="var-desc">Tabs no header + 1 gráfico grande da métrica selecionada + insights laterais.</div>
+      <div class="sk-frame">
+        <div class="sk-tabs">
+          <div class="t active">Volume</div>
+          <div class="t">Avaria</div>
+          <div class="t">Devolução</div>
+          <div class="t">SLA</div>
+        </div>
+        <div class="sk-row" style="align-items:stretch; gap:6px; flex:1">
+          <div class="sk-grow" style="display:flex; flex-direction:column; gap:4px">
+            <div style="font-family:'Caveat',cursive; font-size:14px; font-weight:700">Volume mensal · 6 meses</div>
+            <div class="sk-bars" style="height:80px">
+              <div class="b" style="height:40%"></div>
+              <div class="b" style="height:55%"></div>
+              <div class="b" style="height:60%"></div>
+              <div class="b" style="height:70%"></div>
+              <div class="b" style="height:80%"></div>
+              <div class="b" style="height:95%"></div>
+            </div>
+            <div class="desc" style="font-size:10px">jan · fev · mar · abr · mai · jun</div>
+          </div>
+          <div class="sk-col" style="width:90px">
+            <div class="sk-card" style="padding:5px 6px">
+              <div class="ct">+25%</div>
+              <div class="desc">vs mês ant.</div>
+            </div>
+            <div class="sk-card" style="padding:5px 6px">
+              <div class="ct">+86%</div>
+              <div class="desc">vs 6m</div>
+            </div>
+            <div class="sk-card" style="padding:5px 6px">
+              <div class="ct">8mo</div>
+              <div class="desc">média</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">↳ foco numa métrica por vez, gráfico legível. Mas perde contexto entre métricas (precisa trocar tab).</div>
+    </div>
+
+    <!-- 6.C -->
+    <div class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label">Insights + sparkline <span class="var-tag">C</span></div>
+      <div class="var-desc">Lista de insights automáticos (texto) com mini-gráfico embed em cada. Narrativo. Bom para iniciante.</div>
+      <div class="sk-frame">
+        <div class="sk-card success">
+          <div class="sk-row" style="align-items:center">
+            <div style="flex:1">
+              <div class="ct">Volume +25%</div>
+              <div class="desc">vs mês anterior · maior dos últimos 6m</div>
+            </div>
+            <div class="sk-spark" style="max-width:60px"></div>
+          </div>
+        </div>
+        <div class="sk-card">
+          <div class="sk-row" style="align-items:center">
+            <div style="flex:1">
+              <div class="ct">SLA caiu 3pp</div>
+              <div class="desc">de 99% para 96% no mês — DPD DE atrasou</div>
+            </div>
+            <div class="sk-spark" style="max-width:60px"></div>
+          </div>
+        </div>
+        <div class="sk-card warn">
+          <div class="sk-row" style="align-items:center">
+            <div style="flex:1">
+              <div class="ct">BHID-441 · 12% devolução</div>
+              <div class="desc">dobro da média · revisar ficha?</div>
+            </div>
+            <div class="sk-spark" style="max-width:60px"></div>
+          </div>
+        </div>
+        <div class="sk-card">
+          <div class="sk-row" style="align-items:center">
+            <div style="flex:1">
+              <div class="ct">Avaria 2.1%</div>
+              <div class="desc">estável · dentro da banda esperada</div>
+            </div>
+            <div class="sk-spark" style="max-width:60px"></div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">↳ narrativo, didático para sellers iniciantes. Mas opinativo — algoritmo de "insight" é responsabilidade do produto e pode errar a ênfase.</div>
+    </div>
+
+  </div>
+</section>
+
+<div class="footer-note">
+  <b>Combinação validada · 2026-05-08</b> &nbsp;<span style="background:var(--green-soft); padding:2px 8px; border:1.5px solid var(--ink); border-radius:100px; font-size:16px">1B · 2C · 3A · 4B · 5B+filtro · 6C</span><br><br>
+  Resumo: o dashboard final usa <b>tabs persistentes para multi-origem</b> (1B), <b>tabs de categorias para ações pendentes</b> (2C), <b>funil + cards laterais</b> para operação corrente (3A), <b>cards detalhados</b> para saúde (4B), <b>split 2 colunas com filtro de data</b> para uso & cobrança (5B), e <b>insights narrativos com sparkline</b> para tendências (6C).<br><br>
+  <i>Adição em 5B:</i> filtro de data no topo (default: ciclo atual; opções 30d / 90d / ciclo anterior / personalizado). Projeção só aparece em "ciclo atual"; demais períodos mostram dado fechado.<br><br>
+  <i>Próximos passos possíveis:</i> caminho alternativo (estado vazio · pico de pedidos · falha parcial de carregamento) · próximo wireframe da onda 1 (Setup wizard, Pedidos, Pedido individual) · iteração específica de alguma variação escolhida.
+</div>
+
+</body>
+</html>

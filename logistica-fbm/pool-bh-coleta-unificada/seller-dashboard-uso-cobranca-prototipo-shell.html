@@ -1,0 +1,1005 @@
+<!doctype html>
+<html lang="pt-pt">
+<head>
+<meta charset="utf-8">
+<title>BIG logistics · Protótipo navegável (shell ecossistema)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a; --ink-soft: #3d3d3d; --ink-light: #8a8a8a;
+  --paper: #fcfcfa; --paper-dim: #f7f5ee; --paper-soft: #fbfaf5;
+  --yellow: #fff2a8; --yellow-dim: #ffe771; --yellow-edge: #e6c732;
+  --red-soft: #ffd0c9; --green-soft: #d1f0d8; --blue-soft: #d6e6f5;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: 'Patrick Hand', cursive;
+  background: var(--paper-dim);
+  background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.025) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--ink); line-height: 1.45;
+}
+h1, h2, h3 { font-family: 'Caveat', cursive; letter-spacing: 0.4px; margin: 0; }
+
+/* ============ SHELL LAYOUT ============ */
+.bh-shell {
+  display: grid;
+  grid-template-rows: 56px 1fr;
+  grid-template-columns: 240px 1fr;
+  grid-template-areas: "topbar topbar" "sidebar main";
+  min-height: 100vh;
+}
+
+/* TOP BAR */
+.bh-topbar {
+  grid-area: topbar;
+  position: sticky; top: 0; z-index: 100;
+  background: var(--paper); border-bottom: 2px solid var(--ink);
+  padding: 0 24px;
+  display: flex; align-items: center; gap: 18px;
+  box-shadow: 0 2px 0 var(--ink);
+}
+.bh-logo {
+  font-family: 'Caveat', cursive; font-size: 28px; font-weight: 700;
+  background: var(--yellow); border: 1.8px solid var(--ink);
+  padding: 2px 14px; border-radius: 6px;
+  transform: rotate(-2deg); box-shadow: 2px 2px 0 var(--ink);
+}
+.bh-breadcrumb {
+  flex: 1; font-size: 14px; color: var(--ink-soft);
+  display: flex; align-items: center; gap: 6px;
+}
+.bh-breadcrumb b { font-weight: 700; color: var(--ink); }
+.bh-breadcrumb .sep { color: var(--ink-light); }
+.bh-search {
+  border: 1.5px solid var(--ink); border-radius: 100px;
+  padding: 5px 14px; font-family: 'Patrick Hand', cursive;
+  font-size: 13px; background: var(--paper-soft); color: var(--ink-light);
+  width: 200px;
+}
+.bh-user {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; padding: 4px 12px;
+  border: 1.5px solid var(--ink); border-radius: 100px;
+  background: var(--paper); box-shadow: 2px 2px 0 var(--ink);
+  cursor: pointer;
+}
+.bh-user .avatar {
+  width: 24px; height: 24px; border-radius: 100px;
+  background: var(--yellow); border: 1.5px solid var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Caveat', cursive; font-weight: 700; font-size: 13px;
+}
+
+/* SIDEBAR */
+.bh-sidebar {
+  grid-area: sidebar;
+  position: sticky; top: 56px; height: calc(100vh - 56px);
+  overflow-y: auto;
+  background: var(--paper); border-right: 2px solid var(--ink);
+  padding: 16px 12px;
+}
+.nav-section { margin-bottom: 20px; }
+.nav-group-title {
+  font-family: 'Caveat', cursive; font-size: 18px; font-weight: 700;
+  padding: 4px 10px; margin-bottom: 4px;
+  color: var(--ink); display: flex; align-items: center; gap: 6px;
+}
+.nav-group-title .toggle { font-size: 12px; color: var(--ink-light); margin-left: auto; }
+.nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 10px; border-radius: 4px;
+  font-family: 'Patrick Hand', cursive; font-size: 14px;
+  color: var(--ink-soft); cursor: pointer; user-select: none;
+  text-decoration: none; border: 1.5px solid transparent;
+  margin-bottom: 2px;
+}
+.nav-item:hover { background: var(--paper-dim); color: var(--ink); }
+.nav-item.sub { padding-left: 22px; font-size: 13px; }
+.nav-item.active {
+  background: var(--yellow); border-color: var(--ink);
+  font-weight: 700; color: var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+  transform: translate(-1px, -1px);
+}
+.nav-item .badge {
+  margin-left: auto; font-size: 10px; padding: 0 6px;
+  border: 1.2px solid var(--ink); border-radius: 100px;
+  background: var(--paper);
+}
+.nav-item .badge.alert { background: var(--red-soft); }
+.nav-divider { height: 1.5px; background: var(--ink-light); margin: 14px 6px; opacity: 0.4; }
+
+/* MAIN */
+.bh-main {
+  grid-area: main;
+  padding: 24px 32px 60px;
+  background: var(--paper-dim);
+}
+.view { display: none; animation: fadeIn 0.18s ease-out; }
+.view.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* PAGE HEADER */
+.page-header {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 20px; padding-bottom: 14px;
+  border-bottom: 1.8px solid var(--ink);
+}
+.page-header h2 { font-size: 36px; font-weight: 700; }
+.page-header .page-meta { font-size: 13px; color: var(--ink-light); margin-top: 4px; }
+
+/* SCENARIO TABS */
+.scenario-tabs {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  background: var(--paper); border: 1.8px solid var(--ink); border-radius: 8px;
+  padding: 8px 12px; margin-bottom: 20px;
+  box-shadow: 3px 3px 0 var(--ink); align-items: center;
+}
+.scenario-tabs .label {
+  font-family: 'Caveat', cursive; font-size: 16px; font-weight: 700; margin-right: 4px;
+}
+.scenario-tabs button {
+  font-family: 'Patrick Hand', cursive; font-size: 13px;
+  padding: 4px 12px; cursor: pointer;
+  border: 1.5px solid var(--ink); border-radius: 100px;
+  background: var(--paper); box-shadow: 2px 2px 0 var(--ink);
+}
+.scenario-tabs button:hover { background: var(--yellow-dim); }
+.scenario-tabs button.active {
+  background: var(--yellow); font-weight: 700;
+  transform: translate(2px, 2px); box-shadow: none;
+}
+.scenario-content { display: none; }
+.scenario-content.active { display: block; }
+
+/* DASH STRUCTURE */
+.dash-frame {
+  border: 1.8px solid var(--ink); border-radius: 8px;
+  background: var(--paper); box-shadow: 4px 4px 0 var(--ink);
+  overflow: hidden;
+}
+.origin-tabs-wrap {
+  padding: 14px 20px 0; background: var(--paper-soft);
+  border-bottom: 1.8px solid var(--ink);
+}
+.origin-tabs { display: flex; gap: 0; }
+.origin-tabs .ot {
+  padding: 6px 16px; font-family: 'Patrick Hand', cursive; font-size: 14px;
+  border: 1.2px solid var(--ink); border-bottom: none;
+  border-radius: 5px 5px 0 0; background: var(--paper);
+  margin-right: -1px; cursor: pointer;
+}
+.origin-tabs .ot.active { background: var(--yellow); font-weight: 700; }
+.origin-tabs .ot.alert { background: var(--red-soft); }
+
+.dash-section { padding: 18px 22px; border-bottom: 1.5px dashed var(--ink); }
+.dash-section:last-child { border-bottom: none; }
+.dash-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.dash-section-head h3 { font-family: 'Caveat', cursive; font-size: 24px; font-weight: 700; }
+.shoulder-tag {
+  font-family: 'Patrick Hand', cursive; font-size: 11px;
+  padding: 1px 8px; border: 1.2px solid var(--ink); border-radius: 100px;
+  background: var(--paper-dim); transform: rotate(-1deg);
+}
+
+/* PRIMITIVES */
+.sk-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.sk-col { display: flex; flex-direction: column; gap: 6px; }
+.sk-grow { flex: 1; }
+.sk-line { height: 1.5px; background: var(--ink); margin: 6px 0; }
+.sk-line.dash { background: none; border-top: 1.5px dashed var(--ink); height: 0; }
+.sk-box { border: 1.5px solid var(--ink); border-radius: 3px; padding: 5px 8px; font-size: 13px; background: var(--paper); }
+.sk-box.fill { background: var(--yellow); }
+.sk-box.fillsoft { background: var(--paper-dim); }
+.sk-box.tiny { padding: 3px 8px; font-size: 12px; }
+.sk-btn { display: inline-block; border: 1.5px solid var(--ink); border-radius: 100px; padding: 4px 14px; font-family: 'Patrick Hand', cursive; font-size: 13px; background: var(--paper); box-shadow: 2px 2px 0 var(--ink); cursor: pointer; user-select: none; }
+.sk-btn:hover { background: var(--yellow-dim); }
+.sk-btn.primary { background: var(--yellow); }
+.sk-btn.ghost { border-style: dashed; box-shadow: none; }
+.sk-chip { display: inline-block; border: 1.2px solid var(--ink); border-radius: 100px; padding: 1px 8px; font-size: 11px; background: var(--paper); white-space: nowrap; }
+.sk-chip.active { background: var(--yellow); }
+.sk-chip.green { background: var(--green-soft); }
+.sk-chip.red { background: var(--red-soft); }
+.sk-chip.warn { background: #fff7ee; }
+.sk-chip.muted { background: var(--paper-dim); color: var(--ink-soft); }
+
+.sk-card {
+  border: 1.5px solid var(--ink); border-radius: 4px;
+  padding: 8px 10px; background: var(--paper);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.sk-card .ct { font-weight: 700; font-size: 13px; }
+.sk-card .desc { color: var(--ink-soft); font-size: 11.5px; line-height: 1.3; }
+.sk-card .big { font-size: 28px; font-family: 'Caveat', cursive; font-weight: 700; line-height: 1; }
+.sk-card.warn { background: #fff7ee; }
+.sk-card.danger { background: var(--red-soft); }
+.sk-card.success { background: var(--green-soft); }
+.sk-card.muted { background: var(--paper-dim); }
+.sk-card.skeleton { background: repeating-linear-gradient(45deg, var(--paper-dim) 0 8px, var(--paper-soft) 8px 16px); }
+
+/* ACTION TABS */
+.action-tabs { display: flex; gap: 0; border-bottom: 1.5px solid var(--ink); margin-bottom: 8px; }
+.action-tabs .at {
+  padding: 5px 12px; font-family: 'Patrick Hand', cursive; font-size: 13px;
+  border: 1.2px solid var(--ink); border-bottom: none;
+  border-radius: 5px 5px 0 0; background: var(--paper); margin-bottom: -1.5px; margin-right: -1px;
+  cursor: pointer;
+}
+.action-tabs .at.active { background: var(--yellow); font-weight: 700; border-bottom: 1.5px solid var(--yellow); }
+.action-tabs .at.muted { background: var(--paper-dim); color: var(--ink-light); }
+
+/* FUNNEL / BARS / SPARK */
+.sk-funnel { display: flex; align-items: stretch; gap: 3px; margin: 6px 0; }
+.sk-funnel .fbar { flex: 1; border: 1.2px solid var(--ink); padding: 6px 4px; font-size: 11px; text-align: center; background: var(--paper); display: flex; flex-direction: column; gap: 2px; min-height: 56px; }
+.sk-funnel .fbar .num { font-family: 'Caveat', cursive; font-size: 26px; font-weight: 700; line-height: 1; }
+.sk-funnel .fbar.warn { background: #fff7ee; }
+.sk-funnel .fbar.curr { background: var(--yellow); }
+.sk-funnel .fbar.empty { background: var(--paper-dim); color: var(--ink-light); }
+.sk-bars { display: flex; align-items: flex-end; gap: 3px; height: 70px; }
+.sk-bars .b { flex: 1; background: var(--ink); border-radius: 2px 2px 0 0; }
+.sk-bars .b.proj { background: repeating-linear-gradient(45deg, var(--ink-light) 0 3px, transparent 3px 6px); border: 1px dashed var(--ink); }
+.sk-spark { height: 24px; flex: 1; position: relative;
+  background:
+    linear-gradient(90deg, transparent 0 5%, var(--ink) 5% 6%, transparent 6% 100%),
+    linear-gradient(90deg, transparent 0 25%, var(--ink) 25% 26%, transparent 26% 100%),
+    linear-gradient(90deg, transparent 0 45%, var(--ink) 45% 46%, transparent 46% 100%),
+    linear-gradient(90deg, transparent 0 65%, var(--ink) 65% 66%, transparent 66% 100%),
+    linear-gradient(90deg, transparent 0 85%, var(--ink) 85% 86%, transparent 86% 100%);
+  border-bottom: 1px solid var(--ink-light);
+}
+
+/* DATE FILTER + KPI SIDE */
+.date-filter { display: flex; gap: 6px; align-items: center; padding: 8px 0; flex-wrap: wrap; }
+.date-filter .label { font-size: 12px; color: var(--ink-light); }
+.kpi-side { width: 160px; padding-right: 14px; border-right: 1.5px dashed var(--ink); display: flex; flex-direction: column; gap: 8px; }
+.kpi-side .kpi-label { font-size: 11px; color: var(--ink-light); }
+.kpi-side .kpi-value { font-family: 'Caveat', cursive; font-size: 28px; font-weight: 700; line-height: 1; }
+.kpi-side .kpi-value.lg { font-size: 32px; }
+.kpi-side .kpi-value.highlight { background: var(--yellow); padding: 2px 6px; align-self: flex-start; }
+.kpi-side .kpi-foot { font-size: 11px; color: var(--ink-soft); font-style: italic; }
+
+/* EMPTY / ERROR / BANNER */
+.empty-state {
+  border: 1.5px dashed var(--ink-light); border-radius: 6px;
+  padding: 22px; text-align: center; background: var(--paper-soft);
+}
+.empty-state .es-icon { font-size: 28px; margin-bottom: 8px; }
+.empty-state .es-title { font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700; }
+.empty-state .es-desc { font-size: 13px; color: var(--ink-soft); margin-top: 4px; }
+.error-state { border: 1.5px solid var(--ink); background: var(--red-soft); border-radius: 6px; padding: 18px; text-align: center; }
+.error-state .err-title { font-family: 'Caveat', cursive; font-size: 20px; font-weight: 700; }
+.error-state .err-desc { font-size: 13px; color: var(--ink-soft); margin: 4px 0 8px; }
+.dash-banner {
+  border: 1.5px solid var(--ink); border-radius: 5px;
+  padding: 8px 12px; margin: 0 22px 10px; display: flex; gap: 10px; align-items: center;
+}
+.dash-banner.warn { background: var(--red-soft); }
+.dash-banner.info { background: var(--blue-soft); }
+
+/* STUB VIEWS */
+.stub-frame {
+  border: 1.8px solid var(--ink); border-radius: 8px;
+  background: var(--paper); box-shadow: 4px 4px 0 var(--ink);
+  padding: 24px; min-height: 400px;
+}
+.stub-list .row {
+  display: flex; gap: 12px; align-items: center; padding: 10px 12px;
+  border-bottom: 1px dashed var(--ink-light);
+}
+.stub-list .row:hover { background: var(--paper-dim); }
+.stub-list .row .pid { font-family: 'Caveat', cursive; font-weight: 700; min-width: 80px; }
+.stub-list .row .info { flex: 1; font-size: 13px; }
+.stub-list .row .info .desc { font-size: 11.5px; color: var(--ink-light); }
+
+.under-construction {
+  text-align: center; padding: 60px 30px;
+  border: 2px dashed var(--ink); border-radius: 10px;
+  background: var(--paper-soft);
+}
+.under-construction h3 { font-size: 36px; }
+.under-construction p { font-size: 15px; color: var(--ink-soft); margin-top: 8px; }
+
+/* CALENDAR */
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-cell {
+  border: 1.2px solid var(--ink); padding: 8px 6px;
+  min-height: 70px; background: var(--paper);
+  font-size: 11px;
+}
+.cal-cell .d { font-family: 'Caveat', cursive; font-size: 18px; font-weight: 700; }
+.cal-cell.today { background: var(--yellow); }
+.cal-cell.has-coleta { background: var(--paper-dim); }
+.cal-cell.muted { background: var(--paper-soft); color: var(--ink-light); }
+.cal-cell .ev { font-size: 10px; padding: 1px 4px; border: 1px solid var(--ink); border-radius: 3px; margin-top: 3px; background: var(--paper); }
+
+.helper-toast {
+  position: fixed; bottom: 20px; right: 20px; z-index: 1000;
+  background: var(--paper); border: 2px solid var(--ink); border-radius: 8px;
+  padding: 12px 16px; font-family: 'Patrick Hand', cursive; font-size: 13px;
+  box-shadow: 4px 4px 0 var(--ink); max-width: 280px;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.helper-toast b { font-family: 'Caveat', cursive; font-size: 16px; }
+.helper-toast .x { cursor: pointer; font-size: 16px; line-height: 1; color: var(--ink-light); }
+</style>
+</head>
+<body>
+
+<div class="bh-shell">
+
+  <!-- TOP BAR -->
+  <div class="bh-topbar">
+    <div class="bh-logo">BH</div>
+    <div class="bh-breadcrumb">
+      <span id="crumb-1"><b>Logística</b></span>
+      <span class="sep">›</span>
+      <span id="crumb-2"><b>Uso & cobrança</b></span>
+    </div>
+    <input class="bh-search" placeholder="🔍 buscar pedidos, devoluções, SKU..." readonly>
+    <div class="bh-user">
+      <div class="avatar">JS</div>
+      João S. ▾
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="bh-sidebar">
+
+    <div class="nav-section">
+      <a class="nav-item" data-view="home">🏠 Início</a>
+      <a class="nav-item" data-view="catalogo">📦 Catálogo</a>
+      <a class="nav-item" data-view="vitrine">🛒 Vitrine</a>
+      <a class="nav-item" data-view="cadastro">👤 Cadastro</a>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="nav-section">
+      <div class="nav-group-title">🚚 Logística <span class="toggle">▾</span></div>
+      <a class="nav-item sub" data-view="pedidos">Pedidos <span class="badge alert">3</span></a>
+      <a class="nav-item sub" data-view="coletas">Coletas</a>
+      <a class="nav-item sub" data-view="devolucoes">Devoluções <span class="badge">1</span></a>
+      <a class="nav-item sub" data-view="enderecos">Endereços</a>
+      <a class="nav-item sub" data-view="embalagens">Embalagens</a>
+      <a class="nav-item sub" data-view="carriers">Carriers & contratos</a>
+      <a class="nav-item sub active" data-view="uso-cobranca">Uso & cobrança</a>
+      <a class="nav-item sub" data-view="config-regras">Configurações & regras</a>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="nav-section">
+      <div class="nav-group-title">💰 Planos e preços <span class="toggle">▾</span></div>
+      <a class="nav-item sub" data-view="modulos">Módulos</a>
+      <a class="nav-item sub" data-view="subscricoes">Subscrições</a>
+      <a class="nav-item sub" data-view="faturas">Faturas</a>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="nav-section">
+      <a class="nav-item" data-view="suporte">💬 Suporte</a>
+      <a class="nav-item" data-view="config">⚙ Configurações</a>
+    </div>
+
+  </div>
+
+  <!-- MAIN -->
+  <div class="bh-main">
+
+    <!-- ============ VIEW: USO & COBRANÇA ============ -->
+    <div class="view active" id="view-uso-cobranca">
+      <div class="page-header">
+        <div>
+          <h2>Uso & cobrança</h2>
+          <div class="page-meta">Dashboard operacional · multi-origem · atualizado em near-real-time</div>
+        </div>
+        <div style="font-size:12px; color:var(--ink-light)">atualizado há 12s</div>
+      </div>
+
+      <div class="scenario-tabs">
+        <span class="label">🧪 Cenário:</span>
+        <button data-scenario="happy" class="active">Happy day</button>
+        <button data-scenario="vazio">Estado vazio</button>
+        <button data-scenario="pico">Pico (Black Friday)</button>
+        <button data-scenario="falha">Falha parcial</button>
+        <button data-scenario="ciclo-ant">Ciclo anterior</button>
+      </div>
+
+      <!-- ----- HAPPY ----- -->
+      <div class="scenario-content active" id="sc-happy">
+        <div class="dash-frame">
+          <div class="origin-tabs-wrap"><div class="origin-tabs">
+            <div class="ot active">Todas (3)</div><div class="ot">Lisboa</div><div class="ot">Porto</div><div class="ot">Coimbra</div>
+          </div></div>
+
+          <div class="dash-section">
+            <div class="dash-section-head"><h3>Ações pendentes</h3></div>
+            <div class="action-tabs">
+              <div class="at active">SLA (3)</div><div class="at">RMA (1)</div><div class="at">Cancel (2)</div><div class="at muted">Falhas (0)</div>
+            </div>
+            <div class="sk-col">
+              <div class="sk-card danger"><div class="sk-row"><span class="ct">#4521 · Amazon DE</span><span class="sk-chip red">vence 4h</span><span class="sk-chip muted">DPD</span><span class="sk-grow"></span><span class="sk-btn primary">Resolver</span></div></div>
+              <div class="sk-card danger"><div class="sk-row"><span class="ct">#4517 · bol.com</span><span class="sk-chip red">vence 6h</span><span class="sk-chip muted">GLS</span><span class="sk-grow"></span><span class="sk-btn">Resolver</span></div></div>
+              <div class="sk-card warn"><div class="sk-row"><span class="ct">#4502 · big.pt</span><span class="sk-chip warn">vence 8h</span><span class="sk-grow"></span><span class="sk-btn">Resolver</span></div></div>
+            </div>
+          </div>
+
+          <div class="dash-section">
+            <div class="dash-section-head"><h3>Operação corrente</h3></div>
+            <div style="font-size:12px; color:var(--ink-light); margin-bottom:4px">Pedidos · funil</div>
+            <div class="sk-funnel">
+              <div class="fbar"><div class="num">5</div>criado</div>
+              <div class="fbar"><div class="num">12</div>roteado</div>
+              <div class="fbar curr"><div class="num">8</div>etiquet.</div>
+              <div class="fbar warn"><div class="num">15</div>aguarda</div>
+              <div class="fbar"><div class="num">47</div>trânsito</div>
+              <div class="fbar"><div class="num">23</div>entreg.</div>
+            </div>
+            <div class="sk-row" style="margin-top:14px; align-items:stretch; gap:14px">
+              <div class="sk-card warn" style="flex:1">
+                <div class="sk-row"><span class="sk-chip">Próxima coleta</span><span class="sk-chip muted">DPD</span></div>
+                <div class="ct" style="font-size:18px">Hoje · 14h–17h</div>
+                <div class="desc">15 pacotes · Lisboa</div>
+              </div>
+              <div class="sk-card" style="flex:1">
+                <div class="ct">Devoluções em retorno · 2</div>
+                <div class="desc">#R-865 · ETA amanhã · #R-871 · ETA hoje 18h</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dash-section">
+            <div class="dash-section-head"><h3>Saúde</h3><span class="shoulder-tag">should-have</span></div>
+            <div class="sk-row" style="gap:8px; align-items:stretch">
+              <div class="sk-card success" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip green">●</span><span class="ct">DPD</span></div><div class="desc">check 38s</div></div>
+              <div class="sk-card success" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip green">●</span><span class="ct">GLS</span></div><div class="desc">check 1m</div></div>
+              <div class="sk-card success" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip green">●</span><span class="ct">Vitrine</span></div><div class="desc">webhook ok</div></div>
+              <div class="sk-card success" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip green">●</span><span class="ct">big.pt</span></div><div class="desc">webhook ok</div></div>
+              <div class="sk-card warn" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip">●</span><span class="ct">Amazon</span></div><div class="desc">2h sem import</div></div>
+              <div class="sk-card danger" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip red">●</span><span class="ct">Cdiscount</span></div><div class="desc">14h ⚠</div></div>
+            </div>
+            <div class="sk-card warn" style="margin-top:10px">
+              <div class="sk-row"><span class="ct">Contrato DPD próprio</span><span class="sk-chip warn">fuel surch. 32d</span><span class="sk-grow"></span><u style="font-size:11px">reimport →</u></div>
+            </div>
+          </div>
+
+          <div class="dash-section">
+            <div class="dash-section-head"><h3>Uso & cobrança</h3></div>
+            <div class="date-filter">
+              <span class="label">📅 período:</span>
+              <span class="sk-box tiny fill">Ciclo atual · Maio 2026 ▾</span>
+              <span class="sk-chip">30d</span><span class="sk-chip">90d</span><span class="sk-chip">ciclo ant.</span><span class="sk-chip">↔ personaliz.</span>
+            </div>
+            <div class="sk-row" style="align-items:stretch; gap:0; margin-top:8px">
+              <div class="kpi-side">
+                <div><div class="kpi-label">etiquetas (ciclo)</div><div class="kpi-value lg">247</div></div>
+                <div><div class="kpi-label">valor etiquetas</div><div class="kpi-value">€61.75</div></div>
+                <div><div class="kpi-label">+ assinatura</div><div style="font-size:14px">€99.00</div></div>
+                <div><div class="kpi-label">projetado</div><div class="kpi-value highlight">€160.75</div><div class="kpi-foot">+25% vs mês ant.</div></div>
+              </div>
+              <div class="sk-grow" style="padding-left:14px; display:flex; flex-direction:column; gap:8px">
+                <div style="font-size:11px; color:var(--ink-light); font-style:italic">etiquetas/dia · com projeção</div>
+                <div class="sk-bars">
+                  <div class="b" style="height:30%"></div><div class="b" style="height:50%"></div><div class="b" style="height:40%"></div>
+                  <div class="b" style="height:65%"></div><div class="b" style="height:55%"></div><div class="b" style="height:80%"></div>
+                  <div class="b" style="height:70%"></div><div class="b" style="height:90%"></div>
+                  <div class="b proj" style="height:75%"></div><div class="b proj" style="height:80%"></div>
+                </div>
+                <div class="sk-line dash"></div>
+                <div style="font-size:12px"><b>canal:</b> Vitrine 40% · big.pt 35% · Amzn 15% · Cdisc 10%</div>
+                <div style="font-size:12px"><b>carrier:</b> DPD 60% · GLS 40%</div>
+                <div style="font-size:12px"><b>origem:</b> Lisboa 65% · Porto 35%</div>
+              </div>
+            </div>
+            <div class="sk-row" style="justify-content:flex-end; margin-top:10px">
+              <span class="sk-btn primary" data-go="faturas">Ver fatura corrente em Planos e preços →</span>
+            </div>
+          </div>
+
+          <div class="dash-section">
+            <div class="dash-section-head"><h3>Tendências</h3><span class="shoulder-tag">should-have</span></div>
+            <div class="sk-col" style="gap:8px">
+              <div class="sk-card success"><div class="sk-row" style="align-items:center"><div style="flex:1"><div class="ct">Volume +25%</div><div class="desc">vs mês anterior · maior dos últimos 6m</div></div><div class="sk-spark" style="max-width:80px"></div></div></div>
+              <div class="sk-card"><div class="sk-row" style="align-items:center"><div style="flex:1"><div class="ct">SLA caiu 3pp</div><div class="desc">de 99% para 96% · DPD DE com atrasos</div></div><div class="sk-spark" style="max-width:80px"></div></div></div>
+              <div class="sk-card warn"><div class="sk-row" style="align-items:center"><div style="flex:1"><div class="ct">BHID-441 · 12% devolução</div><div class="desc">dobro da média · revisar ficha?</div></div><div class="sk-spark" style="max-width:80px"></div></div></div>
+              <div class="sk-card"><div class="sk-row" style="align-items:center"><div style="flex:1"><div class="ct">Avaria 2.1%</div><div class="desc">estável · banda esperada</div></div><div class="sk-spark" style="max-width:80px"></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ----- VAZIO ----- -->
+      <div class="scenario-content" id="sc-vazio">
+        <div class="dash-frame">
+          <div class="origin-tabs-wrap" style="padding-bottom:12px">
+            <div style="font-size:13px; color:var(--ink-soft)">Origem: <b>Depósito Lisboa</b> <span style="font-size:11px; color:var(--ink-light); font-style:italic">· cadastre mais em Endereços</span></div>
+          </div>
+          <div class="dash-section">
+            <div class="dash-section-head"><h3>Ações pendentes</h3></div>
+            <div class="empty-state">
+              <div class="es-icon">✓</div>
+              <div class="es-title">Nenhuma ação pendente — dia limpo</div>
+              <div class="es-desc">Quando houver SLA em risco, RMA ou cancelamento, aparecerão aqui.</div>
+            </div>
+          </div>
+          <div class="dash-section">
+            <div class="dash-section-head"><h3>Operação corrente</h3></div>
+            <div class="sk-funnel">
+              <div class="fbar empty"><div class="num">0</div>criado</div><div class="fbar empty"><div class="num">0</div>roteado</div>
+              <div class="fbar empty"><div class="num">0</div>etiquet.</div><div class="fbar empty"><div class="num">0</div>aguarda</div>
+              <div class="fbar empty"><div class="num">0</div>trânsito</div><div class="fbar empty"><div class="num">0</div>entreg.</div>
+            </div>
+            <div class="empty-state" style="margin-top:14px">
+              <div class="es-title">Seu primeiro pedido aparecerá aqui</div>
+              <div class="es-desc">Pedidos chegam automaticamente dos canais BH (Vitrine, big.pt) ou via import CSV em canais externos.</div>
+              <div style="margin-top:10px"><span class="sk-btn primary" data-go="pedidos">Ir para Pedidos →</span></div>
+            </div>
+          </div>
+          <div class="dash-section">
+            <div class="dash-section-head"><h3>Uso & cobrança</h3></div>
+            <div class="sk-row" style="align-items:stretch; gap:0; margin-top:8px">
+              <div class="kpi-side">
+                <div><div class="kpi-label">etiquetas</div><div class="kpi-value lg" style="color:var(--ink-light)">0</div></div>
+                <div><div class="kpi-label">valor etiquetas</div><div class="kpi-value" style="color:var(--ink-light)">€0.00</div></div>
+                <div><div class="kpi-label">+ assinatura</div><div style="font-size:14px">€99.00</div></div>
+                <div><div class="kpi-label">projetado</div><div class="kpi-value highlight">€99.00</div><div class="kpi-foot">primeiro ciclo</div></div>
+              </div>
+              <div class="sk-grow" style="padding-left:14px; display:flex; align-items:center; justify-content:center">
+                <div class="empty-state" style="width:100%">
+                  <div class="es-title">Sem etiquetas geradas ainda</div>
+                  <div class="es-desc">Cada etiqueta confirmada pela carrier soma €0.25 ao seu ciclo.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dash-section">
+            <div class="dash-section-head"><h3>Tendências</h3><span class="shoulder-tag">should-have</span></div>
+            <div class="empty-state">
+              <div class="es-title">Histórico aparecerá após o primeiro ciclo</div>
+              <div class="es-desc">Volume mensal, taxa de avaria, devolução, SLA e top SKUs ficam disponíveis a partir do segundo mês.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ----- PICO ----- -->
+      <div class="scenario-content" id="sc-pico">
+        <div class="dash-frame">
+          <div class="origin-tabs-wrap"><div class="origin-tabs">
+            <div class="ot active">Todas (3)</div><div class="ot">Lisboa <span class="sk-chip red" style="font-size:9.5px; padding:0 5px">8</span></div><div class="ot alert">Porto <span class="sk-chip red" style="font-size:9.5px; padding:0 5px">15</span></div><div class="ot">Coimbra</div>
+          </div></div>
+          <div class="dash-banner warn" style="margin:12px 22px 0">
+            <span style="font-size:18px">⚠</span>
+            <span style="font-size:13px"><b>Volume +280% vs média</b> · Black Friday em curso · DPD reportou degradação parcial.</span>
+          </div>
+          <div class="dash-section">
+            <div class="dash-section-head"><h3>Ações pendentes</h3></div>
+            <div class="action-tabs">
+              <div class="at active">SLA (15)</div><div class="at">RMA (3)</div><div class="at">Cancel (8)</div><div class="at">Falhas (2)</div>
+            </div>
+            <div class="sk-col">
+              <div class="sk-card danger"><div class="sk-row"><span class="ct">#5821 · Amazon DE</span><span class="sk-chip red">vence 1h</span><span class="sk-grow"></span><span class="sk-btn primary">URGENTE</span></div></div>
+              <div class="sk-card danger"><div class="sk-row"><span class="ct">#5817 · Amazon FR</span><span class="sk-chip red">vence 2h</span><span class="sk-grow"></span><span class="sk-btn primary">URGENTE</span></div></div>
+              <div class="sk-card danger"><div class="sk-row"><span class="ct">#5814 · bol.com</span><span class="sk-chip red">vence 3h</span><span class="sk-grow"></span><span class="sk-btn">Resolver</span></div></div>
+              <div class="sk-row" style="justify-content:center; margin-top:6px"><span class="sk-btn ghost">+ 12 mais SLAs em risco · ver todos</span></div>
+            </div>
+          </div>
+          <div class="dash-section">
+            <div class="dash-section-head"><h3>Operação corrente</h3></div>
+            <div class="sk-funnel">
+              <div class="fbar"><div class="num">42</div>criado</div><div class="fbar"><div class="num">87</div>roteado</div>
+              <div class="fbar curr"><div class="num">124</div>etiquet.</div><div class="fbar warn"><div class="num">156</div>aguarda</div>
+              <div class="fbar"><div class="num">890</div>trânsito</div><div class="fbar"><div class="num">247</div>entreg.</div>
+            </div>
+            <div class="sk-row" style="margin-top:14px; align-items:stretch; gap:14px">
+              <div class="sk-card danger" style="flex:1">
+                <div class="sk-row"><span class="sk-chip red">⚠ Próxima coleta AGORA</span></div>
+                <div class="ct" style="font-size:18px">14h–17h · em curso</div>
+                <div class="desc">78 pacotes · motorista a caminho</div>
+              </div>
+              <div class="sk-card warn" style="flex:1">
+                <div class="ct">Devoluções · 12 (+8 vs média)</div>
+                <div class="desc">pico de cancelamentos</div>
+              </div>
+            </div>
+          </div>
+          <div class="dash-section">
+            <div class="dash-section-head"><h3>Uso & cobrança</h3></div>
+            <div class="sk-row" style="align-items:stretch; gap:0; margin-top:8px">
+              <div class="kpi-side">
+                <div><div class="kpi-label">etiquetas</div><div class="kpi-value lg">2.341</div></div>
+                <div><div class="kpi-label">valor etiquetas</div><div class="kpi-value">€585.25</div></div>
+                <div><div class="kpi-label">+ assinatura</div><div style="font-size:14px">€99.00</div></div>
+                <div><div class="kpi-label">projetado</div><div class="kpi-value highlight" style="font-size:24px">€684.25</div><div class="kpi-foot">+325% vs mês ant. ⚡</div></div>
+              </div>
+              <div class="sk-grow" style="padding-left:14px; display:flex; flex-direction:column; gap:8px">
+                <div style="font-size:11px; color:var(--ink-light); font-style:italic">etiquetas/dia · pico ativo</div>
+                <div class="sk-bars">
+                  <div class="b" style="height:10%"></div><div class="b" style="height:8%"></div><div class="b" style="height:12%"></div>
+                  <div class="b" style="height:15%"></div><div class="b" style="height:25%"></div><div class="b" style="height:65%"></div>
+                  <div class="b" style="height:90%"></div><div class="b" style="height:95%"></div>
+                  <div class="b proj" style="height:88%"></div><div class="b proj" style="height:75%"></div>
+                </div>
+                <div style="font-size:12px"><b>canal:</b> Amazon 55% (+pico) · Vitrine 25% · big.pt 15% · Cdisc 5%</div>
+              </div>
+            </div>
+          </div>
+          <div class="dash-section">
+            <div class="dash-section-head"><h3>Tendências</h3><span class="shoulder-tag">should-have</span></div>
+            <div class="sk-col" style="gap:8px">
+              <div class="sk-card warn"><div class="sk-row" style="align-items:center"><div style="flex:1"><div class="ct">Volume +325% (Black Friday)</div><div class="desc">esperado para a data</div></div><div class="sk-spark" style="max-width:80px"></div></div></div>
+              <div class="sk-card danger"><div class="sk-row" style="align-items:center"><div style="flex:1"><div class="ct">SLA -8pp · 91%</div><div class="desc">DPD com degradação</div></div><div class="sk-spark" style="max-width:80px"></div></div></div>
+              <div class="sk-card warn"><div class="sk-row" style="align-items:center"><div style="flex:1"><div class="ct">Cancelamento +5pp</div><div class="desc">comum em pico</div></div><div class="sk-spark" style="max-width:80px"></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ----- FALHA ----- -->
+      <div class="scenario-content" id="sc-falha">
+        <div class="dash-frame">
+          <div class="origin-tabs-wrap"><div class="origin-tabs">
+            <div class="ot active">Todas (3)</div><div class="ot">Lisboa</div><div class="ot">Porto</div><div class="ot">Coimbra</div>
+          </div></div>
+          <div class="dash-banner warn" style="margin:12px 22px 0">
+            <span style="font-size:18px">⚠</span>
+            <span style="font-size:13px; flex:1"><b>2 seções não carregaram.</b> Operação não está bloqueada.</span>
+            <span class="sk-btn">Recarregar</span>
+          </div>
+          <div class="dash-section">
+            <div class="dash-section-head"><h3>Ações pendentes</h3><span class="sk-chip green" style="font-size:10px">carregado</span></div>
+            <div class="sk-col">
+              <div class="sk-card danger"><div class="sk-row"><span class="ct">#4521 · Amazon DE</span><span class="sk-chip red">vence 4h</span><span class="sk-grow"></span><span class="sk-btn primary">Resolver</span></div></div>
+              <div class="sk-card danger"><div class="sk-row"><span class="ct">#4517 · bol.com</span><span class="sk-chip red">vence 6h</span><span class="sk-grow"></span><span class="sk-btn">Resolver</span></div></div>
+              <div class="sk-card warn"><div class="sk-row"><span class="ct">#4502 · big.pt</span><span class="sk-chip warn">vence 8h</span><span class="sk-grow"></span><span class="sk-btn">Resolver</span></div></div>
+            </div>
+          </div>
+          <div class="dash-section">
+            <div class="dash-section-head"><h3>Operação corrente</h3><span class="sk-chip green" style="font-size:10px">carregado</span></div>
+            <div class="sk-funnel">
+              <div class="fbar"><div class="num">5</div>criado</div><div class="fbar"><div class="num">12</div>roteado</div>
+              <div class="fbar curr"><div class="num">8</div>etiquet.</div><div class="fbar warn"><div class="num">15</div>aguarda</div>
+              <div class="fbar"><div class="num">47</div>trânsito</div><div class="fbar"><div class="num">23</div>entreg.</div>
+            </div>
+          </div>
+          <div class="dash-section">
+            <div class="dash-section-head"><h3>Uso & cobrança</h3><span class="sk-chip red" style="font-size:10px">⚠ falhou</span></div>
+            <div class="error-state">
+              <div class="err-title">Não foi possível carregar uso & cobrança</div>
+              <div class="err-desc">A API agregadora retornou erro 503. Os dados continuam sendo coletados; é uma falha de exibição, não de cobrança.</div>
+              <span class="sk-btn primary">Tentar novamente</span>
+            </div>
+          </div>
+          <div class="dash-section">
+            <div class="dash-section-head"><h3>Tendências</h3><span class="shoulder-tag">should-have</span><span class="sk-chip red" style="font-size:10px">⚠ falhou</span></div>
+            <div class="sk-col" style="gap:8px">
+              <div class="sk-card skeleton" style="height:40px"></div>
+              <div class="sk-card skeleton" style="height:40px"></div>
+              <div class="sk-card skeleton" style="height:40px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ----- CICLO ANTERIOR ----- -->
+      <div class="scenario-content" id="sc-ciclo-ant">
+        <div class="dash-frame">
+          <div class="origin-tabs-wrap"><div class="origin-tabs">
+            <div class="ot active">Todas (3)</div><div class="ot">Lisboa</div><div class="ot">Porto</div><div class="ot">Coimbra</div>
+          </div></div>
+          <div class="dash-section">
+            <div class="dash-section-head"><h3>Ações pendentes</h3></div>
+            <div class="sk-col">
+              <div class="sk-card danger"><div class="sk-row"><span class="ct">#4521 · Amazon DE</span><span class="sk-chip red">vence 4h</span><span class="sk-grow"></span><span class="sk-btn primary">Resolver</span></div></div>
+              <div class="sk-card warn"><div class="sk-row"><span class="ct">#4502 · big.pt</span><span class="sk-chip warn">vence 8h</span><span class="sk-grow"></span><span class="sk-btn">Resolver</span></div></div>
+            </div>
+          </div>
+          <div class="dash-section">
+            <div class="dash-section-head"><h3>Operação corrente</h3></div>
+            <div class="sk-funnel">
+              <div class="fbar"><div class="num">5</div>criado</div><div class="fbar"><div class="num">12</div>roteado</div>
+              <div class="fbar curr"><div class="num">8</div>etiquet.</div><div class="fbar warn"><div class="num">15</div>aguarda</div>
+              <div class="fbar"><div class="num">47</div>trânsito</div><div class="fbar"><div class="num">23</div>entreg.</div>
+            </div>
+          </div>
+          <div class="dash-section" style="background:var(--paper-soft)">
+            <div class="dash-section-head"><h3>Uso & cobrança</h3><span class="sk-chip warn" style="font-size:10px">📅 ciclo fechado</span></div>
+            <div class="date-filter">
+              <span class="label">📅 período:</span>
+              <span class="sk-chip">Ciclo atual</span><span class="sk-chip">30d</span><span class="sk-chip">90d</span>
+              <span class="sk-box tiny fill">Abril 2026 (ciclo ant.) ▾</span>
+              <span class="sk-chip">↔ personaliz.</span>
+            </div>
+            <div class="dash-banner info" style="margin: 10px 0;">
+              <span style="font-size:14px">📅</span>
+              <span style="font-size:12.5px"><b>Exibindo Abril 2026 — ciclo fechado.</b> Sem projeção; dados consolidados. Fatura já emitida.</span>
+            </div>
+            <div class="sk-row" style="align-items:stretch; gap:0">
+              <div class="kpi-side">
+                <div><div class="kpi-label">etiquetas (Abr)</div><div class="kpi-value lg">198</div></div>
+                <div><div class="kpi-label">valor etiquetas</div><div class="kpi-value">€49.50</div></div>
+                <div><div class="kpi-label">+ assinatura</div><div style="font-size:14px">€99.00</div></div>
+                <div><div class="kpi-label">total cobrado</div><div class="kpi-value highlight">€148.50</div><div class="kpi-foot">fatura paga · 05/Mai</div></div>
+              </div>
+              <div class="sk-grow" style="padding-left:14px; display:flex; flex-direction:column; gap:8px">
+                <div style="font-size:11px; color:var(--ink-light); font-style:italic">etiquetas/dia · Abril 2026</div>
+                <div class="sk-bars">
+                  <div class="b" style="height:25%"></div><div class="b" style="height:35%"></div><div class="b" style="height:50%"></div>
+                  <div class="b" style="height:60%"></div><div class="b" style="height:55%"></div><div class="b" style="height:70%"></div>
+                  <div class="b" style="height:65%"></div><div class="b" style="height:75%"></div>
+                  <div class="b" style="height:60%"></div><div class="b" style="height:55%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="sk-row" style="justify-content:flex-end; margin-top:10px; gap:8px">
+              <span class="sk-btn ghost" data-scenario-go="happy">Voltar ao ciclo atual</span>
+              <span class="sk-btn primary" data-go="faturas">Ver fatura de Abril →</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============ VIEW: PEDIDOS (stub) ============ -->
+    <div class="view" id="view-pedidos">
+      <div class="page-header"><div><h2>Pedidos</h2><div class="page-meta">110 ativos · 23 entregues hoje · 3 SLA em risco</div></div></div>
+      <div class="stub-frame">
+        <div class="sk-row" style="margin-bottom:14px; gap:8px">
+          <span class="sk-chip active">Todos (110)</span>
+          <span class="sk-chip red">SLA risco (3)</span>
+          <span class="sk-chip">Em trânsito (47)</span>
+          <span class="sk-chip">Aguardando (15)</span>
+          <span class="sk-grow"></span>
+          <span class="sk-btn ghost">Filtros</span>
+          <span class="sk-btn primary">+ Novo manual</span>
+        </div>
+        <div class="stub-list">
+          <div class="row"><span class="pid">#4521</span><div class="info"><b>Amazon DE</b> · Berlin · €54.20<div class="desc">3 itens · DPD · gerado há 1h</div></div><span class="sk-chip red">SLA 4h</span><span class="sk-btn">Abrir</span></div>
+          <div class="row"><span class="pid">#4517</span><div class="info"><b>bol.com</b> · Amsterdam · €89.00<div class="desc">2 itens · GLS · gerado há 3h</div></div><span class="sk-chip red">SLA 6h</span><span class="sk-btn">Abrir</span></div>
+          <div class="row"><span class="pid">#4502</span><div class="info"><b>big.pt</b> · Lisboa · €32.50<div class="desc">1 item · DPD · gerado há 4h</div></div><span class="sk-chip warn">SLA 8h</span><span class="sk-btn">Abrir</span></div>
+          <div class="row"><span class="pid">#4498</span><div class="info"><b>Vitrine</b> · Porto · €112.00<div class="desc">5 itens · DPD · etiquetado</div></div><span class="sk-chip green">aguarda coleta</span><span class="sk-btn">Abrir</span></div>
+          <div class="row"><span class="pid">#4490</span><div class="info"><b>Cdiscount</b> · Paris · €45.00<div class="desc">2 itens · GLS · em trânsito</div></div><span class="sk-chip">trânsito</span><span class="sk-btn">Abrir</span></div>
+          <div class="row"><span class="pid">#4485</span><div class="info"><b>Amazon FR</b> · Lyon · €72.30<div class="desc">3 itens · DPD · entregue</div></div><span class="sk-chip green">entregue</span><span class="sk-btn">Abrir</span></div>
+        </div>
+        <div style="text-align:center; margin-top:14px"><span class="sk-btn ghost">Carregar mais (104)</span></div>
+      </div>
+    </div>
+
+    <!-- ============ VIEW: COLETAS (stub) ============ -->
+    <div class="view" id="view-coletas">
+      <div class="page-header"><div><h2>Coletas</h2><div class="page-meta">Próxima · Hoje 14h–17h · DPD · 15 pacotes</div></div></div>
+      <div class="stub-frame">
+        <div class="sk-row" style="margin-bottom:14px">
+          <span class="sk-chip active">Maio 2026 ▾</span>
+          <span class="sk-grow"></span>
+          <span class="sk-btn">Reagendar coleta extra</span>
+          <span class="sk-btn primary">Configurar janela</span>
+        </div>
+        <div class="cal-grid" style="margin-bottom:8px">
+          <div style="text-align:center; font-size:11px; color:var(--ink-light)">seg</div>
+          <div style="text-align:center; font-size:11px; color:var(--ink-light)">ter</div>
+          <div style="text-align:center; font-size:11px; color:var(--ink-light)">qua</div>
+          <div style="text-align:center; font-size:11px; color:var(--ink-light)">qui</div>
+          <div style="text-align:center; font-size:11px; color:var(--ink-light)">sex</div>
+          <div style="text-align:center; font-size:11px; color:var(--ink-light)">sáb</div>
+          <div style="text-align:center; font-size:11px; color:var(--ink-light)">dom</div>
+        </div>
+        <div class="cal-grid">
+          <div class="cal-cell muted"><div class="d">28</div></div>
+          <div class="cal-cell muted"><div class="d">29</div></div>
+          <div class="cal-cell muted"><div class="d">30</div></div>
+          <div class="cal-cell"><div class="d">1</div></div>
+          <div class="cal-cell has-coleta"><div class="d">2</div><div class="ev">DPD · 14h</div></div>
+          <div class="cal-cell"><div class="d">3</div></div>
+          <div class="cal-cell muted"><div class="d">4</div></div>
+
+          <div class="cal-cell"><div class="d">5</div></div>
+          <div class="cal-cell has-coleta"><div class="d">6</div><div class="ev">DPD · 14h</div></div>
+          <div class="cal-cell"><div class="d">7</div></div>
+          <div class="cal-cell has-coleta"><div class="d">8</div><div class="ev">DPD · 14h</div></div>
+          <div class="cal-cell"><div class="d">9</div></div>
+          <div class="cal-cell"><div class="d">10</div></div>
+          <div class="cal-cell muted"><div class="d">11</div></div>
+
+          <div class="cal-cell"><div class="d">12</div></div>
+          <div class="cal-cell has-coleta"><div class="d">13</div><div class="ev">DPD · 14h</div></div>
+          <div class="cal-cell"><div class="d">14</div></div>
+          <div class="cal-cell today has-coleta"><div class="d">15 · hoje</div><div class="ev">DPD · 14–17h · 15 pcts</div></div>
+          <div class="cal-cell"><div class="d">16</div></div>
+          <div class="cal-cell"><div class="d">17</div></div>
+          <div class="cal-cell muted"><div class="d">18</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ VIEW: DEVOLUÇÕES (stub) ============ -->
+    <div class="view" id="view-devolucoes">
+      <div class="page-header"><div><h2>Devoluções</h2><div class="page-meta">1 aguardando ação · 2 em trânsito reverso · 14d UE</div></div></div>
+      <div class="stub-frame">
+        <div class="sk-row" style="margin-bottom:14px">
+          <span class="sk-chip active">Aguardando ação (1)</span>
+          <span class="sk-chip">Em trânsito (2)</span>
+          <span class="sk-chip">Aguardando inspeção (0)</span>
+          <span class="sk-chip muted">Finalizadas</span>
+        </div>
+        <div class="stub-list">
+          <div class="row" style="background:#fff7ee">
+            <span class="pid">#R-872</span>
+            <div class="info"><b>Pedido #4490</b> · arrependimento 14d · comprador: Maria L.<div class="desc">solicitado há 2h · canal big.pt · prazo restante: 11 dias</div></div>
+            <span class="sk-chip warn">aceitar</span><span class="sk-btn primary">Abrir</span>
+          </div>
+          <div class="row">
+            <span class="pid">#R-865</span>
+            <div class="info"><b>Pedido #4380</b> · defeito não conforme · comprador: Klaus S. (Berlim)<div class="desc">em trânsito reverso · ETA amanhã · DPD</div></div>
+            <span class="sk-chip">trânsito</span><span class="sk-btn">Abrir</span>
+          </div>
+          <div class="row">
+            <span class="pid">#R-871</span>
+            <div class="info"><b>Pedido #4412</b> · item errado · comprador: Pablo R. (Madrid)<div class="desc">em trânsito reverso · ETA hoje 18h · GLS</div></div>
+            <span class="sk-chip">trânsito</span><span class="sk-btn">Abrir</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ VIEW: FATURAS (Planos e preços stub) ============ -->
+    <div class="view" id="view-faturas">
+      <div class="page-header"><div><h2>Faturas</h2><div class="page-meta">Planos e preços › Faturas · BIG logistics + módulos do ecossistema</div></div></div>
+      <div class="stub-frame">
+        <div class="sk-row" style="margin-bottom:14px">
+          <span class="sk-chip active">Todas</span>
+          <span class="sk-chip">2026</span>
+          <span class="sk-chip muted">2025</span>
+          <span class="sk-grow"></span>
+          <span class="sk-btn ghost">Exportar CSV</span>
+        </div>
+        <div class="stub-list">
+          <div class="row" style="background:var(--paper-soft); border:1.5px dashed var(--ink); margin-bottom:8px">
+            <span class="pid">Maio 2026</span>
+            <div class="info"><b>Em curso · projetado €160.75</b><div class="desc">Assinatura €99 + Etiquetas BIG logistics 247 × €0.25 = €61.75 · IVA a aplicar no fechamento</div></div>
+            <span class="sk-chip warn">em curso</span><span class="sk-btn" data-go="uso-cobranca">Ver consumo →</span>
+          </div>
+          <div class="row">
+            <span class="pid">Abril 2026</span>
+            <div class="info"><b>€148.50</b> · paga em 05/Mai/2026<div class="desc">Assinatura €99 + Etiquetas 198 × €0.25 = €49.50</div></div>
+            <span class="sk-chip green">paga</span><span class="sk-btn">PDF</span>
+          </div>
+          <div class="row">
+            <span class="pid">Março 2026</span>
+            <div class="info"><b>€132.25</b> · paga em 05/Abr/2026<div class="desc">Assinatura €99 + Etiquetas 133 × €0.25 = €33.25</div></div>
+            <span class="sk-chip green">paga</span><span class="sk-btn">PDF</span>
+          </div>
+          <div class="row">
+            <span class="pid">Fevereiro 2026</span>
+            <div class="info"><b>€118.00</b> · paga em 05/Mar/2026<div class="desc">Assinatura €99 + Etiquetas 76 × €0.25 = €19.00</div></div>
+            <span class="sk-chip green">paga</span><span class="sk-btn">PDF</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ VIEWS: CONSTRUÇÃO ============ -->
+    <div class="view" id="view-home"><div class="under-construction"><h3>🏠 Início</h3><p>Visão geral do ecossistema BH (todos os módulos). Fora do escopo deste protótipo — foco aqui é BIG logistics.</p></div></div>
+    <div class="view" id="view-catalogo"><div class="under-construction"><h3>📦 Catálogo</h3><p>BHID, variantes, medidas físicas. Spec em <code>Requirements/catalogo.md</code>.</p></div></div>
+    <div class="view" id="view-vitrine"><div class="under-construction"><h3>🛒 Vitrine</h3><p>Loja própria do seller. Spec em <code>Requirements/vitrine-loja-propria.md</code>.</p></div></div>
+    <div class="view" id="view-cadastro"><div class="under-construction"><h3>👤 Cadastro</h3><p>Dados fiscais, IVA por país, VIES. Spec em <code>Requirements/cadastro-lojistas.md</code>.</p></div></div>
+    <div class="view" id="view-enderecos"><div class="under-construction"><h3>Endereços</h3><p>Origens (warehouses) com janelas de coleta. Cadastrado no Setup wizard (Fase 1).</p></div></div>
+    <div class="view" id="view-embalagens"><div class="under-construction"><h3>Embalagens</h3><p>Caixas P/M/G + medidas. Cadastrado no Setup wizard (Fase 2).</p></div></div>
+    <div class="view" id="view-carriers"><div class="under-construction"><h3>Carriers & contratos</h3><p>Pool BH + contratos próprios. Import POC de PDF disponível para 2–3 carriers.</p></div></div>
+    <div class="view" id="view-config-regras"><div class="under-construction"><h3>Configurações & regras</h3><p>Hub de regras (roteamento + embalagem). <b>Should-have</b> v1.5.</p></div></div>
+    <div class="view" id="view-modulos"><div class="under-construction"><h3>Módulos</h3><p>Catálogo de módulos do ecossistema BH (ativar/desativar). BIG logistics está ativo.</p></div></div>
+    <div class="view" id="view-subscricoes"><div class="under-construction"><h3>Subscrições</h3><p>Gerenciar assinaturas ativas. BIG logistics: €99/mês · ativa desde Fev/2026.</p></div></div>
+    <div class="view" id="view-suporte"><div class="under-construction"><h3>💬 Suporte</h3><p>Chat com CSM, base de conhecimento, abrir ticket.</p></div></div>
+    <div class="view" id="view-config"><div class="under-construction"><h3>⚙ Configurações</h3><p>Conta, segurança, notificações, idioma.</p></div></div>
+
+  </div>
+</div>
+
+<!-- HELPER TOAST -->
+<div class="helper-toast" id="helper">
+  <div style="flex:1">
+    <b>🧪 Protótipo navegável</b><br>
+    Clique nos itens da sidebar para alternar views · use as tabs de cenário em <b>Uso & cobrança</b>.
+  </div>
+  <span class="x" onclick="this.parentElement.style.display='none'">✕</span>
+</div>
+
+<script>
+const breadcrumbMap = {
+  'home': ['Início', ''],
+  'catalogo': ['Catálogo', ''],
+  'vitrine': ['Vitrine', ''],
+  'cadastro': ['Cadastro', ''],
+  'pedidos': ['Logística', 'Pedidos'],
+  'coletas': ['Logística', 'Coletas'],
+  'devolucoes': ['Logística', 'Devoluções'],
+  'enderecos': ['Logística', 'Endereços'],
+  'embalagens': ['Logística', 'Embalagens'],
+  'carriers': ['Logística', 'Carriers & contratos'],
+  'uso-cobranca': ['Logística', 'Uso & cobrança'],
+  'config-regras': ['Logística', 'Configurações & regras'],
+  'modulos': ['Planos e preços', 'Módulos'],
+  'subscricoes': ['Planos e preços', 'Subscrições'],
+  'faturas': ['Planos e preços', 'Faturas'],
+  'suporte': ['Suporte', ''],
+  'config': ['Configurações', '']
+};
+
+function goToView(target) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const targetEl = document.getElementById('view-' + target);
+  if (targetEl) targetEl.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  const navItem = document.querySelector('.nav-item[data-view="' + target + '"]');
+  if (navItem) navItem.classList.add('active');
+  const crumb = breadcrumbMap[target] || ['', ''];
+  document.getElementById('crumb-1').innerHTML = '<b>' + crumb[0] + '</b>';
+  const c2 = document.getElementById('crumb-2');
+  if (crumb[1]) {
+    c2.innerHTML = '<b>' + crumb[1] + '</b>';
+    c2.previousElementSibling.style.display = '';
+    c2.style.display = '';
+  } else {
+    c2.style.display = 'none';
+    c2.previousElementSibling.style.display = 'none';
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('.nav-item').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.preventDefault();
+    goToView(btn.dataset.view);
+  });
+});
+
+document.querySelectorAll('[data-go]').forEach(el => {
+  el.addEventListener('click', e => { e.stopPropagation(); goToView(el.dataset.go); });
+});
+
+document.querySelectorAll('.scenario-tabs button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.scenario;
+    document.querySelectorAll('.scenario-content').forEach(s => s.classList.remove('active'));
+    document.getElementById('sc-' + target).classList.add('active');
+    document.querySelectorAll('.scenario-tabs button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+document.querySelectorAll('[data-scenario-go]').forEach(el => {
+  el.addEventListener('click', () => {
+    const target = el.dataset.scenarioGo;
+    document.querySelector('.scenario-tabs button[data-scenario="' + target + '"]').click();
+  });
+});
+
+document.querySelectorAll('.action-tabs').forEach(group => {
+  group.querySelectorAll('.at').forEach(tab => {
+    tab.addEventListener('click', () => {
+      group.querySelectorAll('.at').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+});
+
+document.querySelectorAll('.origin-tabs').forEach(group => {
+  group.querySelectorAll('.ot').forEach(tab => {
+    tab.addEventListener('click', () => {
+      group.querySelectorAll('.ot').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+});
+
+setTimeout(() => { document.getElementById('helper').style.display = 'none'; }, 12000);
+</script>
+
+</body>
+</html>

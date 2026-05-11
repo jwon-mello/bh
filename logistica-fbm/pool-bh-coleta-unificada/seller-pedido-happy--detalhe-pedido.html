@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<title>Wireframe — detalhe-pedido (base)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a;
+  --ink-soft: #3d3d3d;
+  --ink-light: #8a8a8a;
+  --ink-faint: #c8c8c8;
+  --paper: #fcfcfa;
+  --paper-edge: #f3f1e8;
+  --yellow: #fff2a8;
+  --yellow-dim: #ffe771;
+  --yellow-edge: #e6c732;
+  --green-soft: #c9e6b8;
+  --red-soft: #f4b8b0;
+  --blue-soft: #b8d4f0;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Patrick Hand', cursive;
+  background: var(--paper);
+  background-image:
+    radial-gradient(circle at 25% 30%, rgba(0,0,0,0.015) 0%, transparent 50%),
+    radial-gradient(circle at 75% 70%, rgba(0,0,0,0.015) 0%, transparent 50%);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.4;
+  margin: 0;
+  padding: 24px 32px 80px;
+}
+
+h1, h2, .var-label, .section-title { font-family: 'Caveat', cursive; }
+
+/* ========== TÍTULO ========== */
+.title-block {
+  border: 2.5px solid var(--ink);
+  border-radius: 10px;
+  padding: 18px 24px 16px;
+  background: var(--paper);
+  box-shadow: 5px 5px 0 var(--ink);
+  margin-bottom: 28px;
+  position: relative;
+}
+.title-block h1 {
+  font-size: 38px;
+  margin: 0 0 4px;
+  line-height: 1.1;
+  letter-spacing: 0.5px;
+}
+.title-block .meta {
+  font-size: 15px;
+  color: var(--ink-soft);
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+.title-block .meta b { color: var(--ink); }
+.title-block .meta .badge-etapa {
+  background: var(--yellow);
+  border: 1.5px solid var(--ink);
+  padding: 2px 12px;
+  border-radius: 100px;
+  font-family: 'Caveat', cursive;
+  font-size: 18px;
+  transform: rotate(-1.5deg);
+  display: inline-block;
+}
+
+.overview-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 24px;
+  margin-top: 14px;
+  padding: 12px 16px;
+  border: 1.5px dashed var(--ink-light);
+  border-radius: 6px;
+  background: var(--paper-edge);
+  font-size: 14.5px;
+}
+.overview-card b { color: var(--ink); }
+.overview-card .label { color: var(--ink-soft); }
+
+/* ========== FLOOR NAV ========== */
+.floor-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 10px 14px;
+  border: 1.5px dashed var(--ink-light);
+  border-radius: 6px;
+  background: var(--paper-edge);
+  position: sticky;
+  top: 8px;
+  z-index: 10;
+}
+.floor-nav a {
+  padding: 4px 12px;
+  text-decoration: none;
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+  border-radius: 100px;
+  font-size: 14px;
+  background: var(--paper);
+  transition: transform 0.1s;
+}
+.floor-nav a:hover {
+  background: var(--yellow);
+  transform: translate(-1px, -1px);
+}
+
+/* ========== SECTION ========== */
+.section { margin-bottom: 36px; }
+.section-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 2px dashed var(--ink-light);
+}
+.section-num {
+  font-family: 'Caveat', cursive;
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 0.85;
+  color: var(--ink);
+  min-width: 56px;
+  text-align: center;
+  background: var(--yellow);
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  padding: 4px 8px;
+  box-shadow: 3px 3px 0 var(--ink);
+  transform: rotate(-2deg);
+}
+.section-info { flex: 1; }
+.section-title {
+  font-size: 32px;
+  margin: 0 0 4px;
+  line-height: 1.05;
+}
+.section-sentiment {
+  display: inline-block;
+  padding: 1px 10px;
+  border-radius: 100px;
+  border: 1.2px solid var(--ink);
+  font-size: 13px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.section-sentiment.neutra { background: var(--paper-edge); }
+.section-sentiment.pos { background: var(--green-soft); }
+.section-sentiment.neg { background: var(--red-soft); }
+.section-desc {
+  font-size: 14.5px;
+  color: var(--ink-soft);
+  max-width: 720px;
+}
+
+/* ========== VARS GRID ========== */
+.vars {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 18px;
+}
+.var-card {
+  position: relative;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  padding: 14px 14px 10px;
+  background: var(--paper);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.var-card::before {
+  content: '';
+  position: absolute;
+  top: -9px;
+  left: 18px;
+  width: 56px;
+  height: 18px;
+  background: var(--yellow-dim);
+  border: 1px solid var(--ink);
+  transform: rotate(-3deg);
+  z-index: 0;
+}
+.var-label {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+.var-tag {
+  display: inline-block;
+  font-family: 'Caveat', cursive;
+  font-size: 22px;
+  font-weight: 700;
+  background: var(--ink);
+  color: var(--paper);
+  width: 28px;
+  height: 28px;
+  text-align: center;
+  line-height: 26px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.var-desc {
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  line-height: 1.35;
+  margin: 4px 0 10px;
+  min-height: 36px;
+}
+
+.annotate {
+  font-family: 'Kalam', cursive;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--ink-faint);
+}
+.annotate::before {
+  content: '↳ ';
+  color: var(--ink-light);
+}
+
+/* ========== SKETCH PRIMITIVES ========== */
+.sk-frame {
+  border: 1.8px solid var(--ink);
+  border-radius: 5px;
+  padding: 8px;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 180px;
+  font-size: 12px;
+}
+.sk-row { display: flex; gap: 6px; align-items: center; }
+.sk-col { display: flex; flex-direction: column; gap: 4px; }
+.sk-grow { flex: 1; }
+
+.sk-box {
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  padding: 4px 6px;
+  background: var(--paper);
+  font-size: 11.5px;
+  min-height: 18px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.sk-box.dashed { border-style: dashed; border-color: var(--ink-light); }
+.sk-box.fill { background: var(--yellow); }
+.sk-box.fillsoft { background: var(--paper-edge); }
+.sk-box.tiny { padding: 2px 5px; font-size: 11px; }
+.sk-box small { color: var(--ink-light); font-size: 10px; }
+
+.sk-btn {
+  border: 1.5px solid var(--ink);
+  border-radius: 100px;
+  padding: 3px 9px;
+  background: var(--paper);
+  font-size: 11.5px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.sk-btn.primary { background: var(--yellow); font-weight: 700; }
+.sk-btn.ghost { border-style: dashed; color: var(--ink-soft); }
+.sk-btn.danger { background: var(--red-soft); }
+
+.sk-chip {
+  border: 1.2px solid var(--ink);
+  border-radius: 100px;
+  padding: 1px 7px;
+  font-size: 10.5px;
+  background: var(--paper);
+  display: inline-block;
+}
+.sk-chip.active { background: var(--yellow); font-weight: 700; }
+.sk-chip.muted { color: var(--ink-light); border-color: var(--ink-faint); }
+
+.sk-line { height: 1.2px; background: var(--ink-light); margin: 2px 0; }
+.sk-line.dash { background: transparent; border-top: 1.2px dashed var(--ink-light); }
+
+.sk-placeholder {
+  border: 1.5px dashed var(--ink-light);
+  border-radius: 4px;
+  padding: 10px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--ink-light);
+  background: var(--paper-edge);
+  position: relative;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sk-placeholder.thumb { min-height: 24px; padding: 2px; font-size: 10px; }
+
+.sk-steps { display: flex; align-items: center; gap: 0; }
+.sk-steps .d {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper);
+  flex-shrink: 0;
+}
+.sk-steps .d.done { background: var(--ink); }
+.sk-steps .d.current { background: var(--yellow); box-shadow: 0 0 0 3px var(--yellow-dim); }
+.sk-steps .ln {
+  flex: 1;
+  height: 2px;
+  background: var(--ink-light);
+  border-radius: 1px;
+}
+.sk-steps .ln.done { background: var(--ink); }
+
+.sk-progress {
+  height: 8px;
+  background: var(--paper-edge);
+  border: 1.2px solid var(--ink);
+  border-radius: 100px;
+  overflow: hidden;
+}
+.sk-progress .fill {
+  height: 100%;
+  background: var(--yellow-edge);
+}
+
+.sk-table {
+  border: 1.2px solid var(--ink);
+  border-radius: 3px;
+  overflow: hidden;
+  font-size: 11px;
+}
+.sk-table-row {
+  display: flex;
+  border-bottom: 1px dashed var(--ink-light);
+  padding: 3px 5px;
+  gap: 6px;
+  align-items: center;
+}
+.sk-table-row:last-child { border-bottom: 0; }
+.sk-table-row.head { background: var(--paper-edge); font-weight: 700; font-size: 10.5px; color: var(--ink-soft); }
+.sk-table-row.fill { background: var(--yellow); }
+.sk-table-row .col { flex: 1; }
+
+.sk-stack > * + * { margin-top: 5px; }
+
+.sk-tag {
+  font-size: 10px;
+  color: var(--ink-light);
+  font-style: italic;
+}
+
+.sk-fab {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  width: 30px;
+  height: 30px;
+  border: 1.8px solid var(--ink);
+  border-radius: 50%;
+  background: var(--yellow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.sk-mini-card {
+  border: 1.5px solid var(--ink);
+  border-radius: 5px;
+  padding: 5px 7px;
+  background: var(--paper);
+  font-size: 11px;
+}
+.sk-mini-card.fill { background: var(--yellow); }
+.sk-mini-card.fillsoft { background: var(--paper-edge); }
+.sk-mini-card.danger { background: var(--red-soft); }
+
+.sk-drawer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 36%;
+  height: 100%;
+  border-left: 1.8px solid var(--ink);
+  background: var(--paper-edge);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 10.5px;
+}
+
+.sk-collapse {
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  padding: 4px 6px;
+  background: var(--paper-edge);
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sk-frame.relpos { position: relative; }
+
+/* ========== CHOSEN MARK ========== */
+.var-card.chosen { box-shadow: 4px 4px 0 var(--ink), inset 0 0 0 2.5px var(--green-soft); }
+.chosen-mark {
+  position: absolute; top: -12px; right: 18px;
+  background: var(--green-soft); border: 1.5px solid var(--ink);
+  padding: 2px 12px; border-radius: 100px;
+  font-family: 'Caveat', cursive; font-size: 16px; font-weight: 700;
+  transform: rotate(2deg); z-index: 1;
+}
+
+/* ========== FOOTER ========== */
+.footer-note {
+  margin-top: 32px;
+  padding: 14px 18px;
+  border: 1.8px dashed var(--ink);
+  border-radius: 6px;
+  background: var(--paper-edge);
+  font-size: 14.5px;
+  color: var(--ink-soft);
+}
+.footer-note b { color: var(--ink); }
+
+</style>
+</head>
+<body>
+
+<!-- ========== TÍTULO ========== -->
+<div class="title-block">
+  <h1>Wireframe base — <span style="color: var(--ink-soft);">detalhe-pedido</span></h1>
+  <div class="meta">
+    <span class="badge-etapa">Etapa 1 · grid de regiões</span>
+    <span><b>Feature:</b> logistica-fbm</span>
+    <span><b>Hipótese:</b> pool-bh-coleta-unificada</span>
+    <span><b>Tela:</b> detalhe-pedido (âncora)</span>
+    <span><b>Persona:</b> Seller PF/PJ multi-MKP UE</span>
+  </div>
+  <div class="overview-card">
+    <div><span class="label">Journeys que tocam:</span> <b>seller-pedido-happy</b> (4 fases) · <b>comprador-cancela-antes-coleta</b> (4 fases)</div>
+    <div><span class="label">Cenários previstos (Etapa 2):</span> <b>8</b> — happy, docs-gerados, em-trânsito, entregue, cancel-pendente, cancel-checklist, aguarda-retirada, cancelado-final</div>
+    <div><span class="label">Regiões × variações:</span> <b>6 × 3 = 18 mini-sketches</b></div>
+    <div><span class="label">Combinação validada ✓:</span> <b>1A · 2C · 3C · 4B · 5A · 6A</b> — pronta para Etapa 2 (cenários) e referência na Etapa 3 (jornada)</div>
+  </div>
+</div>
+
+<!-- ========== FLOOR NAV ========== -->
+<nav class="floor-nav">
+  <a href="#r1">1 · Header</a>
+  <a href="#r2">2 · Roteamento</a>
+  <a href="#r3">3 · Itens</a>
+  <a href="#r4">4 · Ações</a>
+  <a href="#r5">5 · Timeline</a>
+  <a href="#r6">6 · Painel contextual</a>
+</nav>
+
+<!-- ========== R1 — HEADER ========== -->
+<section id="r1" class="section">
+  <div class="section-head">
+    <div class="section-num">1</div>
+    <div class="section-info">
+      <h2 class="section-title">Header — identidade do pedido <span class="section-sentiment neutra">neutra</span></h2>
+      <p class="section-desc">Topo da tela. Mostra ID do pedido, canal de origem, status corrente, valor e prazo. É o "cartão de visita" do pedido — primeira coisa que o seller olha ao abrir.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <!-- A -->
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">A</span>Stripe horizontal denso</div>
+      <div class="var-desc">Tudo numa linha: ID, canal, status, valor, prazo. Maximiza espaço vertical para o resto da tela.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny" style="font-weight:700;">#PED-1234</div>
+          <div class="sk-chip">Amazon</div>
+          <div class="sk-chip active">Em trânsito</div>
+          <div class="sk-grow"></div>
+          <div class="sk-box tiny" style="font-weight:700;">€87,50</div>
+          <div class="sk-chip muted">SLA: 2 dias</div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="sk-row" style="font-size:10.5px; color:var(--ink-light);">
+          <span>Maria Silva · Lisboa, PT</span>
+          <div class="sk-grow"></div>
+          <span>Recebido 12/05 09:14</span>
+        </div>
+      </div>
+      <div class="annotate">denso e eficiente; em telas estreitas pode quebrar feio</div>
+    </article>
+
+    <!-- B -->
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Card hierárquico</div>
+      <div class="var-desc">ID em destaque grande; chips de canal/status logo abaixo; valor secundário. Hierarquia visual clara.</div>
+      <div class="sk-frame">
+        <div style="font-family:'Caveat',cursive; font-size:22px; font-weight:700;">#PED-1234</div>
+        <div class="sk-row">
+          <div class="sk-chip">Amazon</div>
+          <div class="sk-chip active">Em trânsito</div>
+          <div class="sk-chip muted">SLA: 2 dias</div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="sk-row" style="font-size:10.5px; color:var(--ink-soft);">
+          <span>Maria Silva · Lisboa, PT</span>
+        </div>
+        <div style="font-size:13px; color:var(--ink-soft);">Total: <b>€87,50</b></div>
+      </div>
+      <div class="annotate">leitura natural, scaneável; consome mais altura</div>
+    </article>
+
+    <!-- C -->
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Split 2 colunas</div>
+      <div class="var-desc">Esquerda: identidade (ID + comprador). Direita: status + prazo + canal. Equilíbrio visual.</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="align-items:flex-start;">
+          <div class="sk-col" style="flex:1;">
+            <div style="font-family:'Caveat',cursive; font-size:18px; font-weight:700;">#PED-1234</div>
+            <div style="font-size:11px; color:var(--ink-soft);">Maria Silva</div>
+            <div style="font-size:11px; color:var(--ink-light);">Lisboa, PT</div>
+          </div>
+          <div style="border-left:1.2px dashed var(--ink-light); padding-left:8px; flex:1;">
+            <div class="sk-row" style="margin-bottom:4px;">
+              <div class="sk-chip">Amazon</div>
+            </div>
+            <div class="sk-chip active" style="margin-bottom:4px;">Em trânsito</div>
+            <div style="font-size:11px;">SLA: <b>2 dias</b></div>
+            <div style="font-size:11px; margin-top:2px;">€<b>87,50</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">simétrico e organizado; "valor" perde destaque</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ========== R2 — ROTEAMENTO ========== -->
+<section id="r2" class="section">
+  <div class="section-head">
+    <div class="section-num">2</div>
+    <div class="section-info">
+      <h2 class="section-title">Roteamento — origem + carrier <span class="section-sentiment pos">positiva</span></h2>
+      <p class="section-desc">A decisão da Fase 2 do happy path. Em 95% dos casos seller só confirma o default. Em casos especiais troca em 1 clique. Para multi-origem é mais sensível.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <!-- A -->
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">A</span>2 cards lado a lado</div>
+      <div class="var-desc">Card "Origem" + card "Transportadora", edit inline em cada um. Separação clara entre as 2 decisões.</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="align-items:stretch;">
+          <div class="sk-mini-card fillsoft" style="flex:1;">
+            <div style="font-size:10px; color:var(--ink-light);">ORIGEM</div>
+            <div style="font-weight:700;">Lisboa</div>
+            <div style="font-size:10px; color:var(--ink-soft);">Rua das Amoreiras, 12</div>
+            <div style="margin-top:4px;"><span class="sk-btn ghost" style="font-size:10px; padding:1px 6px;">trocar</span></div>
+          </div>
+          <div class="sk-mini-card fill" style="flex:1.2;">
+            <div style="font-size:10px;">TRANSPORTADORA</div>
+            <div style="font-weight:700;">DPD Classic</div>
+            <div style="font-size:10.5px;">€4,20 · 3 dias</div>
+            <div style="margin-top:4px;"><span class="sk-btn ghost" style="font-size:10px; padding:1px 6px;">comparar</span></div>
+          </div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="sk-tag">por que esta? <span style="text-decoration:underline;">ver breakdown</span></div>
+      </div>
+      <div class="annotate">decisões separadas e legíveis; não deixa óbvio que mudar a origem recota a tarifa</div>
+    </article>
+
+    <!-- B -->
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Stepper visual</div>
+      <div class="var-desc">"Origem ✓ → Carrier ✓ → Tarifa". Edit por click em cada step. Reforça que decisões são encadeadas.</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="gap:0;">
+          <div class="sk-col" style="flex:1; align-items:center; text-align:center;">
+            <div style="width:18px;height:18px;border:1.5px solid var(--ink);border-radius:50%;background:var(--ink);color:var(--paper);font-size:11px;display:flex;align-items:center;justify-content:center;">✓</div>
+            <div style="font-size:10px; font-weight:700; margin-top:2px;">Lisboa</div>
+            <div style="font-size:9px; color:var(--ink-light);">origem</div>
+          </div>
+          <div class="sk-line" style="background:var(--ink); height:2px; margin-top:9px;"></div>
+          <div class="sk-col" style="flex:1; align-items:center; text-align:center;">
+            <div style="width:18px;height:18px;border:1.5px solid var(--ink);border-radius:50%;background:var(--yellow);font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:700;">2</div>
+            <div style="font-size:10px; font-weight:700; margin-top:2px;">DPD Classic</div>
+            <div style="font-size:9px; color:var(--ink-light);">carrier</div>
+          </div>
+          <div class="sk-line dash" style="margin-top:9px;"></div>
+          <div class="sk-col" style="flex:1; align-items:center; text-align:center;">
+            <div style="width:18px;height:18px;border:1.5px solid var(--ink);border-radius:50%;background:var(--paper);font-size:11px;display:flex;align-items:center;justify-content:center;">3</div>
+            <div style="font-size:10px; font-weight:700; margin-top:2px;">€4,20</div>
+            <div style="font-size:9px; color:var(--ink-light);">tarifa</div>
+          </div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="sk-row">
+          <span class="sk-btn ghost" style="font-size:10px; padding:1px 6px;">trocar</span>
+          <div class="sk-grow"></div>
+          <span class="sk-tag">recota se trocar origem</span>
+        </div>
+      </div>
+      <div class="annotate">torna visível a cadeia de decisão; pode parecer "passo a passo" demais para um seller experiente</div>
+    </article>
+
+    <!-- C -->
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">C</span>Tabela comparativa</div>
+      <div class="var-desc">Carriers ranqueadas (default destacado, alts listadas) + dropdown de origem no topo. Decisão é "escolher na lista".</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny fillsoft" style="flex:1;">Origem: <b>Lisboa</b> ▾</div>
+        </div>
+        <div class="sk-table">
+          <div class="sk-table-row head">
+            <div class="col">Carrier</div>
+            <div class="col">Preço</div>
+            <div class="col">Prazo</div>
+          </div>
+          <div class="sk-table-row fill">
+            <div class="col"><b>DPD Classic</b> ✓</div>
+            <div class="col">€4,20</div>
+            <div class="col">3 dias</div>
+          </div>
+          <div class="sk-table-row">
+            <div class="col">GLS Standard</div>
+            <div class="col">€4,80</div>
+            <div class="col">3 dias</div>
+          </div>
+          <div class="sk-table-row">
+            <div class="col">DPD Express</div>
+            <div class="col">€8,50</div>
+            <div class="col">1 dia</div>
+          </div>
+        </div>
+        <div class="sk-tag">por que DPD? <span style="text-decoration:underline;">ver</span></div>
+      </div>
+      <div class="annotate">comparação direta; ocupa muito vertical para uma decisão que 95% só confirma</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ========== R3 — ITENS ========== -->
+<section id="r3" class="section">
+  <div class="section-head">
+    <div class="section-num">3</div>
+    <div class="section-info">
+      <h2 class="section-title">Itens do pedido <span class="section-sentiment neutra">neutra</span></h2>
+      <p class="section-desc">BHID, variantes, quantidades. Fonte do packing slip e do picking físico. Maior parte dos pedidos tem 1–3 itens; cauda tem multi-item.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <!-- A -->
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">A</span>Tabela densa</div>
+      <div class="var-desc">BHID | nome | variante | qtd | foto thumb. Maximiza informação por linha. Bom para multi-item.</div>
+      <div class="sk-frame">
+        <div class="sk-table">
+          <div class="sk-table-row head">
+            <div class="col">BHID</div>
+            <div class="col" style="flex:2;">Item</div>
+            <div class="col" style="flex:0.5;">Qtd</div>
+            <div class="col" style="flex:0.7;">Foto</div>
+          </div>
+          <div class="sk-table-row">
+            <div class="col">B-1042</div>
+            <div class="col" style="flex:2;">Camisola Azul · M</div>
+            <div class="col" style="flex:0.5;">1</div>
+            <div class="col" style="flex:0.7;"><div class="sk-placeholder thumb">×</div></div>
+          </div>
+          <div class="sk-table-row">
+            <div class="col">B-2017</div>
+            <div class="col" style="flex:2;">Cinto Couro · 95cm</div>
+            <div class="col" style="flex:0.5;">1</div>
+            <div class="col" style="flex:0.7;"><div class="sk-placeholder thumb">×</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">scaneável e compacto; foto thumb fica pequena demais para conferência visual rápida</div>
+    </article>
+
+    <!-- B -->
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Cards 1-por-item</div>
+      <div class="var-desc">Card por item com foto grande + atributos. Ótimo para conferência visual; consome muito vertical em multi-item.</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="align-items:stretch;">
+          <div class="sk-placeholder" style="width:50px; min-height:50px;">×</div>
+          <div class="sk-col" style="flex:1;">
+            <div style="font-weight:700;">Camisola Azul</div>
+            <div style="font-size:10.5px; color:var(--ink-soft);">B-1042 · Tam M</div>
+            <div style="font-size:10.5px;">Qtd: <b>1</b></div>
+          </div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="sk-row" style="align-items:stretch;">
+          <div class="sk-placeholder" style="width:50px; min-height:50px;">×</div>
+          <div class="sk-col" style="flex:1;">
+            <div style="font-weight:700;">Cinto Couro</div>
+            <div style="font-size:10.5px; color:var(--ink-soft);">B-2017 · 95cm</div>
+            <div style="font-size:10.5px;">Qtd: <b>1</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">visual e amigável; pedido com 10 itens fica um scroll feio</div>
+    </article>
+
+    <!-- C -->
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">C</span>Lista compacta + expand</div>
+      <div class="var-desc">Linha compacta (qtd + nome + BHID); click expande para detalhes (foto, atributos, ficha completa).</div>
+      <div class="sk-frame">
+        <div class="sk-mini-card fillsoft">
+          <div class="sk-row">
+            <span style="font-weight:700;">1×</span>
+            <span class="sk-grow">Camisola Azul · M</span>
+            <span style="color:var(--ink-light); font-size:10px;">B-1042</span>
+            <span class="sk-tag">▾</span>
+          </div>
+          <div class="sk-line dash" style="margin:4px 0;"></div>
+          <div class="sk-row">
+            <div class="sk-placeholder thumb" style="width:36px;">×</div>
+            <div style="font-size:10px; flex:1;">100% algodão · 280g</div>
+          </div>
+        </div>
+        <div class="sk-mini-card">
+          <div class="sk-row">
+            <span style="font-weight:700;">1×</span>
+            <span class="sk-grow">Cinto Couro · 95cm</span>
+            <span style="color:var(--ink-light); font-size:10px;">B-2017</span>
+            <span class="sk-tag">▸</span>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">escala bem para 10+ itens; click extra pra ver foto pode atrapalhar conferência</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ========== R4 — AÇÕES ========== -->
+<section id="r4" class="section">
+  <div class="section-head">
+    <div class="section-num">4</div>
+    <div class="section-info">
+      <h2 class="section-title">Ações primárias (CTA stateful) <span class="section-sentiment pos">positiva</span></h2>
+      <p class="section-desc">CTA muda por estado do pedido: <b>Gerar documentos</b> (Fase 3 happy), <b>Confirmar cancelamento</b> (cancel Fase 4), <b>Marcar pacote retirado</b> (cancel Fase 5). É o "click do dia" do seller.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <!-- A -->
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">A</span>1 botão grande sticky no fundo</div>
+      <div class="var-desc">CTA primário grande + 2 secundários, fixos no rodapé da tela. Convenção "ação ao final".</div>
+      <div class="sk-frame">
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">
+          ··· conteúdo da tela ···
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="sk-row" style="background:var(--paper-edge); padding:6px; margin:-8px; margin-top:0; border-top:1.5px solid var(--ink);">
+          <span class="sk-btn ghost" style="font-size:11px;">cancelar</span>
+          <div class="sk-grow"></div>
+          <span class="sk-btn ghost" style="font-size:11px;">salvar</span>
+          <span class="sk-btn primary" style="font-size:12px; font-weight:700;">Gerar documentos</span>
+        </div>
+      </div>
+      <div class="annotate">previsível, "leitura → ação"; em telas longas o seller perde o CTA do campo de visão até rolar</div>
+    </article>
+
+    <!-- B -->
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">B</span>Barra superior fixa</div>
+      <div class="var-desc">Sticky no topo, sempre visível ao rolar. Pareado com header da Região 1. Maximiza acesso à ação.</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="background:var(--yellow-dim); padding:6px; margin:-8px; margin-bottom:0; border-bottom:1.5px solid var(--ink);">
+          <span class="sk-btn primary" style="font-size:11.5px;">Gerar documentos</span>
+          <span class="sk-btn ghost" style="font-size:11px;">salvar</span>
+          <div class="sk-grow"></div>
+          <span class="sk-btn ghost" style="font-size:11px;">cancelar</span>
+        </div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">
+          ··· conteúdo da tela ···
+        </div>
+      </div>
+      <div class="annotate">CTA sempre acessível; "compete" visualmente com o header — risco de poluir</div>
+    </article>
+
+    <!-- C -->
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>FAB + menu</div>
+      <div class="var-desc">Botão flutuante grande no canto + menu de secundárias. Padrão mobile, raro em desktop B2B.</div>
+      <div class="sk-frame relpos">
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">
+          ··· conteúdo da tela ···
+        </div>
+        <div class="sk-fab">+</div>
+        <div style="position:absolute; right:12px; bottom:48px; background:var(--paper); border:1.2px solid var(--ink); border-radius:4px; padding:3px 6px; font-size:10px;">Gerar docs</div>
+      </div>
+      <div class="annotate">não compete com layout; quebra convenção desktop e dificulta scaneabilidade da ação</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ========== R5 — TIMELINE ========== -->
+<section id="r5" class="section">
+  <div class="section-head">
+    <div class="section-num">5</div>
+    <div class="section-info">
+      <h2 class="section-title">Timeline / progresso <span class="section-sentiment neutra">neutra</span></h2>
+      <p class="section-desc">Fase atual no ciclo do pedido: roteado → docs → coleta → trânsito → entregue. Em estados de cancel, vira "cancel em curso" / "cancelado". Função: orientação rápida.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <!-- A -->
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">A</span>Stepper horizontal</div>
+      <div class="var-desc">5 dots compactos numa linha. Eficiente em espaço; reusa primitive familiar do BH.</div>
+      <div class="sk-frame">
+        <div class="sk-steps">
+          <div class="d done"></div>
+          <div class="ln done"></div>
+          <div class="d done"></div>
+          <div class="ln done"></div>
+          <div class="d current"></div>
+          <div class="ln"></div>
+          <div class="d"></div>
+          <div class="ln"></div>
+          <div class="d"></div>
+        </div>
+        <div class="sk-row" style="font-size:9px; color:var(--ink-light);">
+          <span style="flex:1;">roteado</span>
+          <span style="flex:1;">docs</span>
+          <span style="flex:1; color:var(--ink); font-weight:700;">coleta</span>
+          <span style="flex:1;">trânsito</span>
+          <span style="flex:1;">entregue</span>
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="sk-tag">timestamp da fase atual: 12/05 14:20</div>
+      </div>
+      <div class="annotate">leitura instantânea; cabe pouco texto secundário (ETA, atrasos)</div>
+    </article>
+
+    <!-- B -->
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Timeline vertical</div>
+      <div class="var-desc">Eventos com timestamps e detalhes. Bom para histórico denso (tracking write-back, eventos da carrier).</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="align-items:flex-start;">
+          <div style="width:14px; height:14px; border:1.5px solid var(--ink); border-radius:50%; background:var(--ink); flex-shrink:0; margin-top:2px;"></div>
+          <div style="flex:1;">
+            <div style="font-size:11px;"><b>Documentos gerados</b></div>
+            <div style="font-size:10px; color:var(--ink-light);">12/05 09:14</div>
+          </div>
+        </div>
+        <div style="border-left:1.5px solid var(--ink); margin-left:6px; height:8px;"></div>
+        <div class="sk-row" style="align-items:flex-start;">
+          <div style="width:14px; height:14px; border:1.5px solid var(--ink); border-radius:50%; background:var(--yellow); flex-shrink:0; margin-top:2px; box-shadow:0 0 0 2px var(--yellow-dim);"></div>
+          <div style="flex:1;">
+            <div style="font-size:11px;"><b>Aguardando coleta</b> ←</div>
+            <div style="font-size:10px; color:var(--ink-light);">12/05 14:20 · próxima janela: hoje 16h</div>
+          </div>
+        </div>
+        <div style="border-left:1.2px dashed var(--ink-light); margin-left:6px; height:8px;"></div>
+        <div class="sk-row" style="align-items:flex-start; opacity:0.4;">
+          <div style="width:14px; height:14px; border:1.5px dashed var(--ink-light); border-radius:50%; flex-shrink:0; margin-top:2px;"></div>
+          <div style="font-size:10.5px;">Em trânsito</div>
+        </div>
+      </div>
+      <div class="annotate">rico em info; consome muito vertical e compete com painel contextual da R6</div>
+    </article>
+
+    <!-- C -->
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Barra de progresso + colapsável</div>
+      <div class="var-desc">Barra horizontal + label da fase atual em destaque. Histórico fica em "▾ ver eventos" colapsável.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div style="flex:1;">
+            <div style="font-size:11px;">Fase atual: <b>Aguardando coleta</b></div>
+            <div style="font-size:10px; color:var(--ink-light);">3 de 5 · próxima janela: hoje 16h</div>
+          </div>
+          <div class="sk-tag">3/5</div>
+        </div>
+        <div class="sk-progress"><div class="fill" style="width:60%;"></div></div>
+        <div class="sk-line dash"></div>
+        <div class="sk-collapse">
+          <span style="font-size:11px; color:var(--ink-soft);">▸ ver histórico de eventos</span>
+        </div>
+      </div>
+      <div class="annotate">limpo e econômico; histórico fica "escondido" — perde para fluxos de auditoria</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ========== R6 — PAINEL CONTEXTUAL ========== -->
+<section id="r6" class="section">
+  <div class="section-head">
+    <div class="section-num">6</div>
+    <div class="section-info">
+      <h2 class="section-title">Painel contextual <span class="section-sentiment neg">tensa em cancel</span></h2>
+      <p class="section-desc">O conteúdo varia drasticamente por estado: <b>tracking detalhado</b> (Fases 6–7), <b>checklist de cancel + contador</b> (cancel 4–5), <b>vazio</b> (Fase 2 happy). É a região com maior variação de carga.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <!-- A -->
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">A</span>Card único stateful</div>
+      <div class="var-desc">Um card que muda conteúdo conforme estado. Ocupa lugar fixo no main; some quando vazio.</div>
+      <div class="sk-frame">
+        <div class="sk-mini-card danger">
+          <div style="font-weight:700; font-size:11.5px;">⚠ Cancelamento pendente</div>
+          <div style="font-size:10px; color:var(--ink-soft);">Comprador cancelou · janela <b>1h 22min</b></div>
+        </div>
+        <div class="sk-stack" style="font-size:10.5px;">
+          <div class="sk-row"><span class="sk-tag">✓</span> Etiqueta cancelada (DPD)</div>
+          <div class="sk-row"><span class="sk-tag">✓</span> Tracking revertido (Amazon)</div>
+          <div class="sk-row"><span class="sk-tag" style="color:var(--ink-light);">○</span> Estoque devolvendo…</div>
+          <div class="sk-row"><span class="sk-tag" style="color:var(--ink-light);">○</span> Aguardando "pacote retirado"</div>
+        </div>
+      </div>
+      <div class="annotate">simples e contextual; estado vazio na Fase 2 deixa "buraco" se a região tem espaço alocado</div>
+    </article>
+
+    <!-- B -->
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Drawer lateral expandível</div>
+      <div class="var-desc">Painel à direita do main, abrível. Preserva foco no conteúdo; contexto fica destacado quando relevante.</div>
+      <div class="sk-frame relpos">
+        <div class="sk-stack" style="font-size:11px; padding-right:38%;">
+          <div class="sk-box tiny">··· conteúdo principal ···</div>
+          <div class="sk-box tiny">··· itens, ações ···</div>
+        </div>
+        <div class="sk-drawer">
+          <div style="font-weight:700;">⚠ Cancel pendente</div>
+          <div style="color:var(--ink-soft);">1h 22min</div>
+          <div class="sk-line dash" style="margin:2px 0;"></div>
+          <div>✓ etiqueta</div>
+          <div>✓ tracking</div>
+          <div style="color:var(--ink-light);">○ estoque</div>
+        </div>
+      </div>
+      <div class="annotate">isola o estado denso; padrão raro para sellers, exige aprendizagem</div>
+    </article>
+
+    <!-- C -->
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Seção colapsada "Mais info"</div>
+      <div class="var-desc">No fim da página, colapsada por default. Expande a pedido. Não rouba atenção dos blocos primários.</div>
+      <div class="sk-frame">
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">
+          ··· conteúdo principal ···
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="sk-collapse">
+          <span style="font-size:11px;"><b>▾ Mais info</b> — cancel pendente, tracking detalhado</span>
+          <span class="sk-tag">expandir</span>
+        </div>
+      </div>
+      <div class="annotate">limpo no estado idle; em estado crítico (cancel) esconder demais é arriscado — pode passar despercebido</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<div class="footer-note">
+  <b>Resumo:</b> 6 regiões × 3 variações = <b>18 mini-sketches</b> para validar.<br>
+  <b>Pontos críticos detectados</b>: (1) Região 6 carrega muita carga em estado de cancel — atenção ao conflito visual com Região 4 (ações). (2) Validação de endereço (decisão #24 do PRD) deve emergir como banner contextual no topo da Região 4 quando aplicável, não como região nova. (3) Tracking write-back falhado em canal externo aparece como chip dentro da Região 5 ou 6.<br>
+  <b>Combinação validada ✓</b>: <b>1A · 2C · 3C · 4B · 5A · 6A</b><br>
+  <b>Próximo passo</b>: Etapa 2 com os 8 cenários da tela quando tivermos as Etapas 1 das outras telas-âncora prontas.
+</div>
+
+</body>
+</html>

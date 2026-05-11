@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo de tela — wizard-shell (8 conteúdos)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a; --ink-soft: #3d3d3d; --ink-light: #8a8a8a; --ink-faint: #c8c8c8;
+  --paper: #fcfcfa; --paper-edge: #f3f1e8;
+  --yellow: #fff2a8; --yellow-dim: #ffe771; --yellow-edge: #e6c732;
+  --green-soft: #c9e6b8; --red-soft: #f4b8b0; --blue-soft: #b8d4f0; --orange-soft: #f5d0a0;
+}
+* { box-sizing: border-box; }
+body { font-family: 'Patrick Hand', cursive; background: var(--paper); color: var(--ink); font-size: 16px; line-height: 1.4; margin: 0; padding: 0 0 80px; }
+h1, h2, h3, .title { font-family: 'Caveat', cursive; }
+
+.title-block { border-bottom: 2.5px solid var(--ink); padding: 16px 28px; background: var(--paper); position: sticky; top: 0; z-index: 50; }
+.title-block .row { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.title-block h1 { font-size: 28px; margin: 0; line-height: 1.05; }
+.title-block .meta { font-size: 13.5px; color: var(--ink-soft); }
+.title-block .meta b { color: var(--ink); }
+.title-block .badge-etapa { background: var(--yellow); border: 1.5px solid var(--ink); padding: 2px 12px; border-radius: 100px; font-family: 'Caveat', cursive; font-size: 16px; transform: rotate(-1.5deg); display: inline-block; }
+.title-block .combo { background: var(--green-soft); border: 1.5px solid var(--ink); padding: 2px 12px; border-radius: 100px; font-size: 13px; }
+
+.proto-nav { position: sticky; top: 64px; z-index: 40; background: var(--paper-edge); padding: 8px 28px; display: flex; gap: 6px; flex-wrap: wrap; border-bottom: 1.5px dashed var(--ink-light); }
+.proto-nav button { border: 1.5px solid var(--ink); border-radius: 100px; padding: 4px 12px; background: var(--paper); font-family: 'Patrick Hand', cursive; font-size: 13px; cursor: pointer; }
+.proto-nav button:hover { background: var(--yellow-dim); transform: translate(-1px, -1px); }
+.proto-nav button.active { background: var(--yellow); font-weight: 700; box-shadow: 2px 2px 0 var(--ink); }
+
+.screen { display: none; padding: 24px 28px; }
+.screen.active { display: block; animation: fadeIn 0.2s; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.scenario-banner { border: 1.8px solid var(--ink); border-radius: 6px; padding: 8px 14px; margin-bottom: 16px; display: flex; gap: 10px; align-items: center; font-size: 13.5px; box-shadow: 3px 3px 0 var(--ink); background: var(--paper-edge); }
+.scenario-banner b { font-family: 'Caveat', cursive; font-size: 16px; }
+.scenario-banner .tag { font-family: 'Caveat', cursive; font-size: 13px; font-weight: 700; border: 1.5px solid var(--ink); padding: 1px 10px; border-radius: 100px; background: var(--paper); }
+
+/* WIZARD SHELL */
+.wizard-shell {
+  border: 1.8px solid var(--ink); border-radius: 8px; background: var(--paper);
+  box-shadow: 4px 4px 0 var(--ink);
+  display: grid; grid-template-rows: auto 1fr auto;
+  min-height: 540px; overflow: hidden;
+}
+
+/* R1 — Progress header */
+.wiz-progress {
+  background: var(--paper-edge); padding: 10px 16px; border-bottom: 1.5px solid var(--ink);
+  display: flex; gap: 12px; align-items: center;
+}
+.wiz-progress .step-num { font-size: 13px; color: var(--ink-soft); }
+.wiz-progress .step-num b { color: var(--ink); font-size: 14px; }
+.wiz-progress .bar { flex: 1; height: 8px; background: var(--paper); border: 1.2px solid var(--ink); border-radius: 100px; overflow: hidden; }
+.wiz-progress .bar .fill { height: 100%; background: var(--yellow-edge); transition: width 0.3s; }
+.wiz-progress .pct { font-size: 13px; color: var(--ink-light); min-width: 40px; text-align: right; }
+
+/* Body grid: sidebar + main */
+.wiz-body { display: grid; grid-template-columns: 240px 1fr; }
+
+/* R3 — Sidebar */
+.wiz-sidebar { background: var(--paper-edge); border-right: 1.5px solid var(--ink); padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; }
+.side-step { display: flex; gap: 8px; align-items: center; padding: 4px 8px; border-radius: 4px; font-size: 13px; cursor: pointer; }
+.side-step .b { width: 18px; height: 18px; border: 1.5px solid var(--ink); border-radius: 50%; background: var(--paper); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.side-step .b.done { background: var(--ink); color: var(--paper); }
+.side-step .b.current { background: var(--yellow); }
+.side-step.current { background: var(--yellow-dim); font-weight: 700; }
+.side-step.done { color: var(--ink-soft); }
+.side-step.muted { color: var(--ink-light); }
+.side-step:hover { background: var(--paper); }
+
+/* Main content area */
+.wiz-main { padding: 22px 26px; min-height: 380px; }
+
+/* R2 — Title + subtitle */
+.wiz-title { font-family: 'Caveat', cursive; font-size: 30px; font-weight: 700; line-height: 1.1; margin: 0 0 4px; }
+.wiz-subtitle { font-size: 14px; color: var(--ink-soft); margin-bottom: 18px; }
+
+/* R5 — Footer */
+.wiz-footer {
+  background: var(--paper-edge); padding: 10px 16px; border-top: 1.5px solid var(--ink);
+  display: flex; gap: 8px; align-items: center;
+}
+.wiz-footer .saved { font-size: 11.5px; color: var(--ink-light); display: flex; align-items: center; gap: 4px; }
+
+/* Buttons */
+.btn { border: 1.5px solid var(--ink); border-radius: 100px; padding: 4px 12px; background: var(--paper); font-family: inherit; font-size: 13px; cursor: pointer; }
+.btn:hover { transform: translate(-1px, -1px); }
+.btn.primary { background: var(--yellow); font-weight: 700; }
+.btn.ghost { border-style: dashed; color: var(--ink-soft); }
+.btn.disabled { background: var(--paper-edge); color: var(--ink-light); border-color: var(--ink-faint); cursor: not-allowed; }
+
+/* Cards */
+.card { border: 1.5px solid var(--ink); border-radius: 6px; padding: 12px 14px; background: var(--paper); margin-bottom: 12px; }
+.card.fill { background: var(--yellow); }
+.card.fillsoft { background: var(--paper-edge); }
+.card.green { background: var(--green-soft); }
+.card.warn { background: var(--orange-soft); }
+.card.danger { background: var(--red-soft); }
+.card .h { font-family: 'Caveat', cursive; font-size: 18px; font-weight: 700; }
+.card .desc { font-size: 13px; color: var(--ink-soft); }
+
+/* Field */
+.field { border: 1.5px solid var(--ink); border-radius: 4px; padding: 6px 10px; background: var(--paper); font-size: 13px; min-height: 30px; display: flex; align-items: center; gap: 6px; }
+.field.dashed { border-style: dashed; border-color: var(--ink-light); color: var(--ink-light); }
+.field.fill { background: var(--yellow); }
+.field-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.field-row > .field { flex: 1; }
+
+.label { font-size: 11px; color: var(--ink-light); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px; display: block; }
+
+.chip { border: 1.2px solid var(--ink); border-radius: 100px; padding: 1px 8px; font-size: 12px; background: var(--paper); display: inline-block; }
+.chip.active { background: var(--yellow); font-weight: 700; }
+.chip.muted { color: var(--ink-light); border-color: var(--ink-faint); }
+.chip.green { background: var(--green-soft); }
+.chip.red { background: var(--red-soft); }
+.chip.orange { background: var(--orange-soft); }
+
+.tag { font-size: 11.5px; color: var(--ink-light); font-style: italic; }
+.line-dash { border-top: 1.2px dashed var(--ink-light); margin: 8px 0; }
+
+.cards-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.cards-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* Calendário simplificado para coletas */
+.cal-week { display: grid; grid-template-columns: 60px repeat(7, 1fr); gap: 3px; font-size: 11.5px; }
+.cal-week .h { font-weight: 700; text-align: center; padding: 3px 0; color: var(--ink-soft); font-size: 11px; text-transform: uppercase; }
+.cal-week .col-h { color: var(--ink-light); font-size: 11px; text-align: right; padding-right: 4px; padding-top: 4px; }
+.cal-week .slot { border: 1px dashed var(--ink-faint); border-radius: 3px; min-height: 22px; }
+.cal-week .pickup { border: 1.5px solid var(--ink); border-radius: 3px; padding: 2px 4px; font-size: 10px; font-weight: 700; background: var(--yellow); display: flex; align-items: center; justify-content: center; }
+.cal-week .pickup.gls { background: var(--green-soft); }
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; border-bottom: 1.5px solid var(--ink); margin-bottom: 14px; }
+.tab { border: 1.5px solid var(--ink); border-bottom: none; border-radius: 5px 5px 0 0; padding: 5px 14px; background: var(--paper); font-size: 13px; cursor: pointer; }
+.tab.active { background: var(--yellow); font-weight: 700; }
+
+/* Welcome hero */
+.hero-wel { text-align: center; padding: 24px 16px; }
+.hero-wel .big { font-family: 'Caveat', cursive; font-size: 48px; font-weight: 700; line-height: 1; }
+.hero-wel .sub { font-size: 15px; color: var(--ink-soft); margin: 8px 0 16px; }
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <div class="row">
+    <h1>wizard-shell</h1>
+    <span class="badge-etapa">Etapa 2 · 8 conteúdos</span>
+    <span class="combo">Combinação: 1A · 2A · 3A · 4A · 5A</span>
+    <div style="flex:1;"></div>
+    <span class="meta"><b>setup-inicial-happy</b> — 10 a 25 min</span>
+  </div>
+</div>
+
+<nav class="proto-nav">
+  <button data-screen="sc-welcome" class="active">1. welcome</button>
+  <button data-screen="sc-origens">2. origens</button>
+  <button data-screen="sc-embalagens">3. embalagens</button>
+  <button data-screen="sc-pool">4. pool BH</button>
+  <button data-screen="sc-carriers">5. carriers</button>
+  <button data-screen="sc-coletas">6. coletas</button>
+  <button data-screen="sc-canais">7. canais</button>
+  <button data-screen="sc-resumo">8. resumo · ativar</button>
+</nav>
+
+<!-- Helper para gerar shell — vou usar template repetido -->
+
+<!-- ============================================ -->
+<!-- 1 · WELCOME                                   -->
+<!-- ============================================ -->
+<section class="screen active" id="sc-welcome">
+  <div class="scenario-banner">
+    <span class="tag">welcome</span>
+    <span><b>Boas-vindas + mapa</b> — apresenta os 8 passos e calibra expectativa de tempo. Primeira coisa que o seller vê após ativar o módulo.</span>
+  </div>
+
+  <div class="wizard-shell">
+    <div class="wiz-progress">
+      <span class="step-num">passo <b>1</b> de <b>8</b></span>
+      <div class="bar"><div class="fill" style="width: 12.5%;"></div></div>
+      <span class="pct">12%</span>
+    </div>
+    <div class="wiz-body">
+      <aside class="wiz-sidebar">
+        <div class="side-step current"><div class="b current">1</div>welcome</div>
+        <div class="side-step muted"><div class="b">2</div>origens</div>
+        <div class="side-step muted"><div class="b">3</div>embalagens</div>
+        <div class="side-step muted"><div class="b">4</div>pool BH</div>
+        <div class="side-step muted"><div class="b">5</div>carriers</div>
+        <div class="side-step muted"><div class="b">6</div>coletas</div>
+        <div class="side-step muted"><div class="b">7</div>canais</div>
+        <div class="side-step muted"><div class="b">8</div>resumo</div>
+      </aside>
+      <main class="wiz-main">
+        <div class="hero-wel">
+          <div class="big">Bem-vindo ao BIG logistics 🚚</div>
+          <div class="sub">Vamos configurar a sua operação de logística em 8 passos rápidos.</div>
+        </div>
+        <div class="card fillsoft">
+          <div class="h">O que você vai configurar:</div>
+          <div style="font-size:13px; margin-top:6px;">
+            📍 Endereços de origem · 📦 Embalagens · 🤝 Pool BH ou contrato próprio<br>
+            🚚 Transportadoras · 📅 Janelas de coleta · 🛒 Canais de venda
+          </div>
+          <div class="line-dash"></div>
+          <div style="font-size:13px;"><b>Tempo estimado:</b> 10 a 25 minutos · <b>Auto-save:</b> seu progresso é salvo automaticamente</div>
+        </div>
+      </main>
+    </div>
+    <div class="wiz-footer">
+      <div class="saved"><span class="chip green">✓</span> tudo guardado</div>
+      <div style="flex:1;"></div>
+      <button class="btn primary">Começar →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 2 · ORIGENS                                   -->
+<!-- ============================================ -->
+<section class="screen" id="sc-origens">
+  <div class="scenario-banner">
+    <span class="tag">origens</span>
+    <span><b>Endereços de coleta</b> — onde os pacotes são despachados fisicamente. Multi-origem suportado (decisão #6 do PRD).</span>
+  </div>
+
+  <div class="wizard-shell">
+    <div class="wiz-progress">
+      <span class="step-num">passo <b>2</b> de <b>8</b></span>
+      <div class="bar"><div class="fill" style="width: 25%;"></div></div>
+      <span class="pct">25%</span>
+    </div>
+    <div class="wiz-body">
+      <aside class="wiz-sidebar">
+        <div class="side-step done"><div class="b done">✓</div>welcome</div>
+        <div class="side-step current"><div class="b current">2</div>origens</div>
+        <div class="side-step muted"><div class="b">3</div>embalagens</div>
+        <div class="side-step muted"><div class="b">4</div>pool BH</div>
+        <div class="side-step muted"><div class="b">5</div>carriers</div>
+        <div class="side-step muted"><div class="b">6</div>coletas</div>
+        <div class="side-step muted"><div class="b">7</div>canais</div>
+        <div class="side-step muted"><div class="b">8</div>resumo</div>
+      </aside>
+      <main class="wiz-main">
+        <h2 class="wiz-title">Endereços de origem</h2>
+        <div class="wiz-subtitle">Cadastre os locais de onde os pacotes saem. Pode ter mais de um.</div>
+
+        <div class="cards-2">
+          <div class="card">
+            <div style="display:flex; gap:6px; align-items:center;">
+              <span class="chip active">default</span>
+              <div class="h" style="margin-left:auto;">📍 Lisboa</div>
+            </div>
+            <div class="line-dash"></div>
+            <div style="font-size:13px;">Rua das Amoreiras, 12<br>1250-022 Lisboa, PT</div>
+            <div style="margin-top:8px;"><span class="btn ghost" style="font-size:11px;">editar</span></div>
+          </div>
+          <div class="card">
+            <div style="display:flex; gap:6px; align-items:center;">
+              <div class="h">📍 Porto</div>
+            </div>
+            <div class="line-dash"></div>
+            <div style="font-size:13px;">Av. da Boavista, 1234<br>4100-119 Porto, PT</div>
+            <div style="margin-top:8px;"><span class="btn ghost" style="font-size:11px;">editar</span> <span class="btn ghost" style="font-size:11px;">tornar default</span></div>
+          </div>
+        </div>
+
+        <div class="card fillsoft" style="text-align:center;">
+          <span class="btn ghost">+ adicionar nova origem</span>
+        </div>
+      </main>
+    </div>
+    <div class="wiz-footer">
+      <button class="btn ghost">← voltar</button>
+      <div style="flex:1;"></div>
+      <div class="saved"><span class="chip green">✓</span> rascunho salvo há 8s</div>
+      <button class="btn ghost">pular</button>
+      <button class="btn primary">continuar →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 3 · EMBALAGENS                                -->
+<!-- ============================================ -->
+<section class="screen" id="sc-embalagens">
+  <div class="scenario-banner">
+    <span class="tag">embalagens</span>
+    <span><b>Caixas P/M/G</b> — medidas físicas alimentam o cálculo de tarifa real da carrier. Defaults P/M/G são pré-preenchidos.</span>
+  </div>
+
+  <div class="wizard-shell">
+    <div class="wiz-progress">
+      <span class="step-num">passo <b>3</b> de <b>8</b></span>
+      <div class="bar"><div class="fill" style="width: 37.5%;"></div></div>
+      <span class="pct">37%</span>
+    </div>
+    <div class="wiz-body">
+      <aside class="wiz-sidebar">
+        <div class="side-step done"><div class="b done">✓</div>welcome</div>
+        <div class="side-step done"><div class="b done">✓</div>origens</div>
+        <div class="side-step current"><div class="b current">3</div>embalagens</div>
+        <div class="side-step muted"><div class="b">4</div>pool BH</div>
+        <div class="side-step muted"><div class="b">5</div>carriers</div>
+        <div class="side-step muted"><div class="b">6</div>coletas</div>
+        <div class="side-step muted"><div class="b">7</div>canais</div>
+        <div class="side-step muted"><div class="b">8</div>resumo</div>
+      </aside>
+      <main class="wiz-main">
+        <h2 class="wiz-title">Embalagens cadastradas</h2>
+        <div class="wiz-subtitle">Cadastre as caixas que você usa. Sugerimos defaults P/M/G — você pode editar.</div>
+
+        <div class="cards-3">
+          <div class="card">
+            <div class="h">📦 Pequena (P)</div>
+            <div style="font-size:13px;">25 × 18 × 8 cm<br>até <b>2 kg</b></div>
+            <div class="line-dash"></div>
+            <div><span class="chip green">default ativo</span></div>
+            <div style="margin-top:6px;"><span class="btn ghost" style="font-size:11px;">editar</span></div>
+          </div>
+          <div class="card">
+            <div class="h">📦 Média (M)</div>
+            <div style="font-size:13px;">35 × 25 × 15 cm<br>até <b>5 kg</b></div>
+            <div class="line-dash"></div>
+            <div><span class="chip green">default ativo</span></div>
+            <div style="margin-top:6px;"><span class="btn ghost" style="font-size:11px;">editar</span></div>
+          </div>
+          <div class="card">
+            <div class="h">📦 Grande (G)</div>
+            <div style="font-size:13px;">50 × 40 × 30 cm<br>até <b>20 kg</b></div>
+            <div class="line-dash"></div>
+            <div><span class="chip green">default ativo</span></div>
+            <div style="margin-top:6px;"><span class="btn ghost" style="font-size:11px;">editar</span></div>
+          </div>
+        </div>
+
+        <div class="card fillsoft" style="text-align:center;">
+          <span class="btn ghost">+ adicionar embalagem custom</span>
+        </div>
+
+        <div class="tag" style="margin-top:8px;">↳ medidas alimentam o cálculo de tarifa real da carrier no momento de cotação</div>
+      </main>
+    </div>
+    <div class="wiz-footer">
+      <button class="btn ghost">← voltar</button>
+      <div style="flex:1;"></div>
+      <div class="saved"><span class="chip green">✓</span> salvo</div>
+      <button class="btn ghost">pular</button>
+      <button class="btn primary">continuar →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 4 · POOL BH                                   -->
+<!-- ============================================ -->
+<section class="screen" id="sc-pool">
+  <div class="scenario-banner">
+    <span class="tag">pool BH</span>
+    <span><b>Decisão chave</b> — pool de tarifas BH (recomendado), contrato próprio (seller já tem com carrier), ou misto. Pode trocar depois.</span>
+  </div>
+
+  <div class="wizard-shell">
+    <div class="wiz-progress">
+      <span class="step-num">passo <b>4</b> de <b>8</b></span>
+      <div class="bar"><div class="fill" style="width: 50%;"></div></div>
+      <span class="pct">50%</span>
+    </div>
+    <div class="wiz-body">
+      <aside class="wiz-sidebar">
+        <div class="side-step done"><div class="b done">✓</div>welcome</div>
+        <div class="side-step done"><div class="b done">✓</div>origens</div>
+        <div class="side-step done"><div class="b done">✓</div>embalagens</div>
+        <div class="side-step current"><div class="b current">4</div>pool BH</div>
+        <div class="side-step muted"><div class="b">5</div>carriers</div>
+        <div class="side-step muted"><div class="b">6</div>coletas</div>
+        <div class="side-step muted"><div class="b">7</div>canais</div>
+        <div class="side-step muted"><div class="b">8</div>resumo</div>
+      </aside>
+      <main class="wiz-main">
+        <h2 class="wiz-title">Tarifas — Pool BH ou contrato próprio?</h2>
+        <div class="wiz-subtitle">Como você quer obter as tarifas das transportadoras? Você pode trocar depois.</div>
+
+        <div class="cards-3">
+          <div class="card fill">
+            <div style="display:flex; gap:6px; align-items:center;">
+              <div class="h">🤝 Pool BH</div>
+              <div style="margin-left:auto;"><span class="chip">recomendado</span></div>
+            </div>
+            <div class="line-dash"></div>
+            <div style="font-size:13px;">Tarifas <b>agregadas</b> que BH negocia com DPD + GLS para todos os sellers. Volume coletivo = preço melhor que conta individual.</div>
+            <div class="line-dash"></div>
+            <div style="font-size:11.5px; color:var(--ink-soft);">✓ Sem negociação<br>✓ Pricing transparente<br>✓ Cobertura EU continental</div>
+          </div>
+          <div class="card">
+            <div class="h">📋 Contrato próprio</div>
+            <div class="line-dash"></div>
+            <div style="font-size:13px;">Você já tem contrato com 1+ carriers (DPD, GLS, UPS, etc.). BH usa SUAS tarifas via import de PDF.</div>
+            <div class="line-dash"></div>
+            <div style="font-size:11.5px; color:var(--ink-soft);">✓ Suas tarifas (pode ser melhor)<br>○ Configuração extra<br>○ Manter atualizado</div>
+          </div>
+          <div class="card">
+            <div class="h">⚖ Misto</div>
+            <div class="line-dash"></div>
+            <div style="font-size:13px;">Pool BH para algumas carriers + contrato próprio para outras. Você decide carrier por carrier.</div>
+            <div class="line-dash"></div>
+            <div style="font-size:11.5px; color:var(--ink-soft);">✓ Flexível<br>○ Mais setup</div>
+          </div>
+        </div>
+
+        <div class="card fillsoft">
+          <div style="font-size:13px;"><b>Escolhido:</b> <span class="chip active">🤝 Pool BH</span> — você terá DPD e GLS ativos automaticamente no próximo passo</div>
+        </div>
+      </main>
+    </div>
+    <div class="wiz-footer">
+      <button class="btn ghost">← voltar</button>
+      <div style="flex:1;"></div>
+      <div class="saved"><span class="chip green">✓</span> salvo</div>
+      <button class="btn primary">continuar →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 5 · CARRIERS                                  -->
+<!-- ============================================ -->
+<section class="screen" id="sc-carriers">
+  <div class="scenario-banner">
+    <span class="tag">carriers</span>
+    <span><b>Transportadoras autorizadas</b> — pool BH ativa automaticamente DPD + GLS. Para contrato próprio, importe o PDF (POC) ou cadastre manualmente.</span>
+  </div>
+
+  <div class="wizard-shell">
+    <div class="wiz-progress">
+      <span class="step-num">passo <b>5</b> de <b>8</b></span>
+      <div class="bar"><div class="fill" style="width: 62.5%;"></div></div>
+      <span class="pct">62%</span>
+    </div>
+    <div class="wiz-body">
+      <aside class="wiz-sidebar">
+        <div class="side-step done"><div class="b done">✓</div>welcome</div>
+        <div class="side-step done"><div class="b done">✓</div>origens</div>
+        <div class="side-step done"><div class="b done">✓</div>embalagens</div>
+        <div class="side-step done"><div class="b done">✓</div>pool BH</div>
+        <div class="side-step current"><div class="b current">5</div>carriers</div>
+        <div class="side-step muted"><div class="b">6</div>coletas</div>
+        <div class="side-step muted"><div class="b">7</div>canais</div>
+        <div class="side-step muted"><div class="b">8</div>resumo</div>
+      </aside>
+      <main class="wiz-main">
+        <h2 class="wiz-title">Transportadoras</h2>
+        <div class="wiz-subtitle">Pool BH ativou DPD + GLS para você. Adicione contrato próprio se quiser.</div>
+
+        <div class="cards-2">
+          <div class="card green">
+            <div style="display:flex; gap:6px;">
+              <div class="h">🚚 DPD</div>
+              <div style="margin-left:auto;"><span class="chip green">ativo · pool BH</span></div>
+            </div>
+            <div class="line-dash"></div>
+            <div style="font-size:13px;">Cobertura: PT, ES, FR, DE, IT, BE, NL · Standard + Express</div>
+          </div>
+          <div class="card green">
+            <div style="display:flex; gap:6px;">
+              <div class="h">🚚 GLS</div>
+              <div style="margin-left:auto;"><span class="chip green">ativo · pool BH</span></div>
+            </div>
+            <div class="line-dash"></div>
+            <div style="font-size:13px;">Cobertura: PT, ES, FR, DE · Standard + Express</div>
+          </div>
+        </div>
+
+        <div class="card fillsoft">
+          <div class="h">+ Contrato próprio</div>
+          <div style="font-size:13px;">Tem contrato com outra carrier (UPS, DHL, Chronopost...) ou tarifa especial DPD/GLS? Importe o PDF e a IA extrai.</div>
+          <div style="margin-top:8px;">
+            <span class="btn primary">⚡ Importar PDF (POC)</span>
+            <span class="btn ghost">cadastrar manual</span>
+          </div>
+        </div>
+      </main>
+    </div>
+    <div class="wiz-footer">
+      <button class="btn ghost">← voltar</button>
+      <div style="flex:1;"></div>
+      <div class="saved"><span class="chip green">✓</span> salvo</div>
+      <button class="btn primary">continuar →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 6 · COLETAS                                   -->
+<!-- ============================================ -->
+<section class="screen" id="sc-coletas">
+  <div class="scenario-banner">
+    <span class="tag">coletas</span>
+    <span><b>Janelas semanais</b> — quando o motorista da carrier passa para recolher os pacotes. Multi-origem × carrier.</span>
+  </div>
+
+  <div class="wizard-shell">
+    <div class="wiz-progress">
+      <span class="step-num">passo <b>6</b> de <b>8</b></span>
+      <div class="bar"><div class="fill" style="width: 75%;"></div></div>
+      <span class="pct">75%</span>
+    </div>
+    <div class="wiz-body">
+      <aside class="wiz-sidebar">
+        <div class="side-step done"><div class="b done">✓</div>welcome</div>
+        <div class="side-step done"><div class="b done">✓</div>origens</div>
+        <div class="side-step done"><div class="b done">✓</div>embalagens</div>
+        <div class="side-step done"><div class="b done">✓</div>pool BH</div>
+        <div class="side-step done"><div class="b done">✓</div>carriers</div>
+        <div class="side-step current"><div class="b current">6</div>coletas</div>
+        <div class="side-step muted"><div class="b">7</div>canais</div>
+        <div class="side-step muted"><div class="b">8</div>resumo</div>
+      </aside>
+      <main class="wiz-main">
+        <h2 class="wiz-title">Janelas de coleta</h2>
+        <div class="wiz-subtitle">Defina quando cada carrier passa em cada origem. Pode ajustar depois no painel-coletas.</div>
+
+        <div style="margin-bottom:8px;">
+          <span class="chip muted">Origem:</span> <span class="chip active">📍 Lisboa ▾</span>
+        </div>
+
+        <div class="card">
+          <div style="font-weight:700; font-size:13px; margin-bottom:6px;">Segunda-feira</div>
+          <div class="field" style="background:var(--yellow);">
+            <span class="chip" style="font-size:11px;">DPD</span>
+            <span style="flex:1;">16:00 — 18:00</span>
+            <span class="btn ghost" style="font-size:11px;">editar</span>
+            <span class="btn ghost" style="font-size:11px;">×</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="font-weight:700; font-size:13px; margin-bottom:6px;">Terça-feira</div>
+          <div class="field" style="background:var(--green-soft);">
+            <span class="chip" style="font-size:11px;">GLS</span>
+            <span style="flex:1;">10:00 — 12:00</span>
+            <span class="btn ghost" style="font-size:11px;">editar</span>
+            <span class="btn ghost" style="font-size:11px;">×</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="font-weight:700; font-size:13px; margin-bottom:6px;">Quarta-feira</div>
+          <div class="field" style="background:var(--yellow);">
+            <span class="chip" style="font-size:11px;">DPD</span>
+            <span style="flex:1;">14:00 — 16:00</span>
+            <span class="btn ghost" style="font-size:11px;">editar</span>
+            <span class="btn ghost" style="font-size:11px;">×</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="font-weight:700; font-size:13px; margin-bottom:6px;">Quinta-feira</div>
+          <div class="field" style="background:var(--green-soft);">
+            <span class="chip" style="font-size:11px;">GLS</span>
+            <span style="flex:1;">10:00 — 12:00</span>
+            <span class="btn ghost" style="font-size:11px;">editar</span>
+            <span class="btn ghost" style="font-size:11px;">×</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="font-weight:700; font-size:13px; margin-bottom:6px;">Sexta-feira</div>
+          <div class="field" style="background:var(--yellow);">
+            <span class="chip" style="font-size:11px;">DPD</span>
+            <span style="flex:1;">14:00 — 16:00</span>
+            <span class="btn ghost" style="font-size:11px;">editar</span>
+            <span class="btn ghost" style="font-size:11px;">×</span>
+          </div>
+        </div>
+
+        <div class="card fillsoft" style="text-align:center;">
+          <span class="btn ghost">+ adicionar janela</span>
+          <span class="tag" style="margin-left:8px;">5 janelas configuradas · DPD + GLS</span>
+        </div>
+      </main>
+    </div>
+    <div class="wiz-footer">
+      <button class="btn ghost">← voltar</button>
+      <div style="flex:1;"></div>
+      <div class="saved"><span class="chip green">✓</span> salvo</div>
+      <button class="btn primary">continuar →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 7 · CANAIS                                    -->
+<!-- ============================================ -->
+<section class="screen" id="sc-canais">
+  <div class="scenario-banner">
+    <span class="tag">canais</span>
+    <span><b>De onde vêm os pedidos</b> — canais BH conectam automaticamente; externos via CSV ou manual (decisão #2 do PRD).</span>
+  </div>
+
+  <div class="wizard-shell">
+    <div class="wiz-progress">
+      <span class="step-num">passo <b>7</b> de <b>8</b></span>
+      <div class="bar"><div class="fill" style="width: 87.5%;"></div></div>
+      <span class="pct">87%</span>
+    </div>
+    <div class="wiz-body">
+      <aside class="wiz-sidebar">
+        <div class="side-step done"><div class="b done">✓</div>welcome</div>
+        <div class="side-step done"><div class="b done">✓</div>origens</div>
+        <div class="side-step done"><div class="b done">✓</div>embalagens</div>
+        <div class="side-step done"><div class="b done">✓</div>pool BH</div>
+        <div class="side-step done"><div class="b done">✓</div>carriers</div>
+        <div class="side-step done"><div class="b done">✓</div>coletas</div>
+        <div class="side-step current"><div class="b current">7</div>canais</div>
+        <div class="side-step muted"><div class="b">8</div>resumo</div>
+      </aside>
+      <main class="wiz-main">
+        <h2 class="wiz-title">Conexão de canais</h2>
+        <div class="wiz-subtitle">Conecte os canais de onde os pedidos chegam ao BH.</div>
+
+        <div class="tabs">
+          <div class="tab active">Ecossistema BH (auto)</div>
+          <div class="tab">Externos (CSV / manual)</div>
+        </div>
+
+        <div class="cards-2">
+          <div class="card green">
+            <div style="display:flex; gap:6px;">
+              <div class="h">🛒 Vitrine BIG sales</div>
+              <div style="margin-left:auto;"><span class="chip green">conectado ✓</span></div>
+            </div>
+            <div style="font-size:13px;">Loja própria do seu BIG Hub. Pedidos chegam via webhook nativo.</div>
+          </div>
+          <div class="card green">
+            <div style="display:flex; gap:6px;">
+              <div class="h">🇵🇹 big.pt MKP</div>
+              <div style="margin-left:auto;"><span class="chip green">conectado ✓</span></div>
+            </div>
+            <div style="font-size:13px;">Marketplace do BIG Hub. Pedidos chegam via webhook nativo.</div>
+          </div>
+        </div>
+
+        <div class="card fillsoft">
+          <div class="h">⚠ Canais externos (Amazon, Cdiscount, bol.com)</div>
+          <div style="font-size:13px;">No v1.5, pedidos de MKPs externos chegam via <b>import CSV</b> ou cadastro manual — não há OAuth/API integration nativa. Use a área "Importações" para subir CSVs periodicamente.</div>
+          <div style="margin-top:8px;">
+            <span class="btn ghost">configurar import agendado</span>
+          </div>
+        </div>
+      </main>
+    </div>
+    <div class="wiz-footer">
+      <button class="btn ghost">← voltar</button>
+      <div style="flex:1;"></div>
+      <div class="saved"><span class="chip green">✓</span> salvo</div>
+      <button class="btn primary">continuar →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 8 · RESUMO + ATIVAÇÃO                         -->
+<!-- ============================================ -->
+<section class="screen" id="sc-resumo">
+  <div class="scenario-banner">
+    <span class="tag">resumo · ativar</span>
+    <span><b>Health-check final</b> — confirma que tudo está pronto e ativa o BIG logistics. A partir daqui, pedidos começam a fluir.</span>
+  </div>
+
+  <div class="wizard-shell">
+    <div class="wiz-progress">
+      <span class="step-num">passo <b>8</b> de <b>8</b></span>
+      <div class="bar"><div class="fill" style="width: 100%;"></div></div>
+      <span class="pct">100%</span>
+    </div>
+    <div class="wiz-body">
+      <aside class="wiz-sidebar">
+        <div class="side-step done"><div class="b done">✓</div>welcome</div>
+        <div class="side-step done"><div class="b done">✓</div>origens</div>
+        <div class="side-step done"><div class="b done">✓</div>embalagens</div>
+        <div class="side-step done"><div class="b done">✓</div>pool BH</div>
+        <div class="side-step done"><div class="b done">✓</div>carriers</div>
+        <div class="side-step done"><div class="b done">✓</div>coletas</div>
+        <div class="side-step done"><div class="b done">✓</div>canais</div>
+        <div class="side-step current"><div class="b current">8</div>resumo</div>
+      </aside>
+      <main class="wiz-main">
+        <h2 class="wiz-title">Tudo pronto?</h2>
+        <div class="wiz-subtitle">Revise o setup. Click "Ativar" quando estiver confortável — pode editar tudo depois em Configurações.</div>
+
+        <div class="cards-2">
+          <div class="card green">
+            <div style="display:flex; gap:6px;">
+              <span class="h">📍 Origens</span>
+              <div style="margin-left:auto;"><span class="chip green">2 ✓</span></div>
+            </div>
+            <div style="font-size:12px;">Lisboa (default) · Porto</div>
+          </div>
+          <div class="card green">
+            <div style="display:flex; gap:6px;">
+              <span class="h">📦 Embalagens</span>
+              <div style="margin-left:auto;"><span class="chip green">3 ✓</span></div>
+            </div>
+            <div style="font-size:12px;">P · M · G (defaults)</div>
+          </div>
+          <div class="card green">
+            <div style="display:flex; gap:6px;">
+              <span class="h">🚚 Carriers</span>
+              <div style="margin-left:auto;"><span class="chip green">2 ✓</span></div>
+            </div>
+            <div style="font-size:12px;">DPD · GLS (pool BH)</div>
+          </div>
+          <div class="card green">
+            <div style="display:flex; gap:6px;">
+              <span class="h">📅 Coletas</span>
+              <div style="margin-left:auto;"><span class="chip green">5 janelas ✓</span></div>
+            </div>
+            <div style="font-size:12px;">Lisboa: 5 janelas · Porto: 0 ⚠</div>
+          </div>
+          <div class="card green">
+            <div style="display:flex; gap:6px;">
+              <span class="h">🛒 Canais BH</span>
+              <div style="margin-left:auto;"><span class="chip green">2 ✓</span></div>
+            </div>
+            <div style="font-size:12px;">Vitrine · big.pt MKP</div>
+          </div>
+          <div class="card warn">
+            <div style="display:flex; gap:6px;">
+              <span class="h">⚠ Canais externos</span>
+              <div style="margin-left:auto;"><span class="chip orange">não configurado</span></div>
+            </div>
+            <div style="font-size:12px;">Amazon, Cdiscount: configurar depois</div>
+          </div>
+        </div>
+
+        <div class="card fillsoft" style="text-align:center;">
+          <div style="font-family:'Caveat',cursive; font-size:22px; font-weight:700; margin-bottom:6px;">Tudo pronto para começar 🎉</div>
+          <div style="font-size:13px; color:var(--ink-soft); margin-bottom:10px;">Você pode ativar agora e ajustar o resto conforme operar.</div>
+          <span class="btn primary" style="font-size:15px; padding:8px 24px; font-weight:700;">Ativar BIG logistics →</span>
+        </div>
+      </main>
+    </div>
+    <div class="wiz-footer">
+      <button class="btn ghost">← voltar</button>
+      <div style="flex:1;"></div>
+      <div class="saved"><span class="chip green">✓</span> tudo salvo</div>
+      <button class="btn primary">Ativar →</button>
+    </div>
+  </div>
+</section>
+
+<script>
+document.querySelectorAll('.proto-nav button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.screen;
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(target).classList.add('active');
+    document.querySelectorAll('.proto-nav button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    window.scrollTo({ top: 130, behavior: 'smooth' });
+  });
+});
+</script>
+
+</body>
+</html>

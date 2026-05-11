@@ -1,0 +1,808 @@
+<!doctype html>
+<html lang="pt-pt">
+<head>
+<meta charset="utf-8">
+<title>BIG logistics · Dashboard · Protótipo navegável</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a; --ink-soft: #3d3d3d; --ink-light: #8a8a8a;
+  --paper: #fcfcfa; --yellow: #fff2a8; --yellow-dim: #ffe771; --yellow-edge: #e6c732;
+  --red-soft: #ffd0c9; --green-soft: #d1f0d8; --blue-soft: #d6e6f5;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: 'Patrick Hand', cursive;
+  background: var(--paper);
+  background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.02) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--ink);
+  padding: 30px 50px 80px;
+  line-height: 1.45;
+}
+h1, h2, h3, .section-title, .scenario-tag { font-family: 'Caveat', cursive; letter-spacing: 0.4px; }
+.title-block { border-bottom: 2px solid var(--ink); padding-bottom: 14px; margin-bottom: 18px; }
+.title-block h1 { font-size: 36px; font-weight: 700; margin: 0; }
+.title-block .meta { color: var(--ink-light); font-size: 14px; margin-top: 4px; display: flex; flex-wrap: wrap; gap: 16px; }
+.title-block .meta b { color: var(--ink-soft); font-weight: 400; font-family: 'Patrick Hand', cursive; }
+.proto-badge {
+  display: inline-block; background: var(--yellow); border: 1.5px solid var(--ink);
+  padding: 3px 10px; border-radius: 100px; font-size: 16px; font-family: 'Caveat', cursive;
+  transform: rotate(-1deg); margin-left: 8px;
+}
+
+/* Proto nav (sticky) */
+.proto-nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--paper); border: 2px solid var(--ink); border-radius: 8px;
+  padding: 14px 18px; margin-bottom: 30px;
+  display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.proto-nav .nav-label {
+  font-family: 'Caveat', cursive; font-weight: 700; font-size: 18px;
+  margin-right: 8px;
+}
+.proto-nav button {
+  font-family: 'Patrick Hand', cursive; font-size: 15px;
+  padding: 5px 14px; cursor: pointer;
+  border: 1.5px solid var(--ink); border-radius: 100px;
+  background: var(--paper); box-shadow: 2px 2px 0 var(--ink);
+  transition: transform 0.1s;
+}
+.proto-nav button:hover { background: var(--yellow-dim); transform: translate(-1px, -1px); }
+.proto-nav button.active {
+  background: var(--yellow); font-weight: 700;
+  transform: translate(2px, 2px); box-shadow: none;
+}
+
+/* Screens */
+.screen { display: none; animation: fadeIn 0.18s ease-out; }
+.screen.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.scenario-banner {
+  background: var(--blue-soft); border: 1.5px solid var(--ink); border-radius: 6px;
+  padding: 10px 16px; margin-bottom: 18px; display: flex; gap: 12px; align-items: center;
+}
+.scenario-tag {
+  font-size: 22px; font-weight: 700; padding: 1px 12px;
+  background: var(--yellow); border: 1.5px solid var(--ink); border-radius: 100px;
+  transform: rotate(-1deg);
+}
+.scenario-banner .desc { font-size: 14px; color: var(--ink-soft); flex: 1; }
+
+/* Dashboard layout */
+.dash-frame {
+  border: 1.8px solid var(--ink); border-radius: 6px;
+  padding: 0; background: var(--paper); box-shadow: 4px 4px 0 var(--ink);
+  overflow: hidden;
+}
+.dash-header {
+  padding: 14px 22px; border-bottom: 1.8px solid var(--ink);
+  background: #fbfaf5;
+}
+.dash-breadcrumb {
+  font-size: 13px; color: var(--ink-light); margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.dash-breadcrumb b { color: var(--ink-soft); font-family: 'Patrick Hand', cursive; font-weight: 400; }
+.origin-tabs { display: flex; gap: 0; border-bottom: 1.5px solid var(--ink); margin-bottom: -1px; }
+.origin-tabs .ot {
+  padding: 6px 16px; font-family: 'Patrick Hand', cursive; font-size: 14px;
+  border: 1.2px solid var(--ink); border-bottom: none;
+  border-radius: 5px 5px 0 0; background: var(--paper);
+  margin-right: -1px;
+}
+.origin-tabs .ot.active { background: var(--yellow); font-weight: 700; }
+.origin-tabs .ot.alert { background: var(--red-soft); }
+
+.dash-section { padding: 18px 22px; border-bottom: 1.5px dashed var(--ink); }
+.dash-section:last-child { border-bottom: none; }
+.dash-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.dash-section-head h3 { font-family: 'Caveat', cursive; font-size: 24px; margin: 0; font-weight: 700; }
+.shoulder-tag {
+  font-family: 'Patrick Hand', cursive; font-size: 11px;
+  padding: 1px 8px; border: 1.2px solid var(--ink); border-radius: 100px;
+  background: #f0efe9; transform: rotate(-1deg);
+}
+
+/* Primitives */
+.sk-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.sk-col { display: flex; flex-direction: column; gap: 6px; }
+.sk-grow { flex: 1; }
+.sk-line { height: 1.5px; background: var(--ink); margin: 6px 0; }
+.sk-line.dash { background: none; border-top: 1.5px dashed var(--ink); height: 0; }
+.sk-box { border: 1.5px solid var(--ink); border-radius: 3px; padding: 5px 8px; font-size: 13px; background: var(--paper); }
+.sk-box.fill { background: var(--yellow); }
+.sk-box.fillsoft { background: #f0efe9; }
+.sk-box.tiny { padding: 3px 8px; font-size: 12px; }
+.sk-btn { display: inline-block; border: 1.5px solid var(--ink); border-radius: 100px; padding: 4px 14px; font-family: 'Patrick Hand', cursive; font-size: 13px; background: var(--paper); box-shadow: 2px 2px 0 var(--ink); cursor: pointer; }
+.sk-btn.primary { background: var(--yellow); }
+.sk-btn.ghost { border-style: dashed; box-shadow: none; }
+.sk-chip { display: inline-block; border: 1.2px solid var(--ink); border-radius: 100px; padding: 1px 8px; font-size: 11px; background: var(--paper); white-space: nowrap; }
+.sk-chip.active { background: var(--yellow); }
+.sk-chip.green { background: var(--green-soft); }
+.sk-chip.red { background: var(--red-soft); }
+.sk-chip.warn { background: #fff7ee; }
+.sk-chip.muted { background: #f0efe9; color: var(--ink-soft); }
+.sk-chip.lg { font-size: 13px; padding: 2px 12px; }
+
+.sk-card {
+  border: 1.5px solid var(--ink); border-radius: 4px;
+  padding: 8px 10px; background: var(--paper);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.sk-card .ct { font-weight: 700; font-size: 13px; }
+.sk-card .desc { color: var(--ink-soft); font-size: 11.5px; line-height: 1.3; }
+.sk-card .big { font-size: 28px; font-family: 'Caveat', cursive; font-weight: 700; line-height: 1; }
+.sk-card.warn { background: #fff7ee; }
+.sk-card.danger { background: var(--red-soft); }
+.sk-card.success { background: var(--green-soft); }
+.sk-card.muted { background: #f5f4ee; }
+.sk-card.skeleton { background: repeating-linear-gradient(45deg, #f5f4ee 0 8px, #fbfaf5 8px 16px); }
+
+/* Action tabs (Seção 2) */
+.action-tabs { display: flex; gap: 0; border-bottom: 1.5px solid var(--ink); margin-bottom: 8px; }
+.action-tabs .at {
+  padding: 5px 12px; font-family: 'Patrick Hand', cursive; font-size: 13px;
+  border: 1.2px solid var(--ink); border-bottom: none;
+  border-radius: 5px 5px 0 0; background: var(--paper); margin-bottom: -1.5px; margin-right: -1px;
+}
+.action-tabs .at.active { background: var(--yellow); font-weight: 700; border-bottom: 1.5px solid var(--yellow); }
+.action-tabs .at.muted { background: #f5f4ee; color: var(--ink-light); }
+
+/* Funnel */
+.sk-funnel { display: flex; align-items: stretch; gap: 3px; margin: 6px 0; }
+.sk-funnel .fbar {
+  flex: 1; border: 1.2px solid var(--ink); padding: 6px 4px;
+  font-size: 11px; text-align: center; background: var(--paper);
+  display: flex; flex-direction: column; gap: 2px; min-height: 56px;
+}
+.sk-funnel .fbar .num { font-family: 'Caveat', cursive; font-size: 26px; font-weight: 700; line-height: 1; }
+.sk-funnel .fbar.warn { background: #fff7ee; }
+.sk-funnel .fbar.curr { background: var(--yellow); }
+.sk-funnel .fbar.empty { background: #f5f4ee; color: var(--ink-light); }
+
+/* Bars chart */
+.sk-bars { display: flex; align-items: flex-end; gap: 3px; height: 70px; }
+.sk-bars .b { flex: 1; background: var(--ink); border-radius: 2px 2px 0 0; }
+.sk-bars .b.muted { background: var(--ink-light); }
+.sk-bars .b.proj { background: repeating-linear-gradient(45deg, var(--ink-light) 0 3px, transparent 3px 6px); border: 1px dashed var(--ink); }
+.sk-bars .b.empty { background: #f0efe9; border: 1px dashed var(--ink-light); }
+
+/* Sparkline */
+.sk-spark {
+  height: 24px; flex: 1; position: relative;
+  background:
+    linear-gradient(90deg, transparent 0 5%, var(--ink) 5% 6%, transparent 6% 100%),
+    linear-gradient(90deg, transparent 0 25%, var(--ink) 25% 26%, transparent 26% 100%),
+    linear-gradient(90deg, transparent 0 45%, var(--ink) 45% 46%, transparent 46% 100%),
+    linear-gradient(90deg, transparent 0 65%, var(--ink) 65% 66%, transparent 66% 100%),
+    linear-gradient(90deg, transparent 0 85%, var(--ink) 85% 86%, transparent 86% 100%);
+  border-bottom: 1px solid var(--ink-light);
+}
+
+/* Date filter */
+.date-filter { display: flex; gap: 6px; align-items: center; padding: 8px 0; flex-wrap: wrap; }
+.date-filter .label { font-size: 12px; color: var(--ink-light); }
+
+/* KPI side */
+.kpi-side { width: 160px; padding-right: 14px; border-right: 1.5px dashed var(--ink); display: flex; flex-direction: column; gap: 8px; }
+.kpi-side .kpi-label { font-size: 11px; color: var(--ink-light); }
+.kpi-side .kpi-value { font-family: 'Caveat', cursive; font-size: 28px; font-weight: 700; line-height: 1; }
+.kpi-side .kpi-value.lg { font-size: 32px; }
+.kpi-side .kpi-value.highlight { background: var(--yellow); padding: 2px 6px; align-self: flex-start; }
+.kpi-side .kpi-foot { font-size: 11px; color: var(--ink-soft); font-style: italic; }
+
+/* Empty state copy */
+.empty-state {
+  border: 1.5px dashed var(--ink-light); border-radius: 6px;
+  padding: 22px; text-align: center; background: #fbfaf5;
+}
+.empty-state .es-icon { font-size: 28px; margin-bottom: 8px; }
+.empty-state .es-title { font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700; }
+.empty-state .es-desc { font-size: 13px; color: var(--ink-soft); margin-top: 4px; }
+
+/* Error state */
+.error-state {
+  border: 1.5px solid var(--ink); background: var(--red-soft); border-radius: 6px;
+  padding: 18px; text-align: center;
+}
+.error-state .err-title { font-family: 'Caveat', cursive; font-size: 20px; font-weight: 700; }
+.error-state .err-desc { font-size: 13px; color: var(--ink-soft); margin: 4px 0 8px; }
+
+.dash-banner {
+  border: 1.5px solid var(--ink); border-radius: 5px;
+  padding: 8px 12px; margin: 0 22px 10px; display: flex; gap: 10px; align-items: center;
+}
+.dash-banner.warn { background: var(--red-soft); }
+.dash-banner.info { background: var(--blue-soft); }
+
+.footer-note {
+  margin-top: 40px; padding-top: 18px; border-top: 2px solid var(--ink);
+  font-family: 'Caveat', cursive; font-size: 18px; color: var(--ink-soft);
+}
+.footer-note b { font-weight: 700; color: var(--ink); }
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <h1>BIG logistics · Dashboard <span class="proto-badge">Protótipo navegável</span></h1>
+  <div class="meta">
+    <span><b>caminho:</b> seller-dashboard-uso-cobranca-prototipo</span>
+    <span><b>baseado em:</b> 1B · 2C · 3A · 4B · 5B+filtro · 6C</span>
+    <span><b>cenários:</b> 5 (happy · vazio · pico · falha · ciclo anterior)</span>
+    <span><b>persona:</b> Seller PF/PJ ativo</span>
+  </div>
+</div>
+
+<div class="proto-nav">
+  <span class="nav-label">Cenário:</span>
+  <button data-screen="happy" class="active">Happy day</button>
+  <button data-screen="vazio">Estado vazio</button>
+  <button data-screen="pico">Pico (Black Friday)</button>
+  <button data-screen="falha">Falha parcial</button>
+  <button data-screen="ciclo-ant">Ciclo anterior</button>
+</div>
+
+<!-- ======================== HAPPY DAY ======================== -->
+<div class="screen active" id="happy">
+  <div class="scenario-banner">
+    <span class="scenario-tag">Happy day</span>
+    <span class="desc">Operação fluida · valores típicos · 110 pedidos no dia · 247 etiquetas no ciclo · multi-origem (3) ativo. Estado de referência do produto.</span>
+  </div>
+
+  <div class="dash-frame">
+    <div class="dash-header">
+      <div class="dash-breadcrumb"><b>BH</b> › Logística › <b>Uso & cobrança</b><span style="margin-left:auto; font-size:11px">atualizado há 12s</span></div>
+      <div class="origin-tabs">
+        <div class="ot active">Todas (3)</div>
+        <div class="ot">Lisboa</div>
+        <div class="ot">Porto</div>
+        <div class="ot">Coimbra</div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Ações pendentes</h3></div>
+      <div class="action-tabs">
+        <div class="at active">SLA (3)</div>
+        <div class="at">RMA (1)</div>
+        <div class="at">Cancel (2)</div>
+        <div class="at muted">Falhas (0)</div>
+      </div>
+      <div class="sk-col">
+        <div class="sk-card danger">
+          <div class="sk-row"><span class="ct">#4521 · Amazon DE</span><span class="sk-chip red">vence 4h</span><span class="sk-chip muted">DPD</span><span class="sk-grow"></span><span class="sk-btn primary">Resolver</span></div>
+        </div>
+        <div class="sk-card danger">
+          <div class="sk-row"><span class="ct">#4517 · bol.com</span><span class="sk-chip red">vence 6h</span><span class="sk-chip muted">GLS</span><span class="sk-grow"></span><span class="sk-btn">Resolver</span></div>
+        </div>
+        <div class="sk-card warn">
+          <div class="sk-row"><span class="ct">#4502 · big.pt</span><span class="sk-chip warn">vence 8h</span><span class="sk-chip muted">DPD</span><span class="sk-grow"></span><span class="sk-btn">Resolver</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Operação corrente</h3></div>
+      <div style="font-size:12px; color:var(--ink-light); margin-bottom:4px">Pedidos · funil</div>
+      <div class="sk-funnel">
+        <div class="fbar"><div class="num">5</div>criado</div>
+        <div class="fbar"><div class="num">12</div>roteado</div>
+        <div class="fbar curr"><div class="num">8</div>etiquet.</div>
+        <div class="fbar warn"><div class="num">15</div>aguarda coleta</div>
+        <div class="fbar"><div class="num">47</div>em trânsito</div>
+        <div class="fbar"><div class="num">23</div>entregue hoje</div>
+      </div>
+      <div class="sk-row" style="margin-top:14px; align-items:stretch; gap:14px">
+        <div class="sk-card warn" style="flex:1">
+          <div class="sk-row"><span class="sk-chip">Próxima coleta</span><span class="sk-chip muted">DPD</span></div>
+          <div class="ct" style="font-size:18px">Hoje · 14h–17h</div>
+          <div class="desc">15 pacotes · Depósito Lisboa</div>
+        </div>
+        <div class="sk-card" style="flex:1">
+          <div class="ct">Devoluções em retorno · 2</div>
+          <div class="desc">#R-865 · Berlim → Lisboa · ETA amanhã</div>
+          <div class="desc">#R-871 · Madrid → Lisboa · ETA hoje 18h</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Saúde</h3><span class="shoulder-tag">should-have</span></div>
+      <div class="sk-row" style="gap:8px; align-items:stretch">
+        <div class="sk-card success" style="flex:1; padding:6px 8px">
+          <div class="sk-row"><span class="sk-chip green">●</span><span class="ct">DPD</span></div>
+          <div class="desc">check 38s</div>
+        </div>
+        <div class="sk-card success" style="flex:1; padding:6px 8px">
+          <div class="sk-row"><span class="sk-chip green">●</span><span class="ct">GLS</span></div>
+          <div class="desc">check 1m</div>
+        </div>
+        <div class="sk-card success" style="flex:1; padding:6px 8px">
+          <div class="sk-row"><span class="sk-chip green">●</span><span class="ct">Vitrine</span></div>
+          <div class="desc">webhook ok</div>
+        </div>
+        <div class="sk-card success" style="flex:1; padding:6px 8px">
+          <div class="sk-row"><span class="sk-chip green">●</span><span class="ct">big.pt</span></div>
+          <div class="desc">webhook ok</div>
+        </div>
+        <div class="sk-card warn" style="flex:1; padding:6px 8px">
+          <div class="sk-row"><span class="sk-chip">●</span><span class="ct">Amazon</span></div>
+          <div class="desc">2h sem import</div>
+        </div>
+        <div class="sk-card danger" style="flex:1; padding:6px 8px">
+          <div class="sk-row"><span class="sk-chip red">●</span><span class="ct">Cdiscount</span></div>
+          <div class="desc">14h ⚠ <u>ver</u></div>
+        </div>
+      </div>
+      <div class="sk-card warn" style="margin-top:10px">
+        <div class="sk-row"><span class="ct">Contrato DPD próprio</span><span class="sk-chip warn">fuel surch. 32d</span><span class="sk-grow"></span><u style="font-size:11px">reimport →</u></div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Uso & cobrança</h3></div>
+      <div class="date-filter">
+        <span class="label">📅 período:</span>
+        <span class="sk-box tiny fill">Ciclo atual · Maio 2026 ▾</span>
+        <span class="sk-chip">30d</span>
+        <span class="sk-chip">90d</span>
+        <span class="sk-chip">ciclo ant.</span>
+        <span class="sk-chip">↔ personaliz.</span>
+      </div>
+      <div class="sk-row" style="align-items:stretch; gap:0; margin-top:8px">
+        <div class="kpi-side">
+          <div><div class="kpi-label">etiquetas (ciclo)</div><div class="kpi-value lg">247</div></div>
+          <div><div class="kpi-label">valor etiquetas</div><div class="kpi-value">€61.75</div></div>
+          <div><div class="kpi-label">+ assinatura</div><div style="font-size:14px">€99.00</div></div>
+          <div><div class="kpi-label">projetado</div><div class="kpi-value highlight">€160.75</div><div class="kpi-foot">+25% vs mês ant.</div></div>
+        </div>
+        <div class="sk-grow" style="padding-left:14px; display:flex; flex-direction:column; gap:8px">
+          <div style="font-size:11px; color:var(--ink-light); font-style:italic">etiquetas/dia · com projeção</div>
+          <div class="sk-bars">
+            <div class="b" style="height:30%"></div><div class="b" style="height:50%"></div><div class="b" style="height:40%"></div>
+            <div class="b" style="height:65%"></div><div class="b" style="height:55%"></div><div class="b" style="height:80%"></div>
+            <div class="b" style="height:70%"></div><div class="b" style="height:90%"></div>
+            <div class="b proj" style="height:75%"></div><div class="b proj" style="height:80%"></div>
+          </div>
+          <div class="sk-line dash"></div>
+          <div style="font-size:12px"><b>canal:</b> Vitrine 40% · big.pt 35% · Amzn 15% · Cdisc 10%</div>
+          <div style="font-size:12px"><b>carrier:</b> DPD 60% · GLS 40%</div>
+          <div style="font-size:12px"><b>origem:</b> Lisboa 65% · Porto 35%</div>
+        </div>
+      </div>
+      <div class="sk-row" style="justify-content:flex-end; margin-top:10px">
+        <span class="sk-btn primary">Ver fatura corrente em Planos e preços →</span>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Tendências</h3><span class="shoulder-tag">should-have</span></div>
+      <div class="sk-col" style="gap:8px">
+        <div class="sk-card success">
+          <div class="sk-row" style="align-items:center"><div style="flex:1"><div class="ct">Volume +25%</div><div class="desc">vs mês anterior · maior dos últimos 6m</div></div><div class="sk-spark" style="max-width:80px"></div></div>
+        </div>
+        <div class="sk-card">
+          <div class="sk-row" style="align-items:center"><div style="flex:1"><div class="ct">SLA caiu 3pp</div><div class="desc">de 99% para 96% · DPD DE com atrasos</div></div><div class="sk-spark" style="max-width:80px"></div></div>
+        </div>
+        <div class="sk-card warn">
+          <div class="sk-row" style="align-items:center"><div style="flex:1"><div class="ct">BHID-441 · 12% devolução</div><div class="desc">dobro da média · revisar ficha?</div></div><div class="sk-spark" style="max-width:80px"></div></div>
+        </div>
+        <div class="sk-card">
+          <div class="sk-row" style="align-items:center"><div style="flex:1"><div class="ct">Avaria 2.1%</div><div class="desc">estável · dentro da banda esperada</div></div><div class="sk-spark" style="max-width:80px"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== ESTADO VAZIO ======================== -->
+<div class="screen" id="vazio">
+  <div class="scenario-banner">
+    <span class="scenario-tag">Estado vazio</span>
+    <span class="desc">Primeiro acesso pós-setup · zero pedidos · 1 origem · sem histórico. Copy de onboarding orienta os primeiros passos. Filtro multi-origem oculto (1 origem só).</span>
+  </div>
+
+  <div class="dash-frame">
+    <div class="dash-header">
+      <div class="dash-breadcrumb"><b>BH</b> › Logística › <b>Uso & cobrança</b><span style="margin-left:auto; font-size:11px">atualizado há 5s</span></div>
+      <div style="font-size:13px; color:var(--ink-soft); padding: 4px 0;">Origem: <b>Depósito Lisboa</b> <span style="font-size:11px; color:var(--ink-light); font-style:italic">· cadastre mais origens em Setup &gt; Endereços</span></div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Ações pendentes</h3></div>
+      <div class="empty-state">
+        <div class="es-icon">✓</div>
+        <div class="es-title">Nenhuma ação pendente — dia limpo</div>
+        <div class="es-desc">Quando houver SLA em risco, RMA ou cancelamento, aparecerão aqui.</div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Operação corrente</h3></div>
+      <div class="sk-funnel">
+        <div class="fbar empty"><div class="num">0</div>criado</div>
+        <div class="fbar empty"><div class="num">0</div>roteado</div>
+        <div class="fbar empty"><div class="num">0</div>etiquet.</div>
+        <div class="fbar empty"><div class="num">0</div>aguarda</div>
+        <div class="fbar empty"><div class="num">0</div>em trânsito</div>
+        <div class="fbar empty"><div class="num">0</div>entregue hoje</div>
+      </div>
+      <div class="empty-state" style="margin-top:14px">
+        <div class="es-title">Seu primeiro pedido aparecerá aqui</div>
+        <div class="es-desc">Pedidos chegam automaticamente dos canais BH (Vitrine, big.pt) ou via import CSV em canais externos.</div>
+        <div style="margin-top:10px"><span class="sk-btn primary">Ir para Pedidos →</span> <span class="sk-btn ghost">Importar CSV</span></div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Saúde</h3><span class="shoulder-tag">should-have</span></div>
+      <div class="sk-row" style="gap:8px; align-items:stretch">
+        <div class="sk-card success" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip green">●</span><span class="ct">DPD</span></div><div class="desc">configurado</div></div>
+        <div class="sk-card success" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip green">●</span><span class="ct">GLS</span></div><div class="desc">configurado</div></div>
+        <div class="sk-card success" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip green">●</span><span class="ct">Vitrine</span></div><div class="desc">conectada</div></div>
+        <div class="sk-card muted" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip muted">○</span><span class="ct">big.pt</span></div><div class="desc">não conectado</div></div>
+        <div class="sk-card muted" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip muted">○</span><span class="ct">Amazon</span></div><div class="desc">CSV manual</div></div>
+        <div class="sk-card muted" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip muted">○</span><span class="ct">Cdiscount</span></div><div class="desc">CSV manual</div></div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Uso & cobrança</h3></div>
+      <div class="date-filter">
+        <span class="label">📅 período:</span>
+        <span class="sk-box tiny fill">Ciclo atual · Maio 2026 ▾</span>
+      </div>
+      <div class="sk-row" style="align-items:stretch; gap:0; margin-top:8px">
+        <div class="kpi-side">
+          <div><div class="kpi-label">etiquetas (ciclo)</div><div class="kpi-value lg" style="color:var(--ink-light)">0</div></div>
+          <div><div class="kpi-label">valor etiquetas</div><div class="kpi-value" style="color:var(--ink-light)">€0.00</div></div>
+          <div><div class="kpi-label">+ assinatura</div><div style="font-size:14px">€99.00</div></div>
+          <div><div class="kpi-label">projetado</div><div class="kpi-value highlight">€99.00</div><div class="kpi-foot">primeiro ciclo de operação</div></div>
+        </div>
+        <div class="sk-grow" style="padding-left:14px; display:flex; flex-direction:column; justify-content:center">
+          <div class="empty-state">
+            <div class="es-title">Sem etiquetas geradas ainda</div>
+            <div class="es-desc">Cada etiqueta confirmada pela carrier soma €0.25 ao seu ciclo. Você pode acompanhar em tempo real aqui.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Tendências</h3><span class="shoulder-tag">should-have</span></div>
+      <div class="empty-state">
+        <div class="es-title">Histórico aparecerá após o primeiro ciclo</div>
+        <div class="es-desc">Volume mensal, taxa de avaria, devolução, SLA cumprido e top SKUs ficam disponíveis a partir do segundo mês de operação.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== PICO ======================== -->
+<div class="screen" id="pico">
+  <div class="scenario-banner">
+    <span class="scenario-tag">Pico (Black Friday)</span>
+    <span class="desc">Volume excepcional · 1.247 pedidos hoje · 2.341 etiquetas no ciclo · DPD em degradação por carga · 15 SLAs em risco. Stress da operação.</span>
+  </div>
+
+  <div class="dash-frame">
+    <div class="dash-header">
+      <div class="dash-breadcrumb"><b>BH</b> › Logística › <b>Uso & cobrança</b><span style="margin-left:auto; font-size:11px">atualizado há 8s</span></div>
+      <div class="origin-tabs">
+        <div class="ot active">Todas (3)</div>
+        <div class="ot">Lisboa <span class="sk-chip red" style="font-size:9.5px; padding:0 5px">8</span></div>
+        <div class="ot alert">Porto <span class="sk-chip red" style="font-size:9.5px; padding:0 5px">15</span></div>
+        <div class="ot">Coimbra <span class="sk-chip warn" style="font-size:9.5px; padding:0 5px">5</span></div>
+      </div>
+    </div>
+
+    <div class="dash-banner warn">
+      <span style="font-size:18px">⚠</span>
+      <span style="font-size:13px"><b>Volume +280% vs média</b> · Black Friday em curso · DPD reportou degradação parcial — etiquetas em retry. Reagendamento de coleta extra disponível.</span>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Ações pendentes</h3></div>
+      <div class="action-tabs">
+        <div class="at active">SLA (15)</div>
+        <div class="at">RMA (3)</div>
+        <div class="at">Cancel (8)</div>
+        <div class="at">Falhas (2)</div>
+      </div>
+      <div class="sk-col">
+        <div class="sk-card danger"><div class="sk-row"><span class="ct">#5821 · Amazon DE</span><span class="sk-chip red">vence 1h</span><span class="sk-chip muted">DPD</span><span class="sk-grow"></span><span class="sk-btn primary">URGENTE</span></div></div>
+        <div class="sk-card danger"><div class="sk-row"><span class="ct">#5817 · Amazon FR</span><span class="sk-chip red">vence 2h</span><span class="sk-chip muted">DPD</span><span class="sk-grow"></span><span class="sk-btn primary">URGENTE</span></div></div>
+        <div class="sk-card danger"><div class="sk-row"><span class="ct">#5814 · bol.com</span><span class="sk-chip red">vence 3h</span><span class="sk-chip muted">GLS</span><span class="sk-grow"></span><span class="sk-btn">Resolver</span></div></div>
+        <div class="sk-card warn"><div class="sk-row"><span class="ct">#5810 · Amazon DE</span><span class="sk-chip warn">vence 4h</span><span class="sk-chip muted">DPD</span><span class="sk-grow"></span><span class="sk-btn">Resolver</span></div></div>
+        <div class="sk-card warn"><div class="sk-row"><span class="ct">#5805 · big.pt</span><span class="sk-chip warn">vence 5h</span><span class="sk-grow"></span><span class="sk-btn">Resolver</span></div></div>
+        <div class="sk-row" style="justify-content:center; margin-top:6px"><span class="sk-btn ghost">+ 10 mais SLAs em risco · ver todos</span></div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Operação corrente</h3></div>
+      <div class="sk-funnel">
+        <div class="fbar"><div class="num">42</div>criado</div>
+        <div class="fbar"><div class="num">87</div>roteado</div>
+        <div class="fbar curr"><div class="num">124</div>etiquet.</div>
+        <div class="fbar warn"><div class="num">156</div>aguarda</div>
+        <div class="fbar"><div class="num">890</div>em trânsito</div>
+        <div class="fbar"><div class="num">247</div>entregue hoje</div>
+      </div>
+      <div class="sk-row" style="margin-top:14px; align-items:stretch; gap:14px">
+        <div class="sk-card danger" style="flex:1">
+          <div class="sk-row"><span class="sk-chip red">⚠ Próxima coleta AGORA</span><span class="sk-chip muted">DPD</span></div>
+          <div class="ct" style="font-size:18px">14h–17h · em curso</div>
+          <div class="desc">78 pacotes · Lisboa · motorista a caminho</div>
+          <div style="margin-top:6px"><span class="sk-btn">Reagendar coleta extra</span></div>
+        </div>
+        <div class="sk-card warn" style="flex:1">
+          <div class="ct">Devoluções em retorno · 12</div>
+          <div class="desc">+8 vs média · pico de cancelamentos pós-pico</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Saúde</h3><span class="shoulder-tag">should-have</span></div>
+      <div class="sk-row" style="gap:8px; align-items:stretch">
+        <div class="sk-card warn" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip warn">●</span><span class="ct">DPD</span></div><div class="desc">degradação · retry</div></div>
+        <div class="sk-card success" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip green">●</span><span class="ct">GLS</span></div><div class="desc">check 30s</div></div>
+        <div class="sk-card success" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip green">●</span><span class="ct">Vitrine</span></div><div class="desc">webhook ok</div></div>
+        <div class="sk-card success" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip green">●</span><span class="ct">big.pt</span></div><div class="desc">webhook ok</div></div>
+        <div class="sk-card warn" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip warn">●</span><span class="ct">Amazon</span></div><div class="desc">3h sem import</div></div>
+        <div class="sk-card success" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip green">●</span><span class="ct">Cdiscount</span></div><div class="desc">restaurado</div></div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Uso & cobrança</h3></div>
+      <div class="date-filter">
+        <span class="label">📅 período:</span>
+        <span class="sk-box tiny fill">Ciclo atual · Novembro 2026 ▾</span>
+      </div>
+      <div class="sk-row" style="align-items:stretch; gap:0; margin-top:8px">
+        <div class="kpi-side">
+          <div><div class="kpi-label">etiquetas (ciclo)</div><div class="kpi-value lg">2.341</div></div>
+          <div><div class="kpi-label">valor etiquetas</div><div class="kpi-value">€585.25</div></div>
+          <div><div class="kpi-label">+ assinatura</div><div style="font-size:14px">€99.00</div></div>
+          <div><div class="kpi-label">projetado</div><div class="kpi-value highlight" style="font-size:24px">€684.25</div><div class="kpi-foot">+325% vs mês ant. ⚡</div></div>
+        </div>
+        <div class="sk-grow" style="padding-left:14px; display:flex; flex-direction:column; gap:8px">
+          <div style="font-size:11px; color:var(--ink-light); font-style:italic">etiquetas/dia · pico ativo</div>
+          <div class="sk-bars">
+            <div class="b" style="height:10%"></div><div class="b" style="height:8%"></div><div class="b" style="height:12%"></div>
+            <div class="b" style="height:15%"></div><div class="b" style="height:25%"></div><div class="b" style="height:65%"></div>
+            <div class="b" style="height:90%"></div><div class="b" style="height:95%"></div>
+            <div class="b proj" style="height:88%"></div><div class="b proj" style="height:75%"></div>
+          </div>
+          <div class="sk-line dash"></div>
+          <div style="font-size:12px"><b>canal:</b> Amazon 55% (+pico) · Vitrine 25% · big.pt 15% · Cdisc 5%</div>
+          <div style="font-size:12px"><b>carrier:</b> DPD 70% · GLS 30%</div>
+          <div style="font-size:12px"><b>origem:</b> Lisboa 50% · Porto 35% · Coimbra 15%</div>
+        </div>
+      </div>
+      <div class="sk-row" style="justify-content:flex-end; margin-top:10px">
+        <span class="sk-btn primary">Ver fatura corrente em Planos e preços →</span>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Tendências</h3><span class="shoulder-tag">should-have</span></div>
+      <div class="sk-col" style="gap:8px">
+        <div class="sk-card warn"><div class="sk-row" style="align-items:center"><div style="flex:1"><div class="ct">Volume +325% (pico Black Friday)</div><div class="desc">disparado em 24h · esperado para a data</div></div><div class="sk-spark" style="max-width:80px"></div></div></div>
+        <div class="sk-card danger"><div class="sk-row" style="align-items:center"><div style="flex:1"><div class="ct">SLA -8pp · 91%</div><div class="desc">DPD com degradação · 15 SLAs em risco agora</div></div><div class="sk-spark" style="max-width:80px"></div></div></div>
+        <div class="sk-card warn"><div class="sk-row" style="align-items:center"><div style="flex:1"><div class="ct">Cancelamento +5pp</div><div class="desc">comum em pico · estoque mal calibrado?</div></div><div class="sk-spark" style="max-width:80px"></div></div></div>
+        <div class="sk-card"><div class="sk-row" style="align-items:center"><div style="flex:1"><div class="ct">Avaria estável (2.0%)</div><div class="desc">pool BH absorvendo bem o stress</div></div><div class="sk-spark" style="max-width:80px"></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== FALHA PARCIAL ======================== -->
+<div class="screen" id="falha">
+  <div class="scenario-banner">
+    <span class="scenario-tag">Falha parcial</span>
+    <span class="desc">API agregadora retornou erro em parte das seções · 1, 2, 3, 4 carregaram OK · 5 e 6 em erro · banner de aviso + retry por seção. Fluxo normal não bloqueia.</span>
+  </div>
+
+  <div class="dash-frame">
+    <div class="dash-header">
+      <div class="dash-breadcrumb"><b>BH</b> › Logística › <b>Uso & cobrança</b><span style="margin-left:auto; font-size:11px">atualização parcial · há 14s</span></div>
+      <div class="origin-tabs">
+        <div class="ot active">Todas (3)</div>
+        <div class="ot">Lisboa</div>
+        <div class="ot">Porto</div>
+        <div class="ot">Coimbra</div>
+      </div>
+    </div>
+
+    <div class="dash-banner warn">
+      <span style="font-size:18px">⚠</span>
+      <span style="font-size:13px; flex:1"><b>2 seções não carregaram.</b> Operação não está bloqueada — ações pendentes e operação corrente estão atualizadas. Tente recarregar Uso &amp; cobrança e Tendências.</span>
+      <span class="sk-btn">Recarregar tudo</span>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Ações pendentes</h3><span class="sk-chip green" style="font-size:10px">carregado</span></div>
+      <div class="action-tabs">
+        <div class="at active">SLA (3)</div>
+        <div class="at">RMA (1)</div>
+        <div class="at">Cancel (2)</div>
+        <div class="at muted">Falhas (0)</div>
+      </div>
+      <div class="sk-col">
+        <div class="sk-card danger"><div class="sk-row"><span class="ct">#4521 · Amazon DE</span><span class="sk-chip red">vence 4h</span><span class="sk-grow"></span><span class="sk-btn primary">Resolver</span></div></div>
+        <div class="sk-card danger"><div class="sk-row"><span class="ct">#4517 · bol.com</span><span class="sk-chip red">vence 6h</span><span class="sk-grow"></span><span class="sk-btn">Resolver</span></div></div>
+        <div class="sk-card warn"><div class="sk-row"><span class="ct">#4502 · big.pt</span><span class="sk-chip warn">vence 8h</span><span class="sk-grow"></span><span class="sk-btn">Resolver</span></div></div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Operação corrente</h3><span class="sk-chip green" style="font-size:10px">carregado</span></div>
+      <div class="sk-funnel">
+        <div class="fbar"><div class="num">5</div>criado</div>
+        <div class="fbar"><div class="num">12</div>roteado</div>
+        <div class="fbar curr"><div class="num">8</div>etiquet.</div>
+        <div class="fbar warn"><div class="num">15</div>aguarda</div>
+        <div class="fbar"><div class="num">47</div>em trânsito</div>
+        <div class="fbar"><div class="num">23</div>entregue hoje</div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Saúde</h3><span class="shoulder-tag">should-have</span><span class="sk-chip green" style="font-size:10px">carregado</span></div>
+      <div class="sk-row" style="gap:8px; align-items:stretch">
+        <div class="sk-card success" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip green">●</span><span class="ct">DPD</span></div><div class="desc">check 38s</div></div>
+        <div class="sk-card success" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip green">●</span><span class="ct">GLS</span></div><div class="desc">check 1m</div></div>
+        <div class="sk-card success" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip green">●</span><span class="ct">Vitrine</span></div><div class="desc">webhook ok</div></div>
+        <div class="sk-card warn" style="flex:1; padding:6px 8px"><div class="sk-row"><span class="sk-chip warn">●</span><span class="ct">API</span></div><div class="desc">erro parcial</div></div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Uso & cobrança</h3><span class="sk-chip red" style="font-size:10px">⚠ falhou</span></div>
+      <div class="error-state">
+        <div class="err-title">Não foi possível carregar uso & cobrança</div>
+        <div class="err-desc">A API agregadora retornou erro 503. Os dados continuam sendo coletados; é uma falha de exibição, não de cobrança. Tente recarregar.</div>
+        <span class="sk-btn primary">Tentar novamente</span>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Tendências</h3><span class="shoulder-tag">should-have</span><span class="sk-chip red" style="font-size:10px">⚠ falhou</span></div>
+      <div class="sk-col" style="gap:8px">
+        <div class="sk-card skeleton" style="height:40px"></div>
+        <div class="sk-card skeleton" style="height:40px"></div>
+        <div class="sk-card skeleton" style="height:40px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== CICLO ANTERIOR ======================== -->
+<div class="screen" id="ciclo-ant">
+  <div class="scenario-banner">
+    <span class="scenario-tag">Ciclo anterior</span>
+    <span class="desc">Filtro de data ajustado para Abril 2026 (ciclo fechado) · sem projeção (dado consolidado) · banner explicativo · demais seções permanecem real-time. Útil para revisão/auditoria.</span>
+  </div>
+
+  <div class="dash-frame">
+    <div class="dash-header">
+      <div class="dash-breadcrumb"><b>BH</b> › Logística › <b>Uso & cobrança</b><span style="margin-left:auto; font-size:11px">atualizado há 12s</span></div>
+      <div class="origin-tabs">
+        <div class="ot active">Todas (3)</div>
+        <div class="ot">Lisboa</div>
+        <div class="ot">Porto</div>
+        <div class="ot">Coimbra</div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Ações pendentes</h3></div>
+      <div class="action-tabs">
+        <div class="at active">SLA (3)</div>
+        <div class="at">RMA (1)</div>
+        <div class="at">Cancel (2)</div>
+        <div class="at muted">Falhas (0)</div>
+      </div>
+      <div class="sk-col">
+        <div class="sk-card danger"><div class="sk-row"><span class="ct">#4521 · Amazon DE</span><span class="sk-chip red">vence 4h</span><span class="sk-grow"></span><span class="sk-btn primary">Resolver</span></div></div>
+        <div class="sk-card danger"><div class="sk-row"><span class="ct">#4517 · bol.com</span><span class="sk-chip red">vence 6h</span><span class="sk-grow"></span><span class="sk-btn">Resolver</span></div></div>
+        <div class="sk-card warn"><div class="sk-row"><span class="ct">#4502 · big.pt</span><span class="sk-chip warn">vence 8h</span><span class="sk-grow"></span><span class="sk-btn">Resolver</span></div></div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Operação corrente</h3></div>
+      <div class="sk-funnel">
+        <div class="fbar"><div class="num">5</div>criado</div>
+        <div class="fbar"><div class="num">12</div>roteado</div>
+        <div class="fbar curr"><div class="num">8</div>etiquet.</div>
+        <div class="fbar warn"><div class="num">15</div>aguarda</div>
+        <div class="fbar"><div class="num">47</div>em trânsito</div>
+        <div class="fbar"><div class="num">23</div>entregue hoje</div>
+      </div>
+    </div>
+
+    <div class="dash-section" style="background:#fbfaf5">
+      <div class="dash-section-head"><h3>Uso & cobrança</h3><span class="sk-chip warn" style="font-size:10px">📅 ciclo fechado</span></div>
+      <div class="date-filter">
+        <span class="label">📅 período:</span>
+        <span class="sk-chip">Ciclo atual</span>
+        <span class="sk-chip">30d</span>
+        <span class="sk-chip">90d</span>
+        <span class="sk-box tiny fill">Abril 2026 (ciclo ant.) ▾</span>
+        <span class="sk-chip">↔ personaliz.</span>
+      </div>
+      <div class="dash-banner info" style="margin: 10px 0;">
+        <span style="font-size:14px">📅</span>
+        <span style="font-size:12.5px"><b>Exibindo Abril 2026 — ciclo fechado.</b> Sem projeção; dados consolidados. Fatura correspondente já foi emitida.</span>
+      </div>
+      <div class="sk-row" style="align-items:stretch; gap:0">
+        <div class="kpi-side">
+          <div><div class="kpi-label">etiquetas (Abr)</div><div class="kpi-value lg">198</div></div>
+          <div><div class="kpi-label">valor etiquetas</div><div class="kpi-value">€49.50</div></div>
+          <div><div class="kpi-label">+ assinatura</div><div style="font-size:14px">€99.00</div></div>
+          <div><div class="kpi-label">total cobrado</div><div class="kpi-value highlight">€148.50</div><div class="kpi-foot">fatura paga · 05/Mai</div></div>
+        </div>
+        <div class="sk-grow" style="padding-left:14px; display:flex; flex-direction:column; gap:8px">
+          <div style="font-size:11px; color:var(--ink-light); font-style:italic">etiquetas/dia · Abril 2026</div>
+          <div class="sk-bars">
+            <div class="b" style="height:25%"></div><div class="b" style="height:35%"></div><div class="b" style="height:50%"></div>
+            <div class="b" style="height:60%"></div><div class="b" style="height:55%"></div><div class="b" style="height:70%"></div>
+            <div class="b" style="height:65%"></div><div class="b" style="height:75%"></div>
+            <div class="b" style="height:60%"></div><div class="b" style="height:55%"></div>
+          </div>
+          <div class="sk-line dash"></div>
+          <div style="font-size:12px"><b>canal:</b> Vitrine 38% · big.pt 32% · Amzn 18% · Cdisc 12%</div>
+          <div style="font-size:12px"><b>carrier:</b> DPD 58% · GLS 42%</div>
+          <div style="font-size:12px"><b>origem:</b> Lisboa 60% · Porto 40%</div>
+        </div>
+      </div>
+      <div class="sk-row" style="justify-content:flex-end; margin-top:10px; gap:8px">
+        <span class="sk-btn ghost">Voltar ao ciclo atual</span>
+        <span class="sk-btn primary">Ver fatura de Abril →</span>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-head"><h3>Tendências</h3><span class="shoulder-tag">should-have</span></div>
+      <div class="sk-col" style="gap:8px">
+        <div class="sk-card"><div class="sk-row" style="align-items:center"><div style="flex:1"><div class="ct">Volume Abr · 198 etiquetas</div><div class="desc">+12% vs Março</div></div><div class="sk-spark" style="max-width:80px"></div></div></div>
+        <div class="sk-card success"><div class="sk-row" style="align-items:center"><div style="flex:1"><div class="ct">SLA Abr · 99%</div><div class="desc">melhor mês de 2026</div></div><div class="sk-spark" style="max-width:80px"></div></div></div>
+        <div class="sk-card"><div class="sk-row" style="align-items:center"><div style="flex:1"><div class="ct">Avaria 1.8%</div><div class="desc">abaixo da média histórica</div></div><div class="sk-spark" style="max-width:80px"></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer-note">
+  <b>Protótipo navegável · 5 cenários</b> &nbsp;<span style="background:var(--green-soft); padding:2px 8px; border:1.5px solid var(--ink); border-radius:100px; font-size:16px">happy · vazio · pico · falha · ciclo anterior</span><br><br>
+  Baseado na combinação validada do wireframe base (1B · 2C · 3A · 4B · 5B+filtro · 6C). Cada cenário mantém as variações escolhidas, mudando apenas o conteúdo das seções para refletir o estado.<br><br>
+  <i>Próximos caminhos:</i> adicionar mais cenários (origem específica em alerta · seller multi-origem com 1 origem desativada · período personalizado de data) · evoluir para alta-fidelidade · partir para próximo wireframe da onda 1 (Setup wizard · Pedidos).
+</div>
+
+<script>
+  document.querySelectorAll('.proto-nav button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.screen;
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(target).classList.add('active');
+      document.querySelectorAll('.proto-nav button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo de tela — importar-contrato-preview (5 cenários · contratos reais)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a; --ink-soft: #3d3d3d; --ink-light: #8a8a8a; --ink-faint: #c8c8c8;
+  --paper: #fcfcfa; --paper-edge: #f3f1e8;
+  --yellow: #fff2a8; --yellow-dim: #ffe771; --yellow-edge: #e6c732;
+  --green-soft: #c9e6b8; --red-soft: #f4b8b0; --blue-soft: #b8d4f0; --orange-soft: #f5d0a0;
+  --conf-high: #c9e6b8; --conf-mid: #f5d0a0; --conf-low: #f4b8b0;
+}
+* { box-sizing: border-box; }
+body { font-family: 'Patrick Hand', cursive; background: var(--paper); color: var(--ink); font-size: 16px; line-height: 1.4; margin: 0; padding: 0 0 80px; }
+h1, h2, h3 { font-family: 'Caveat', cursive; }
+
+.title-block { border-bottom: 2.5px solid var(--ink); padding: 16px 28px; background: var(--paper); position: sticky; top: 0; z-index: 50; }
+.title-block .row { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.title-block h1 { font-size: 28px; margin: 0; line-height: 1.05; }
+.title-block .meta { font-size: 13px; color: var(--ink-soft); }
+.title-block .meta b { color: var(--ink); }
+.title-block .badge-etapa { background: var(--yellow); border: 1.5px solid var(--ink); padding: 2px 12px; border-radius: 100px; font-family: 'Caveat', cursive; font-size: 16px; transform: rotate(-1.5deg); display: inline-block; }
+.title-block .combo { background: var(--green-soft); border: 1.5px solid var(--ink); padding: 2px 12px; border-radius: 100px; font-size: 13px; }
+.title-block .refat { background: var(--blue-soft); border: 1.5px solid var(--ink); padding: 2px 12px; border-radius: 100px; font-size: 12px; font-style: italic; }
+
+.proto-nav { position: sticky; top: 64px; z-index: 40; background: var(--paper-edge); padding: 8px 28px; display: flex; gap: 6px; flex-wrap: wrap; border-bottom: 1.5px dashed var(--ink-light); }
+.proto-nav button { border: 1.5px solid var(--ink); border-radius: 100px; padding: 4px 12px; background: var(--paper); font-family: 'Patrick Hand', cursive; font-size: 13px; cursor: pointer; }
+.proto-nav button:hover { background: var(--yellow-dim); transform: translate(-1px, -1px); }
+.proto-nav button.active { background: var(--yellow); font-weight: 700; box-shadow: 2px 2px 0 var(--ink); }
+
+.screen { display: none; padding: 24px 28px 60px; }
+.screen.active { display: block; animation: fadeIn 0.2s; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.scenario-banner { border: 1.8px solid var(--ink); border-radius: 6px; padding: 8px 14px; margin-bottom: 16px; display: flex; gap: 10px; align-items: center; font-size: 13.5px; box-shadow: 3px 3px 0 var(--ink); background: var(--paper-edge); }
+.scenario-banner.happy { background: var(--green-soft); }
+.scenario-banner.warn { background: var(--orange-soft); }
+.scenario-banner.danger { background: var(--red-soft); }
+.scenario-banner b { font-family: 'Caveat', cursive; font-size: 16px; }
+.scenario-banner .tag { font-family: 'Caveat', cursive; font-size: 13px; font-weight: 700; border: 1.5px solid var(--ink); padding: 1px 10px; border-radius: 100px; background: var(--paper); }
+
+/* R1 Header */
+.tela-header { border: 1.8px solid var(--ink); border-radius: 6px; padding: 8px 14px; margin-bottom: 12px; box-shadow: 3px 3px 0 var(--ink); background: var(--paper); }
+.tela-header .row { display: flex; gap: 10px; align-items: center; }
+.tela-header .id { font-weight: 700; font-size: 14px; }
+
+/* R2 Summary */
+.summary-bar { background: var(--paper-edge); border: 1.5px solid var(--ink); border-radius: 5px; padding: 6px 12px; margin-bottom: 14px; display: flex; gap: 8px; align-items: center; font-size: 13px; flex-wrap: wrap; }
+.summary-bar.warn { background: var(--orange-soft); }
+.summary-bar.danger { background: var(--red-soft); }
+.summary-bar .filter { margin-left: auto; }
+
+/* R6 Bottom bar */
+.bottom-bar { position: sticky; bottom: 0; background: var(--paper-edge); border-top: 1.5px solid var(--ink); padding: 10px 14px; display: flex; gap: 8px; align-items: center; margin: 16px -28px -60px; }
+
+/* R4 Acordeão 2 níveis */
+.acc { border: 1.5px solid var(--ink); border-radius: 5px; background: var(--paper); margin-bottom: 8px; overflow: hidden; }
+.acc-head { padding: 8px 12px; background: var(--paper-edge); display: flex; gap: 8px; align-items: center; cursor: pointer; font-size: 14px; }
+.acc-head .h { font-family: 'Caveat', cursive; font-size: 18px; font-weight: 700; }
+.acc-head .count { margin-left: auto; font-size: 12px; color: var(--ink-soft); }
+.acc.expanded .acc-head { background: var(--yellow-dim); border-bottom: 1.2px solid var(--ink); }
+.acc.expanded .arrow::before { content: '▾'; }
+.acc:not(.expanded) .arrow::before { content: '▸'; }
+.acc-body { padding: 10px 12px; }
+.acc:not(.expanded) .acc-body { display: none; }
+
+/* Acordeão nível 2 — produtos com sub-tabelas */
+.acc2 { border: 1.4px solid var(--ink-light); border-radius: 4px; background: var(--paper); margin-bottom: 6px; overflow: hidden; }
+.acc2-head { padding: 6px 10px; background: var(--paper); display: flex; gap: 8px; align-items: center; cursor: pointer; font-size: 12.5px; border-left: 4px solid var(--ink); }
+.acc2-head .h2 { font-weight: 700; }
+.acc2-head .count { margin-left: auto; font-size: 11px; color: var(--ink-soft); }
+.acc2.expanded .acc2-head { background: var(--paper-edge); border-bottom: 1px dashed var(--ink-light); border-left-color: var(--yellow-edge); }
+.acc2.expanded .arrow::before { content: '▾'; }
+.acc2:not(.expanded) .arrow::before { content: '▸'; }
+.acc2-body { padding: 8px 12px; }
+.acc2:not(.expanded) .acc2-body { display: none; }
+
+/* R5 Confidence bordas */
+.field-conf { border: 2px solid var(--ink); border-radius: 4px; padding: 5px 10px; background: var(--paper); font-size: 13px; min-height: 30px; display: flex; align-items: center; gap: 6px; margin-bottom: 6px; cursor: pointer; }
+.field-conf.high { border-color: var(--conf-high); }
+.field-conf.mid { border-color: var(--conf-mid); }
+.field-conf.low { border-color: var(--conf-low); }
+.field-conf.editing { background: var(--yellow); border-color: var(--ink); border-style: dashed; }
+.field-conf .conf-tag { margin-left: auto; font-size: 11px; color: var(--ink-light); }
+.field-conf .conf-tag.high::before { content: '✓ '; color: var(--ink); }
+.field-conf .conf-tag.mid::before { content: '⚠ '; color: var(--ink); }
+.field-conf .conf-tag.low::before { content: '⚠ '; color: var(--ink); }
+.field-conf .pdf-link { font-size: 11px; color: var(--ink-light); text-decoration: underline; cursor: pointer; margin-left: 6px; }
+
+/* Tabela tarifária */
+.tariff-table { border: 1.2px solid var(--ink); border-radius: 4px; overflow: hidden; font-size: 12px; margin-bottom: 8px; }
+.tariff-table .tr { display: flex; border-bottom: 1px dashed var(--ink-light); padding: 4px 8px; gap: 6px; align-items: center; }
+.tariff-table .tr:last-child { border-bottom: 0; }
+.tariff-table .tr.head { background: var(--paper-edge); font-weight: 700; font-size: 10.5px; color: var(--ink-soft); text-transform: uppercase; }
+.tariff-table .col { flex: 1; text-align: center; }
+.tariff-table .col.label { flex: 0.8; text-align: left; font-weight: 700; }
+.tariff-table .cell { border-radius: 3px; padding: 2px 6px; display: inline-block; }
+.tariff-table .cell.high { border: 1.5px solid var(--conf-high); }
+.tariff-table .cell.mid { border: 1.5px solid var(--conf-mid); background: rgba(245,208,160,0.2); }
+.tariff-table .cell.low { border: 1.5px solid var(--conf-low); background: rgba(244,184,176,0.3); }
+
+.btn { border: 1.5px solid var(--ink); border-radius: 100px; padding: 4px 12px; background: var(--paper); font-family: inherit; font-size: 13px; cursor: pointer; }
+.btn:hover { transform: translate(-1px, -1px); }
+.btn.primary { background: var(--yellow); font-weight: 700; }
+.btn.ghost { border-style: dashed; color: var(--ink-soft); }
+.btn.disabled { background: var(--paper-edge); color: var(--ink-light); border-color: var(--ink-faint); cursor: not-allowed; }
+
+.chip { border: 1.2px solid var(--ink); border-radius: 100px; padding: 1px 8px; font-size: 12px; background: var(--paper); display: inline-block; }
+.chip.poc { background: var(--blue-soft); font-style: italic; }
+.chip.green { background: var(--green-soft); }
+.chip.warn { background: var(--orange-soft); }
+.chip.danger { background: var(--red-soft); }
+.chip.muted { color: var(--ink-light); }
+
+.tag { font-size: 11.5px; color: var(--ink-light); font-style: italic; }
+
+/* Popover PDF */
+.pdf-popover { position: fixed; bottom: 80px; right: 32px; width: 320px; background: var(--paper); border: 2px solid var(--ink); border-radius: 8px; box-shadow: 6px 6px 0 var(--ink); padding: 10px; z-index: 100; display: none; }
+.pdf-popover.show { display: block; animation: fadeIn 0.15s; }
+.pdf-popover .ph { font-family: 'Caveat', cursive; font-size: 16px; font-weight: 700; }
+.pdf-popover .pdf-render { border: 1.5px solid var(--ink); border-radius: 4px; padding: 10px; background: repeating-linear-gradient(45deg, var(--paper-edge) 0 6px, var(--paper) 6px 12px); display: flex; flex-direction: column; gap: 4px; min-height: 120px; }
+.pdf-popover .pdf-line { height: 5px; background: var(--ink-light); border-radius: 1px; margin: 1px 4px; }
+.pdf-popover .pdf-line.short { width: 60%; }
+.pdf-popover .pdf-line.med { width: 80%; }
+.pdf-popover .bbox { border: 2px solid var(--yellow-edge); background: rgba(255,242,168,0.5); padding: 2px 6px; font-size: 11px; font-weight: 700; align-self: flex-start; border-radius: 3px; }
+.pdf-popover .close { position: absolute; top: 6px; right: 8px; cursor: pointer; }
+
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 10px 18px; border-radius: 100px; font-family: 'Caveat', cursive; font-size: 16px; box-shadow: 4px 4px 0 rgba(0,0,0,0.2); z-index: 200; display: flex; gap: 8px; align-items: center; }
+.toast .check { background: var(--green-soft); color: var(--ink); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; }
+
+.line-dash { border-top: 1.2px dashed var(--ink-light); margin: 6px 0; }
+
+/* Matriz visual */
+.matrix-cell { display: inline-block; width: 22px; height: 18px; border: 1px solid var(--ink-faint); font-size: 10px; text-align: center; line-height: 16px; }
+.matrix-cell.z1 { background: var(--green-soft); }
+.matrix-cell.z2 { background: #e0e8d0; }
+.matrix-cell.z3 { background: #d8e0c0; }
+.matrix-cell.z4 { background: var(--orange-soft); }
+.matrix-cell.z5 { background: var(--red-soft); }
+.matrix-cell.z6 { background: #d8a0a0; }
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <div class="row">
+    <h1>importar-contrato-preview</h1>
+    <span class="badge-etapa">Etapa 2 · 5 cenários</span>
+    <span class="combo">Combinação: 1A · 2B · 3C · 4B · 5A · 6A</span>
+    <span class="refat">refatorado 2026-05-11 · 3 contratos reais analisados</span>
+    <div style="flex:1;"></div>
+    <span class="meta"><b>Foco POC:</b> camadas 2 (pricing) + 3 (modificadores)</span>
+  </div>
+</div>
+
+<nav class="proto-nav">
+  <button data-screen="sc-fedex" class="active">1. preview FedEx (multi-produto)</button>
+  <button data-screen="sc-edicao">2. edição-revisão</button>
+  <button data-screen="sc-pdf-bbox">3. PDF bbox popover</button>
+  <button data-screen="sc-ontime">4. preview OnTime (modificadores)</button>
+  <button data-screen="sc-salva">5. salva + simular</button>
+</nav>
+
+<!-- ============================================ -->
+<!-- 1 · PREVIEW FEDEX (multi-produto)             -->
+<!-- ============================================ -->
+<section class="screen active" id="sc-fedex">
+  <div class="scenario-banner happy">
+    <span class="tag">FedEx 2025</span>
+    <span><b>5 produtos extraídos + zonas com matriz origem×destino</b> — IA detectou estrutura compartilhada (mesmas 6 zonas para todos os produtos). 82% conf. média.</span>
+  </div>
+
+  <div class="tela-header">
+    <div class="row">
+      <span class="id">FedEx</span>
+      <span class="chip muted">"Tarifas 2025 ES"</span>
+      <span class="chip muted">ES</span>
+      <div style="flex:1;"></div>
+      <span class="chip poc">⚡ POC beta</span>
+      <span class="chip green"><b>82%</b> conf.</span>
+    </div>
+  </div>
+
+  <div class="summary-bar">
+    <span>Extraídos: <b>6 zonas (matriz orig×dest 50×50)</b> · <b>5 produtos</b> · <b>0 modificadores</b> · 82% conf.</span>
+    <span class="filter"><span class="btn ghost" style="font-size:11px; padding:1px 8px;">☐ só ⚠</span></span>
+  </div>
+
+  <!-- ZONAS GLOBAIS -->
+  <div class="acc expanded">
+    <div class="acc-head"><span class="arrow"></span><span class="h">Zonas globais</span><span class="count">6 · matriz orig×dest · 95%</span></div>
+    <div class="acc-body">
+      <div class="field-conf high">
+        <b>Zona 1 — Provincial</b>
+        <span style="font-size:11px; color:var(--ink-soft);">mesma província (origem = destino)</span>
+        <span class="conf-tag high">conf. 98%</span>
+      </div>
+      <div class="field-conf high">
+        <b>Zona 2 — Corta</b> · <b>Zona 3 — Media</b> · <b>Zona 4 — Larga</b>
+        <span style="font-size:11px; color:var(--ink-soft);">por distância peninsular</span>
+        <span class="conf-tag high">conf. 92%</span>
+      </div>
+      <div class="field-conf high">
+        <b>Zona 5 — Baleares</b>
+        <span class="conf-tag high">conf. 95%</span>
+      </div>
+      <div class="field-conf high">
+        <b>Zona 6 — Canarias, Ceuta y Melilla</b>
+        <span class="conf-tag high">conf. 95%</span>
+      </div>
+      <div class="line-dash"></div>
+      <div style="font-size:11.5px;"><b>Mapeamento</b>: matriz 50×50 províncias → zona <span class="tag">(ver matriz completa)</span></div>
+      <div style="display:flex; gap:1px; flex-wrap:wrap; max-width:340px; margin-top:4px;">
+        <span class="matrix-cell z1">1</span><span class="matrix-cell z4">4</span><span class="matrix-cell z4">4</span><span class="matrix-cell z4">4</span><span class="matrix-cell z3">3</span><span class="matrix-cell z3">3</span><span class="matrix-cell z4">4</span><span class="matrix-cell z5">5</span><span class="matrix-cell z5">5</span><span class="matrix-cell z3">3</span>
+        <span class="matrix-cell z4">4</span><span class="matrix-cell z1">1</span><span class="matrix-cell z2">2</span><span class="matrix-cell z2">2</span><span class="matrix-cell z4">4</span><span class="matrix-cell z3">3</span><span class="matrix-cell z4">4</span><span class="matrix-cell z5">5</span><span class="matrix-cell z5">5</span><span class="matrix-cell z4">4</span>
+        <span class="matrix-cell z4">4</span><span class="matrix-cell z2">2</span><span class="matrix-cell z1">1</span><span class="matrix-cell z3">3</span><span class="matrix-cell z4">4</span><span class="matrix-cell z4">4</span><span class="matrix-cell z4">4</span><span class="matrix-cell z5">5</span><span class="matrix-cell z5">5</span><span class="matrix-cell z3">3</span>
+      </div>
+      <div class="tag">↳ amostra 10×3 da matriz 50×50 — cores indicam zona</div>
+    </div>
+  </div>
+
+  <!-- PRODUTOS -->
+  <div class="acc expanded">
+    <div class="acc-head"><span class="arrow"></span><span class="h">Produtos</span><span class="count">5 · ⚠ 2 sub-tabelas</span></div>
+    <div class="acc-body">
+
+      <!-- Produto 1 expandido -->
+      <div class="acc2 expanded">
+        <div class="acc2-head"><span class="arrow"></span><span class="h2">FedEx Priority</span><span class="count">3 sub-tabelas · 85%</span></div>
+        <div class="acc2-body">
+          <div style="font-size:11.5px; color:var(--ink-soft); margin-bottom:4px;"><b>Sub-tabela 1:</b> condição "embalagem ∈ {Envelope, Pak}" · faixas 0.5–2.5kg</div>
+          <div class="tariff-table">
+            <div class="tr head"><div class="col label">Peso</div><div class="col">Z1</div><div class="col">Z2</div><div class="col">Z3</div><div class="col">Z4</div><div class="col">Z5</div><div class="col">Z6</div></div>
+            <div class="tr"><div class="col label">0.5 kg</div><div class="col"><span class="cell high">3,01</span></div><div class="col"><span class="cell high">3,33</span></div><div class="col"><span class="cell high">3,63</span></div><div class="col"><span class="cell high">4,20</span></div><div class="col"><span class="cell high">11,38</span></div><div class="col"><span class="cell high">12,80</span></div></div>
+            <div class="tr"><div class="col label">1 kg</div><div class="col"><span class="cell high">3,01</span></div><div class="col"><span class="cell high">3,33</span></div><div class="col"><span class="cell high">3,63</span></div><div class="col"><span class="cell high">4,20</span></div><div class="col"><span class="cell high">11,38</span></div><div class="col"><span class="cell high">12,80</span></div></div>
+            <div class="tr"><div class="col label">2 kg</div><div class="col"><span class="cell high">3,04</span></div><div class="col"><span class="cell high">3,36</span></div><div class="col"><span class="cell high">3,69</span></div><div class="col"><span class="cell mid">4,28</span></div><div class="col"><span class="cell high">11,54</span></div><div class="col"><span class="cell high">12,97</span></div></div>
+          </div>
+          <div style="font-size:11.5px; color:var(--ink-soft); margin-bottom:4px;"><b>Sub-tabela 2:</b> condição "outra embalagem" · faixas 2–100kg <span class="tag">(15 faixas)</span></div>
+          <div style="font-size:11.5px; color:var(--ink-soft); margin-bottom:4px;"><b>Sub-tabela 3:</b> condição "peso > 100kg" · multiplicador por kg <span class="tag">(0,36–0,63 €/kg por zona)</span></div>
+          <div class="line-dash"></div>
+          <div style="font-size:11px;"><b>Tasa volumétrica:</b> 167 kg/m³ <span class="tag">↗ ver no PDF</span></div>
+        </div>
+      </div>
+
+      <!-- Demais produtos -->
+      <div class="acc2">
+        <div class="acc2-head"><span class="arrow"></span><span class="h2">FedEx Priority Express</span><span class="count">3 sub-tabelas · 84% ✓</span></div>
+      </div>
+      <div class="acc2">
+        <div class="acc2-head"><span class="arrow"></span><span class="h2">FedEx First</span><span class="count">3 sub-tabelas · 82% ✓</span></div>
+      </div>
+      <div class="acc2">
+        <div class="acc2-head"><span class="arrow"></span><span class="h2">FedEx Priority Freight</span><span class="count">1 tabela (>68kg) · ⚠ 76%</span></div>
+      </div>
+      <div class="acc2">
+        <div class="acc2-head"><span class="arrow"></span><span class="h2">FedEx Priority Express Freight</span><span class="count">1 tabela · ⚠ 74%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADICIONAIS GLOBAIS -->
+  <div class="acc">
+    <div class="acc-head"><span class="arrow"></span><span class="h">Adicionais globais</span><span class="count">0 detectados</span></div>
+  </div>
+
+  <!-- MODIFICADORES -->
+  <div class="acc">
+    <div class="acc-head"><span class="arrow"></span><span class="h">Modificadores multiplicativos</span><span class="count">0 detectados · cadastrar manual?</span></div>
+  </div>
+
+  <div class="bottom-bar">
+    <button class="btn ghost">⌥ cadastrar manualmente</button>
+    <div style="flex:1;"></div>
+    <button class="btn ghost">salvar rascunho</button>
+    <button class="btn primary">Salvar e ativar</button>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 2 · EDIÇÃO                                    -->
+<!-- ============================================ -->
+<section class="screen" id="sc-edicao">
+  <div class="scenario-banner warn">
+    <span class="tag">edição</span>
+    <span><b>Revisando célula de sub-tabela</b> — seller corrigindo €4,28 (Zona 4 / 2kg) em FedEx Priority. Validação inline + auto-save.</span>
+  </div>
+
+  <div class="tela-header">
+    <div class="row">
+      <span class="id">FedEx Priority</span>
+      <span class="chip muted">Sub-tabela 1 · Envelope/Pak</span>
+      <div style="flex:1;"></div>
+      <span class="chip warn">1 célula em edição</span>
+    </div>
+  </div>
+
+  <div class="summary-bar">
+    <span>Editando: <b>Zona 4 (Larga) · 2 kg</b> de FedEx Priority · Sub-tabela 1</span>
+    <span class="filter"><span class="btn primary" style="font-size:11px; padding:1px 8px;">☑ só ⚠</span></span>
+  </div>
+
+  <div class="acc expanded">
+    <div class="acc-head"><span class="arrow"></span><span class="h">FedEx Priority — Sub-tabela 1 (Envelope/Pak)</span><span class="count">⚠ 1 célula</span></div>
+    <div class="acc-body">
+      <div class="tariff-table">
+        <div class="tr head"><div class="col label">Peso</div><div class="col">Z1</div><div class="col">Z2</div><div class="col">Z3</div><div class="col">Z4</div><div class="col">Z5</div><div class="col">Z6</div></div>
+        <div class="tr"><div class="col label">0.5 kg</div><div class="col"><span class="cell high">3,01</span></div><div class="col"><span class="cell high">3,33</span></div><div class="col"><span class="cell high">3,63</span></div><div class="col"><span class="cell high">4,20</span></div><div class="col"><span class="cell high">11,38</span></div><div class="col"><span class="cell high">12,80</span></div></div>
+        <div class="tr"><div class="col label">1 kg</div><div class="col"><span class="cell high">3,01</span></div><div class="col"><span class="cell high">3,33</span></div><div class="col"><span class="cell high">3,63</span></div><div class="col"><span class="cell high">4,20</span></div><div class="col"><span class="cell high">11,38</span></div><div class="col"><span class="cell high">12,80</span></div></div>
+        <div class="tr" style="background:var(--yellow-dim);">
+          <div class="col label">2 kg</div>
+          <div class="col"><span class="cell high">3,04</span></div>
+          <div class="col"><span class="cell high">3,36</span></div>
+          <div class="col"><span class="cell high">3,69</span></div>
+          <div class="col"><span class="cell" style="border:1.8px dashed var(--ink); background:var(--paper);"><b>4,38</b> ✎</span></div>
+          <div class="col"><span class="cell high">11,54</span></div>
+          <div class="col"><span class="cell high">12,97</span></div>
+        </div>
+      </div>
+      <div style="background:var(--paper-edge); border:1.5px solid var(--ink); border-radius:4px; padding:8px 12px; margin-top:6px;">
+        <div style="font-size:12px;"><b>↳ Você mudou €4,28 → €4,38</b> · confirmar?</div>
+        <div class="line-dash"></div>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <span class="btn ghost" style="font-size:11px;">descartar mudança</span>
+          <div style="flex:1;"></div>
+          <span class="tag">validação: progressão consistente vs faixas vizinhas (€4,20–€4,28 → €4,38 é razoável)</span>
+          <span class="btn primary" style="font-size:11px;">confirmar valor</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <button class="btn ghost">⌥ cadastrar manualmente</button>
+    <div style="flex:1;"></div>
+    <span class="tag">↳ auto-save: rascunho salvo há 6s · 2 campos editados</span>
+    <button class="btn ghost">salvar rascunho</button>
+    <button class="btn primary">Salvar e ativar</button>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 3 · PDF BBOX POPOVER                          -->
+<!-- ============================================ -->
+<section class="screen" id="sc-pdf-bbox">
+  <div class="scenario-banner happy">
+    <span class="tag">PDF bbox</span>
+    <span><b>Verificação no PDF</b> — seller clicou em "📄" ao lado de €11,54 (Zona 5 Baleares, 2kg). Popover abre com região do contrato + bbox destacada.</span>
+  </div>
+
+  <div class="tela-header">
+    <div class="row">
+      <span class="id">FedEx Priority</span>
+      <span class="chip muted">Sub-tabela 1 · Envelope/Pak</span>
+      <div style="flex:1;"></div>
+      <span class="chip">82% conf.</span>
+    </div>
+  </div>
+
+  <div class="summary-bar">
+    <span>FedEx Priority · Sub-tabela 1 (Envelope/Pak)</span>
+  </div>
+
+  <div class="acc expanded">
+    <div class="acc-head"><span class="arrow"></span><span class="h">Peso × Zona</span><span class="count">6 faixas</span></div>
+    <div class="acc-body">
+      <div class="tariff-table">
+        <div class="tr head"><div class="col label">Peso</div><div class="col">Z1</div><div class="col">Z2</div><div class="col">Z3</div><div class="col">Z4</div><div class="col">Z5</div><div class="col">Z6</div></div>
+        <div class="tr"><div class="col label">0.5 kg</div><div class="col"><span class="cell high">3,01 📄</span></div><div class="col">3,33</div><div class="col">3,63</div><div class="col">4,20</div><div class="col">11,38</div><div class="col">12,80</div></div>
+        <div class="tr" style="background:var(--yellow-dim);">
+          <div class="col label">2 kg</div>
+          <div class="col">3,04</div>
+          <div class="col">3,36</div>
+          <div class="col">3,69</div>
+          <div class="col">4,28</div>
+          <div class="col"><span class="cell high"><b>11,54 ▸</b></span></div>
+          <div class="col">12,97</div>
+        </div>
+      </div>
+      <div class="tag">↳ clicar em "📄" ou na célula abre popover com a região exata do PDF</div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <button class="btn ghost">⌥ cadastrar manualmente</button>
+    <div style="flex:1;"></div>
+    <button class="btn ghost">salvar rascunho</button>
+    <button class="btn primary">Salvar e ativar</button>
+  </div>
+
+  <div class="pdf-popover show" style="position:absolute; bottom:90px; right:32px;">
+    <span class="close" onclick="this.parentElement.classList.remove('show')">×</span>
+    <div class="ph">📄 PDF · página 2</div>
+    <div class="tag" style="margin-bottom:6px;">FedEx Priority · 2 kg · Zona 5 Baleares</div>
+    <div class="pdf-render">
+      <div style="font-size:9px; color:var(--ink-light); text-align:center;">"Tarifas válidas utilizando FedEx Envelope/Pak"</div>
+      <div class="pdf-line med"></div>
+      <div class="pdf-line short"></div>
+      <div class="pdf-line med"></div>
+      <div class="bbox">11,54 €</div>
+      <div class="pdf-line short"></div>
+      <div class="pdf-line med"></div>
+    </div>
+    <div style="font-size:11px; color:var(--ink-soft); margin-top:6px;">↳ bbox amarela na célula 2kg × Zona 5</div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 4 · PREVIEW ONTIME (modificadores)             -->
+<!-- ============================================ -->
+<section class="screen" id="sc-ontime">
+  <div class="scenario-banner happy">
+    <span class="tag">OnTime 2025</span>
+    <span><b>Contrato denso — 3 categorias × N serviços + modificadores externos</b> — IA detectou combustível como escala condicional, descarbonização 1%, seguro 8% com 9 exclusões. 65% conf. (mais complexo).</span>
+  </div>
+
+  <div class="tela-header">
+    <div class="row">
+      <span class="id">OnTime</span>
+      <span class="chip muted">"BIGHUB STORE · 2025"</span>
+      <div style="flex:1;"></div>
+      <span class="chip poc">⚡ POC beta</span>
+      <span class="chip warn"><b>65%</b> conf.</span>
+    </div>
+  </div>
+
+  <div class="summary-bar warn">
+    <span>Extraídos: <b>9 regiões + matriz orig×dest</b> · <b>3 categorias · 11 serviços</b> · <b>3 modificadores</b> · 65% conf.</span>
+    <span class="filter"><span class="btn ghost" style="font-size:11px; padding:1px 8px;">☐ só ⚠</span></span>
+  </div>
+
+  <div class="acc">
+    <div class="acc-head"><span class="arrow"></span><span class="h">Zonas globais</span><span class="count">9 regiões + matriz · 70%</span></div>
+  </div>
+
+  <div class="acc expanded">
+    <div class="acc-head"><span class="arrow"></span><span class="h">Produtos</span><span class="count">3 categorias · 11 serviços · ⚠ 4</span></div>
+    <div class="acc-body">
+      <div class="acc2">
+        <div class="acc2-head"><span class="arrow"></span><span class="h2">XS Paquetería</span><span class="count">8 serviços · 72% ✓</span></div>
+      </div>
+      <div class="acc2 expanded">
+        <div class="acc2-head"><span class="arrow"></span><span class="h2">XL Paquetería</span><span class="count">3 sub-tabelas · matriz orig×dest · ⚠ 58%</span></div>
+        <div class="acc2-body">
+          <div style="font-size:11.5px; color:var(--ink-soft); margin-bottom:4px;"><b>Sub-tabela 1:</b> Península (matriz origem × destino × peso 50–5000kg) · 1300+ células</div>
+          <div style="font-size:11.5px; color:var(--ink-soft); margin-bottom:4px;"><b>Sub-tabela 2:</b> Baleares Interislas (matriz ilha origem × ilha destino × peso) ⚠ 56%</div>
+          <div style="font-size:11.5px; color:var(--ink-soft); margin-bottom:4px;"><b>Sub-tabela 3:</b> Península → Canárias (linear · peso × ilha destino)</div>
+          <div class="line-dash"></div>
+          <div style="font-size:11px;"><b>Tasa volumétrica:</b> 250 kg/m³ <span class="tag">(XL)</span></div>
+        </div>
+      </div>
+      <div class="acc2">
+        <div class="acc2-head"><span class="arrow"></span><span class="h2">XP Palets</span><span class="count">tipologia × dimensões · ⚠ 62%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc expanded">
+    <div class="acc-head"><span class="arrow"></span><span class="h">Adicionais globais</span><span class="count">12 detectados · DUAs, ilhas, CCAA</span></div>
+    <div class="acc-body">
+      <div class="field-conf high"><b>DUAs</b> <span style="font-size:11px; color:var(--ink-soft);">Canarias €17,30 imp/exp · Ceuta-Melilla €31,50/€50,00 · Andorra €30/€30 · Gibraltar €30/€35</span><span class="conf-tag high">conf. 88%</span></div>
+      <div class="field-conf mid"><b>Reexpedición Isla Formentera</b> <span style="font-size:11px;">€17,30 entrada · €4,10 saída</span><span class="conf-tag mid">conf. 65%</span></div>
+      <div class="field-conf high"><b>Bulto fuera normativa</b> <span style="font-size:11px;">€34,50</span><span class="conf-tag high">conf. 90%</span></div>
+      <div class="field-conf mid"><b>Servicio ADR</b> <span style="font-size:11px;">+20% sobre tarifa</span><span class="conf-tag mid">conf. 70%</span></div>
+    </div>
+  </div>
+
+  <div class="acc expanded">
+    <div class="acc-head" style="background:var(--blue-soft);"><span class="arrow"></span><span class="h">Modificadores multiplicativos</span><span class="count">3 · todos aplicados sobre tarifa neta</span></div>
+    <div class="acc-body">
+      <div class="field-conf high">
+        <b>⛽ Combustível</b>
+        <span style="font-size:11px; color:var(--ink-soft);">escala condicional · 33 faixas · €/L → %</span>
+        <span class="conf-tag high">conf. 95%</span>
+      </div>
+      <div style="font-size:11.5px; padding-left:12px; color:var(--ink-soft); margin-bottom:8px;">
+        ↳ ex: gasóleo entre <b>1,50–1,55 €/L → +7,30%</b> sobre tarifa<br>
+        ↳ índice atualizado mensalmente pelo MITMA (gov ES) · <span class="tag">aplicação automática (RD-ley 3/2022)</span>
+      </div>
+      <div class="field-conf high">
+        <b>♻ Descarbonização HVO</b>
+        <span style="font-size:11px; color:var(--ink-soft);">+1% fixo sobre tarifa neta · biocombustíveis</span>
+        <span class="conf-tag high">conf. 92%</span>
+      </div>
+      <div class="field-conf mid">
+        <b>🛡 Seguro adicional opcional</b>
+        <span style="font-size:11px; color:var(--ink-soft);">+8% sobre importe total · 9 exclusões (XL-XP) · +1 exclusão (XS)</span>
+        <span class="conf-tag mid">conf. 68%</span>
+      </div>
+      <div style="font-size:11.5px; padding-left:12px; color:var(--ink-soft);">
+        ↳ cobertura 3.000€ transporte · 20.000€ logística<br>
+        ↳ excluídos: docs valor · peles · vidro plano · perecíveis · prensa · mudanças · usado/granel · contêineres · ilegais<br>
+        ↳ <b>opcional</b> — seller pode recusar via certificado de exoneração
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <button class="btn ghost">⌥ cadastrar manualmente</button>
+    <div style="flex:1;"></div>
+    <button class="btn ghost">salvar rascunho</button>
+    <button class="btn primary">Salvar e ativar</button>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 5 · SALVA + SIMULAR                            -->
+<!-- ============================================ -->
+<section class="screen" id="sc-salva">
+  <div class="scenario-banner happy">
+    <span class="tag">ativada</span>
+    <span><b>Contrato ativo</b> — após revisão, tabela cadastrada e em uso. Simulador de cotação pós-ativação confirma cálculo com modificadores aplicados.</span>
+  </div>
+
+  <div class="tela-header">
+    <div class="row">
+      <span class="id">OnTime BIGHUB 2025</span>
+      <div style="flex:1;"></div>
+      <span class="chip green">✓ ativa</span>
+      <span class="chip">vigente desde 11/05/2026</span>
+    </div>
+  </div>
+
+  <div class="summary-bar" style="background:var(--green-soft);">
+    <span style="font-weight:700;">✓</span>
+    <span><b>3 categorias · 11 serviços · 12 adicionais · 3 modificadores</b> · 4 campos editados (auditoria)</span>
+  </div>
+
+  <div class="acc expanded">
+    <div class="acc-head"><span class="arrow"></span><span class="h">Resumo da tabela ativa</span><span class="count">tudo verde ✓</span></div>
+    <div class="acc-body">
+      <div class="field-conf high">
+        <b>Zonas globais</b>
+        <span style="font-size:11px; color:var(--ink-soft);">9 regiões + matriz orig×dest 50×50</span>
+        <span class="conf-tag high">3 mapeamentos</span>
+      </div>
+      <div class="field-conf high">
+        <b>Produtos</b>
+        <span style="font-size:11px; color:var(--ink-soft);">XS · XL · XP (11 serviços, 7 sub-tabelas)</span>
+        <span class="conf-tag high">ativos</span>
+      </div>
+      <div class="field-conf high">
+        <b>Adicionais</b>
+        <span style="font-size:11px; color:var(--ink-soft);">DUAs · ilhas · CCAA · ADR · bulto fuera normativa · 7 outros</span>
+        <span class="conf-tag high">12 ativos</span>
+      </div>
+      <div class="field-conf high">
+        <b>Modificadores multiplicativos</b>
+        <span style="font-size:11px; color:var(--ink-soft);">⛽ combust. (escala) · ♻ descarb. 1% · 🛡 seguro 8% opcional</span>
+        <span class="conf-tag high">3 ativos</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="border: 1.5px solid var(--ink); background: var(--paper); padding: 12px 14px; border-radius: 5px; margin-top: 14px; box-shadow: 3px 3px 0 var(--ink);">
+    <div style="font-family:'Caveat',cursive; font-size:18px; font-weight:700; margin-bottom:6px;">🎯 Simulador de cotação pós-ativação (guard-rail)</div>
+    <div style="font-size:13px; margin-bottom:8px;">Cole um exemplo concreto do contrato. BH calcula com a tabela ativa + modificadores e compara com o valor esperado.</div>
+
+    <div style="display:flex; gap:8px; margin-bottom:8px;">
+      <div class="field-conf high" style="flex:1; cursor:default;">
+        <span style="font-size:11px; color:var(--ink-light);">Origem:</span> <b>Madrid</b> ·
+        <span style="font-size:11px; color:var(--ink-light);">Destino:</span> <b>Sevilla</b> ·
+        <span style="font-size:11px; color:var(--ink-light);">Peso:</span> <b>2 kg</b> ·
+        <span style="font-size:11px; color:var(--ink-light);">Serviço:</span> <b>XS 24h</b>
+      </div>
+      <button class="btn primary">calcular</button>
+    </div>
+
+    <div style="background:var(--paper-edge); border:1.5px solid var(--ink); border-radius:4px; padding:10px;">
+      <div style="font-size:11.5px; color:var(--ink-soft); margin-bottom:6px; font-weight:700;">CÁLCULO (camadas 2+3)</div>
+      <div style="font-size:12.5px; display:grid; grid-template-columns:1fr auto; gap:4px 12px;">
+        <div>Zona resolvida (Madrid→Sevilla)</div><div><b>Iberia</b></div>
+        <div>Tarifa base XS 24h · 2kg · Iberia</div><div><b>€6,91</b></div>
+        <div class="line-dash" style="grid-column:1/-1;"></div>
+        <div style="color:var(--ink-soft);">⛽ Combustível (€1,55/L → +7,30%)</div><div>+€0,50</div>
+        <div style="color:var(--ink-soft);">♻ Descarbonização (+1%)</div><div>+€0,07</div>
+        <div style="color:var(--ink-soft);">🛡 Seguro adicional (opcional · 8%)</div><div><span class="tag">recusado</span> €0,00</div>
+        <div class="line-dash" style="grid-column:1/-1;"></div>
+        <div style="font-weight:700;">Total estimado (sem IVA)</div><div style="font-weight:700; background:var(--yellow); padding:0 6px; border-radius:3px;">€7,48</div>
+      </div>
+      <div class="tag" style="margin-top:6px;">↳ valor esperado do PDF: <b>€6,91</b> base + modificadores aplicados ✓</div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <button class="btn ghost">↓ baixar PDF cadastrado</button>
+    <button class="btn ghost">editar tabela</button>
+    <div style="flex:1;"></div>
+    <button class="btn">→ voltar para Carriers</button>
+  </div>
+
+  <div class="toast">
+    <span class="check">✓</span>
+    <span>Tabela "OnTime BIGHUB 2025" ativada · modificadores aplicados</span>
+  </div>
+</section>
+
+<script>
+document.querySelectorAll('.proto-nav button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.screen;
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(target).classList.add('active');
+    document.querySelectorAll('.proto-nav button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    window.scrollTo({ top: 130, behavior: 'smooth' });
+  });
+});
+
+document.querySelectorAll('.acc-head, .acc2-head').forEach(h => {
+  h.addEventListener('click', () => {
+    h.parentElement.classList.toggle('expanded');
+  });
+});
+</script>
+
+</body>
+</html>

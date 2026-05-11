@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo navegável de jornada — seller-dashboard-uso-cobranca-happy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a; --ink-soft: #3d3d3d; --ink-light: #8a8a8a; --ink-faint: #c8c8c8;
+  --paper: #fcfcfa; --paper-edge: #f3f1e8;
+  --yellow: #fff2a8; --yellow-dim: #ffe771; --yellow-edge: #e6c732;
+  --green-soft: #c9e6b8; --red-soft: #f4b8b0; --blue-soft: #b8d4f0; --orange-soft: #f5d0a0;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: 'Patrick Hand', cursive; background: var(--paper); color: var(--ink); font-size: 15px; line-height: 1.4; }
+h1, h2, h3, .h-caveat { font-family: 'Caveat', cursive; }
+
+.bh-shell { display: grid; grid-template-rows: 56px 1fr; grid-template-columns: 240px 1fr; grid-template-areas: "topbar topbar" "sidebar main"; min-height: 100vh; }
+
+.bh-topbar { grid-area: topbar; position: sticky; top: 0; z-index: 100; background: var(--paper); border-bottom: 2px solid var(--ink); display: flex; align-items: center; padding: 0 18px; gap: 18px; }
+.bh-logo { font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700; background: var(--yellow); border: 1.8px solid var(--ink); border-radius: 100px; padding: 2px 14px; transform: rotate(-3deg); }
+.bh-breadcrumb { font-size: 13.5px; color: var(--ink-soft); flex: 1; }
+.bh-breadcrumb b { color: var(--ink); font-weight: 700; }
+.bh-breadcrumb .sep { color: var(--ink-light); margin: 0 6px; }
+.bh-search { width: 220px; border: 1.5px dashed var(--ink-light); border-radius: 100px; padding: 4px 14px; font-size: 12.5px; color: var(--ink-light); background: var(--paper-edge); }
+.bh-user { display: flex; align-items: center; gap: 8px; font-size: 13px; border: 1.5px solid var(--ink); border-radius: 100px; padding: 3px 12px 3px 4px; background: var(--paper); }
+.bh-user .avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--blue-soft); border: 1.5px solid var(--ink); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; }
+
+.bh-sidebar { grid-area: sidebar; position: sticky; top: 56px; height: calc(100vh - 56px); background: var(--paper-edge); border-right: 2px solid var(--ink); overflow-y: auto; padding: 12px 8px; }
+.nav-section { margin-bottom: 14px; }
+.nav-group-title { font-size: 10.5px; color: var(--ink-light); text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 10px; }
+.nav-item { display: flex; align-items: center; gap: 8px; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--ink-soft); margin-bottom: 1px; }
+.nav-item:hover { background: var(--paper); }
+.nav-item.active { background: var(--yellow); color: var(--ink); font-weight: 700; box-shadow: 2px 2px 0 var(--ink); transform: translate(-1px, -1px); }
+.nav-item .ico { width: 14px; font-size: 12px; opacity: 0.7; }
+.nav-item .pill { margin-left: auto; font-size: 10px; padding: 0 6px; border: 1.2px solid var(--ink); border-radius: 100px; background: var(--paper); }
+.nav-item .pill.alert { background: var(--red-soft); }
+
+.bh-main { grid-area: main; padding: 20px 28px 100px; overflow-x: hidden; }
+
+.journey-stepper-wrap { border: 1.8px solid var(--ink); border-radius: 6px; background: var(--paper); padding: 10px 16px; margin-bottom: 16px; box-shadow: 3px 3px 0 var(--ink); }
+.journey-stepper-wrap .title { font-family: 'Caveat', cursive; font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.journey-stepper { display: flex; gap: 6px; }
+.journey-stepper .step { flex: 1; padding: 6px 8px; border: 1.4px solid var(--ink-light); border-radius: 5px; background: var(--paper); font-size: 11.5px; cursor: pointer; display: flex; gap: 8px; align-items: center; }
+.journey-stepper .step:hover { background: var(--yellow-dim); }
+.journey-stepper .step.done { background: var(--paper-edge); border-color: var(--ink); color: var(--ink-soft); }
+.journey-stepper .step.current { background: var(--yellow); border-color: var(--ink); font-weight: 700; box-shadow: 2px 2px 0 var(--ink); }
+.journey-stepper .step .num { font-family: 'Caveat', cursive; font-weight: 700; font-size: 14px; }
+.journey-stepper .step .lbl { font-size: 12px; }
+.journey-stepper .step .meta { font-size: 10.5px; color: var(--ink-light); font-style: italic; margin-left: auto; }
+.journey-stepper .step.current .meta { color: var(--ink-soft); }
+
+.view { display: none; }
+.view.active { display: block; animation: fadeIn 0.2s; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.journey-nav-bar { position: fixed; bottom: 0; left: 240px; right: 0; background: var(--paper-edge); border-top: 1.8px solid var(--ink); padding: 10px 28px; display: flex; gap: 10px; align-items: center; z-index: 30; }
+.journey-nav-bar .meta-tag { font-size: 11.5px; color: var(--ink-light); font-style: italic; }
+.journey-nav-bar .saved { font-size: 11.5px; color: var(--ink-light); display: flex; align-items: center; gap: 4px; }
+
+.page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.page-header h2 { font-size: 26px; margin: 0; }
+.page-header .sub { font-size: 13.5px; color: var(--ink-soft); }
+.page-header .chip-pos { margin-left: auto; display: flex; gap: 6px; }
+
+.card { border: 1.5px solid var(--ink); border-radius: 6px; padding: 14px 16px; background: var(--paper); box-shadow: 3px 3px 0 var(--ink); margin-bottom: 14px; }
+.card .title { font-family: 'Caveat', cursive; font-size: 18px; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.card .title .ord { font-size: 13px; color: var(--ink-light); font-family: 'Patrick Hand', cursive; font-weight: 400; }
+.card.green { background: var(--green-soft); }
+.card.warn { background: var(--orange-soft); }
+.card.fillsoft { background: var(--paper-edge); }
+.card.info { background: var(--blue-soft); }
+.card.fill { background: var(--yellow); }
+.card.danger { background: var(--red-soft); }
+
+.btn { border: 1.5px solid var(--ink); border-radius: 100px; padding: 4px 12px; background: var(--paper); font-family: inherit; font-size: 13px; cursor: pointer; }
+.btn:hover { transform: translate(-1px, -1px); }
+.btn.primary { background: var(--yellow); font-weight: 700; }
+.btn.ghost { border-style: dashed; color: var(--ink-soft); }
+.btn.big { padding: 8px 20px; font-size: 15px; font-weight: 700; }
+
+.chip { border: 1.2px solid var(--ink); border-radius: 100px; padding: 1px 8px; font-size: 11.5px; background: var(--paper); display: inline-block; }
+.chip.green { background: var(--green-soft); }
+.chip.warn { background: var(--orange-soft); }
+.chip.danger { background: var(--red-soft); }
+.chip.info { background: var(--blue-soft); }
+.chip.muted { color: var(--ink-light); }
+.chip.active { background: var(--yellow); font-weight: 700; }
+
+.tag { font-size: 11.5px; color: var(--ink-light); font-style: italic; }
+.line-dash { border-top: 1.2px dashed var(--ink-light); margin: 8px 0; }
+
+/* Rotina banner */
+.rotina-banner { display: flex; gap: 12px; align-items: flex-start; border: 1.5px solid var(--ink); border-radius: 6px; padding: 10px 14px; margin-bottom: 14px; background: var(--blue-soft); }
+.rotina-banner .icon { font-size: 22px; }
+.rotina-banner .copy { flex: 1; font-size: 13px; color: var(--ink-soft); }
+.rotina-banner .copy b { color: var(--ink); }
+.rotina-banner .copy .h-caveat { font-size: 18px; font-weight: 700; }
+
+/* Origem filter */
+.origem-bar { display: flex; gap: 6px; align-items: center; margin-bottom: 12px; font-size: 13px; }
+
+/* Action list inside ações pendentes */
+.action-row { display: flex; gap: 8px; align-items: center; padding: 7px 10px; border: 1.4px solid var(--ink); border-radius: 4px; background: var(--paper); margin-bottom: 4px; font-size: 12.5px; }
+.action-row.danger { background: var(--red-soft); }
+.action-row.warn { background: var(--orange-soft); }
+.action-row .pid { font-family: 'Caveat', cursive; font-weight: 700; min-width: 60px; }
+.action-row .info { flex: 1; }
+.action-row .info .desc { font-size: 11px; color: var(--ink-light); }
+.action-tabs { display: flex; gap: 4px; border-bottom: 1.5px solid var(--ink); margin-bottom: 8px; }
+.action-tab { border: 1.4px solid var(--ink); border-bottom: none; border-radius: 5px 5px 0 0; padding: 4px 12px; background: var(--paper); font-size: 12.5px; cursor: pointer; position: relative; bottom: -1.5px; }
+.action-tab.active { background: var(--yellow); font-weight: 700; }
+.action-tab.muted { background: var(--paper-edge); color: var(--ink-light); }
+
+/* Funil */
+.funil { display: flex; gap: 4px; margin: 6px 0; }
+.funil .bar { flex: 1; border: 1.4px solid var(--ink); padding: 6px 4px; text-align: center; background: var(--paper); display: flex; flex-direction: column; gap: 2px; font-size: 10.5px; min-height: 56px; border-radius: 4px; }
+.funil .bar .num { font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700; line-height: 1; }
+.funil .bar.curr { background: var(--yellow); }
+.funil .bar.warn { background: var(--orange-soft); }
+.funil .bar.empty { background: var(--paper-edge); color: var(--ink-light); }
+
+/* KPI block (uso & cobrança) */
+.kpi-row { display: flex; gap: 14px; align-items: stretch; }
+.kpi-block { flex: 0 0 200px; border-right: 1.5px dashed var(--ink-light); padding-right: 14px; display: flex; flex-direction: column; gap: 8px; }
+.kpi-block .kpi-label { font-size: 11px; color: var(--ink-light); }
+.kpi-block .kpi-value { font-family: 'Caveat', cursive; font-size: 30px; font-weight: 700; line-height: 1; }
+.kpi-block .kpi-value.lg { font-size: 36px; }
+.kpi-block .kpi-value.highlight { background: var(--yellow); padding: 2px 8px; align-self: flex-start; border-radius: 4px; }
+.kpi-block .kpi-foot { font-size: 11px; color: var(--ink-soft); font-style: italic; }
+.kpi-chart { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.kpi-chart .label { font-size: 11.5px; color: var(--ink-light); font-style: italic; }
+.bars { display: flex; align-items: flex-end; gap: 3px; height: 64px; }
+.bars .b { flex: 1; background: var(--ink); border-radius: 2px 2px 0 0; min-height: 4px; }
+.bars .b.proj { background: repeating-linear-gradient(45deg, var(--ink-light) 0 3px, transparent 3px 6px); border: 1px dashed var(--ink); }
+.breakdown { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; }
+.breakdown b { color: var(--ink); }
+
+/* Saude semáforos */
+.saude-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.saude-cell { border: 1.4px solid var(--ink); border-radius: 5px; padding: 7px 10px; background: var(--paper); display: flex; gap: 8px; align-items: center; font-size: 12px; }
+.saude-cell .dot { width: 10px; height: 10px; border-radius: 50%; border: 1.2px solid var(--ink); }
+.saude-cell .dot.green { background: var(--green-soft); }
+.saude-cell .dot.warn { background: var(--orange-soft); }
+.saude-cell .dot.danger { background: var(--red-soft); }
+.saude-cell.warn { background: var(--orange-soft); }
+.saude-cell.danger { background: var(--red-soft); }
+.saude-cell .name { font-weight: 700; }
+.saude-cell .desc { font-size: 11px; color: var(--ink-soft); margin-left: auto; }
+
+/* Tendências */
+.trend-row { display: flex; gap: 8px; align-items: center; border: 1.4px solid var(--ink); border-radius: 5px; padding: 8px 12px; background: var(--paper); margin-bottom: 6px; font-size: 12.5px; }
+.trend-row.green { background: var(--green-soft); }
+.trend-row.warn { background: var(--orange-soft); }
+.trend-row .ct { font-weight: 700; }
+.trend-row .desc { color: var(--ink-soft); font-size: 11.5px; margin-left: 4px; }
+.trend-row .spark { width: 70px; height: 22px; margin-left: auto; background:
+  linear-gradient(90deg, transparent 0 5%, var(--ink) 5% 6%, transparent 6% 100%),
+  linear-gradient(90deg, transparent 0 25%, var(--ink) 25% 26%, transparent 26% 100%),
+  linear-gradient(90deg, transparent 0 45%, var(--ink) 45% 46%, transparent 46% 100%),
+  linear-gradient(90deg, transparent 0 65%, var(--ink) 65% 66%, transparent 66% 100%),
+  linear-gradient(90deg, transparent 0 85%, var(--ink) 85% 86%, transparent 86% 100%);
+  border-bottom: 1px solid var(--ink-light); }
+
+/* Variant switch (cenários alternativos da Rotina A) */
+.variant-bar { display: flex; gap: 6px; align-items: center; font-size: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+
+/* Stub */
+.under-construction { border: 1.8px dashed var(--ink-light); border-radius: 8px; padding: 40px; background: var(--paper-edge); text-align: center; }
+.under-construction .big { font-family: 'Caveat', cursive; font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+.under-construction .sub { font-size: 13.5px; color: var(--ink-soft); }
+.stub-list-row { display: flex; gap: 10px; align-items: center; padding: 8px 12px; border-bottom: 1px dashed var(--ink-light); font-size: 13px; }
+.stub-list-row .pid { font-family: 'Caveat', cursive; font-weight: 700; min-width: 90px; }
+.stub-list-row .info { flex: 1; }
+.stub-list-row .desc { font-size: 11.5px; color: var(--ink-light); }
+
+/* Empty state */
+.empty-state { border: 1.5px dashed var(--ink-light); border-radius: 6px; padding: 22px; text-align: center; background: var(--paper-edge); }
+.empty-state .es-icon { font-size: 26px; margin-bottom: 6px; }
+.empty-state .es-title { font-family: 'Caveat', cursive; font-size: 20px; font-weight: 700; }
+.empty-state .es-desc { font-size: 12.5px; color: var(--ink-soft); margin-top: 4px; }
+
+/* Error */
+.error-state { border: 1.5px solid var(--ink); background: var(--red-soft); border-radius: 6px; padding: 16px; text-align: center; }
+.error-state .err-title { font-family: 'Caveat', cursive; font-size: 18px; font-weight: 700; }
+.error-state .err-desc { font-size: 12.5px; color: var(--ink-soft); margin: 4px 0 8px; }
+
+.toast { position: fixed; bottom: 80px; right: 20px; background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 8px; box-shadow: 4px 4px 0 rgba(0,0,0,0.2); z-index: 200; font-size: 13px; max-width: 320px; }
+.toast .close { position: absolute; top: 4px; right: 8px; cursor: pointer; opacity: 0.7; }
+</style>
+</head>
+<body>
+
+<div class="bh-shell">
+
+  <header class="bh-topbar">
+    <div class="bh-logo">BH</div>
+    <nav class="bh-breadcrumb" id="crumb"><b>Logística</b><span class="sep">›</span><b>Uso & cobrança</b></nav>
+    <div class="bh-search">⌕ buscar pedidos, devoluções, SKU…</div>
+    <div class="bh-user"><div class="avatar">J</div>Jhonatan</div>
+  </header>
+
+  <aside class="bh-sidebar">
+    <div class="nav-section">
+      <div class="nav-item" data-view="inicio"><span class="ico">⌂</span>Início</div>
+      <div class="nav-item" data-view="catalogo"><span class="ico">▥</span>Catálogo</div>
+      <div class="nav-item" data-view="vitrine"><span class="ico">▣</span>Vitrine</div>
+      <div class="nav-item" data-view="cadastro"><span class="ico">⊞</span>Cadastro</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-group-title">Logística</div>
+      <div class="nav-item" data-view="pedidos"><span class="ico">▤</span>Pedidos<span class="pill alert">3</span></div>
+      <div class="nav-item" data-view="coletas"><span class="ico">▦</span>Coletas</div>
+      <div class="nav-item" data-view="devolucoes"><span class="ico">▩</span>Devoluções<span class="pill">1</span></div>
+      <div class="nav-item"><span class="ico">◉</span>Endereços</div>
+      <div class="nav-item"><span class="ico">▢</span>Embalagens</div>
+      <div class="nav-item" data-view="carriers"><span class="ico">▶</span>Carriers</div>
+      <div class="nav-item active" data-view="rotina-a"><span class="ico">▥</span>Uso & cobrança</div>
+      <div class="nav-item"><span class="ico">⚙</span>Configurações</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-group-title">Planos e preços</div>
+      <div class="nav-item"><span class="ico">▥</span>Módulos</div>
+      <div class="nav-item"><span class="ico">▤</span>Subscrições</div>
+      <div class="nav-item" data-view="faturas"><span class="ico">▦</span>Faturas</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-item"><span class="ico">?</span>Suporte</div>
+    </div>
+  </aside>
+
+  <main class="bh-main">
+
+    <div class="journey-stepper-wrap" id="journey-stepper-wrap">
+      <div class="title">📊 Jornada — Uso & cobrança · 3 rotinas de uso · <span id="rotina-current-name">Rotina A · Olhada matinal</span></div>
+      <div class="journey-stepper" id="journey-stepper"></div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- ROTINA A · OLHADA MATINAL (~3 min, todo dia)  -->
+    <!-- ============================================ -->
+    <div class="view active" id="view-rotina-a">
+
+      <div class="page-header">
+        <h2 class="h-caveat">Uso & cobrança</h2>
+        <span class="sub">command center diário · atualizado há 12s</span>
+        <div class="chip-pos">
+          <span class="chip muted">~3 min</span>
+          <span class="chip active">Rotina A</span>
+        </div>
+      </div>
+
+      <div class="rotina-banner">
+        <span class="icon">🌅</span>
+        <div class="copy">
+          <span class="h-caveat">Bom dia.</span> Primeira tela do dia. Percorra <b>top-down</b>: ações pendentes → operação → consumo. Se Seção 1 estiver vazia ("dia limpo"), o resto é leitura rápida.
+          <div class="line-dash" style="margin:6px 0;"></div>
+          <span class="tag">Variantes desta rotina:</span>
+          <span class="btn ghost" style="font-size:11px;" data-go-variant="vazio">ver estado vazio</span>
+          <span class="btn ghost" style="font-size:11px;" data-go-variant="falha">ver falha parcial</span>
+          <span class="btn ghost" style="font-size:11px;" data-go-variant="ciclo-ant">ver ciclo anterior</span>
+        </div>
+      </div>
+
+      <div class="origem-bar">
+        <span class="chip muted">📍 Origem:</span>
+        <span class="chip active">Todas (3) ▾</span>
+        <span class="tag">Lisboa · Porto · Coimbra · filtro global, persiste na sessão</span>
+      </div>
+
+      <!-- Seção 1 · Ações pendentes -->
+      <div class="card danger">
+        <div class="title">🚨 Ações pendentes <span class="ord">· Seção 1 · must-have</span></div>
+        <div class="action-tabs">
+          <div class="action-tab active">SLA risco (3)</div>
+          <div class="action-tab">RMA aguardando (1)</div>
+          <div class="action-tab">Cancelados na zona (2)</div>
+          <div class="action-tab muted">Falhas integração (0)</div>
+        </div>
+        <div class="action-row danger">
+          <span class="pid">#4521</span>
+          <div class="info"><b>Amazon DE</b> · DPD<div class="desc">Berlim · €54.20 · gerado há 1h</div></div>
+          <span class="chip danger">vence 4h</span>
+          <span class="btn primary" data-go="pedidos">Resolver</span>
+        </div>
+        <div class="action-row danger">
+          <span class="pid">#4517</span>
+          <div class="info"><b>bol.com</b> · GLS<div class="desc">Amsterdam · €89.00 · gerado há 3h</div></div>
+          <span class="chip danger">vence 6h</span>
+          <span class="btn" data-go="pedidos">Abrir</span>
+        </div>
+        <div class="action-row warn">
+          <span class="pid">#4502</span>
+          <div class="info"><b>big.pt</b> · DPD<div class="desc">Lisboa · €32.50</div></div>
+          <span class="chip warn">vence 8h</span>
+          <span class="btn" data-go="pedidos">Abrir</span>
+        </div>
+        <div class="tag" style="margin-top:6px;">↳ click em qualquer item abre o detalhe em <code>seller-pedido-happy</code> Fase 2.</div>
+      </div>
+
+      <!-- Seção 2 · Operação corrente -->
+      <div class="card">
+        <div class="title">🚚 Operação corrente <span class="ord">· Seção 2 · must-have</span></div>
+        <div class="tag" style="margin-bottom:4px;">funil de pedidos · estado agora</div>
+        <div class="funil">
+          <div class="bar"><span class="num">5</span>criado</div>
+          <div class="bar"><span class="num">12</span>roteado</div>
+          <div class="bar curr"><span class="num">8</span>etiquet.</div>
+          <div class="bar warn"><span class="num">15</span>aguarda</div>
+          <div class="bar"><span class="num">47</span>trânsito</div>
+          <div class="bar"><span class="num">23</span>entreg.</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+          <div class="card warn" style="margin:0; box-shadow:none; padding:10px 12px;">
+            <div style="font-size:12px;"><b>Próxima coleta</b> · DPD · Lisboa</div>
+            <div style="font-family:'Caveat',cursive; font-size:18px; font-weight:700;">Hoje · 14h–17h</div>
+            <div class="tag">15 pacotes</div>
+            <span class="btn ghost" style="font-size:11px; margin-top:4px;" data-go="coletas">ver calendário →</span>
+          </div>
+          <div class="card fillsoft" style="margin:0; box-shadow:none; padding:10px 12px;">
+            <div style="font-size:12px;"><b>Devoluções em retorno</b> · 2</div>
+            <div class="tag" style="margin-top:4px;">#R-865 · ETA amanhã · #R-871 · ETA hoje 18h</div>
+            <span class="btn ghost" style="font-size:11px; margin-top:4px;" data-go="devolucoes">ver devoluções →</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção 3 · Uso & cobrança -->
+      <div class="card fill">
+        <div class="title">💸 Uso & cobrança <span class="ord">· Seção 3 · must-have</span></div>
+        <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
+          <span class="chip muted">📅 período:</span>
+          <span class="chip active">Ciclo atual · Maio 2026 ▾</span>
+          <span class="chip">30d</span>
+          <span class="chip" data-go-variant="ciclo-ant" style="cursor:pointer;">ciclo ant.</span>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-block">
+            <div><div class="kpi-label">etiquetas (ciclo)</div><div class="kpi-value lg">247</div></div>
+            <div><div class="kpi-label">valor etiquetas</div><div class="kpi-value">€61.75</div></div>
+            <div><div class="kpi-label">+ assinatura</div><div style="font-size:14px;">€99.00</div></div>
+            <div><div class="kpi-label">projetado fim ciclo</div><div class="kpi-value highlight">€160.75</div><div class="kpi-foot">+25% vs Abril · extrapolação linear</div></div>
+          </div>
+          <div class="kpi-chart">
+            <div class="label">etiquetas/dia · 8 dias decorridos + projeção</div>
+            <div class="bars">
+              <div class="b" style="height:30%"></div><div class="b" style="height:50%"></div><div class="b" style="height:40%"></div>
+              <div class="b" style="height:65%"></div><div class="b" style="height:55%"></div><div class="b" style="height:80%"></div>
+              <div class="b" style="height:70%"></div><div class="b" style="height:90%"></div>
+              <div class="b proj" style="height:75%"></div><div class="b proj" style="height:80%"></div>
+            </div>
+            <div class="line-dash"></div>
+            <div class="breakdown">
+              <span><b>canal:</b> Vitrine 40% · big.pt 35% · Amzn 15% · Cdisc 10%</span>
+            </div>
+            <div class="breakdown">
+              <span><b>carrier:</b> DPD 60% · GLS 40%</span>
+              <span><b>origem:</b> Lisboa 65% · Porto 35%</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:10px; justify-content:flex-end;">
+          <span class="btn ghost">Ver detalhe das etiquetas →</span>
+          <span class="btn primary" data-go="faturas">Ver fatura corrente em Planos e preços →</span>
+        </div>
+        <div class="tag" style="margin-top:6px;">↳ <b>conferível em &lt;5s sem rolar</b>: 247 etiquetas, €160.75 projetado. Detalhes só se quiser.</div>
+      </div>
+
+    </div>
+
+    <!-- ============================================ -->
+    <!-- ROTINA B · CONFERÊNCIA INTRA-DIA (~30s)        -->
+    <!-- ============================================ -->
+    <div class="view" id="view-rotina-b">
+
+      <div class="page-header">
+        <h2 class="h-caveat">Uso & cobrança</h2>
+        <span class="sub">conferência rápida pós-ação · ~30s</span>
+        <div class="chip-pos">
+          <span class="chip muted">~30s</span>
+          <span class="chip active">Rotina B</span>
+        </div>
+      </div>
+
+      <div class="rotina-banner">
+        <span class="icon">🔁</span>
+        <div class="copy">
+          <span class="h-caveat">Volta rápida.</span> Acabou de gerar lote de etiquetas ou processar RMA. Só precisa confirmar que <b>os items que resolveu sumiram</b> e o <b>funil avançou</b>. Não rola até o fim — confere Seções 1 e 2 e volta ao trabalho.
+        </div>
+      </div>
+
+      <div class="origem-bar">
+        <span class="chip muted">📍 Origem:</span>
+        <span class="chip active">Todas (3) ▾</span>
+        <span class="tag">filtro preservado da Rotina A</span>
+      </div>
+
+      <!-- Seção 1 compacta -->
+      <div class="card warn">
+        <div class="title">🚨 Ações pendentes <span class="ord">· antes: 3 SLAs · agora: 1</span></div>
+        <div class="action-tabs">
+          <div class="action-tab active">SLA risco (1)</div>
+          <div class="action-tab">RMA (1)</div>
+          <div class="action-tab muted">Cancel (0)</div>
+          <div class="action-tab muted">Falhas (0)</div>
+        </div>
+        <div class="action-row warn">
+          <span class="pid">#4502</span>
+          <div class="info"><b>big.pt</b> · DPD<div class="desc">aguarda etiqueta · prazo restante</div></div>
+          <span class="chip warn">vence 7h</span>
+          <span class="btn" data-go="pedidos">Abrir</span>
+        </div>
+        <div class="tag" style="margin-top:6px;">↳ <b>✓ zerei 2 SLAs</b> nos últimos 30 min. Resta o de 7h — não urgente.</div>
+      </div>
+
+      <!-- Seção 2 compacta -->
+      <div class="card green">
+        <div class="title">🚚 Operação corrente <span class="ord">· funil avançou</span></div>
+        <div class="funil">
+          <div class="bar"><span class="num">3</span>criado</div>
+          <div class="bar"><span class="num">10</span>roteado</div>
+          <div class="bar curr"><span class="num">20</span>etiquet.</div>
+          <div class="bar warn"><span class="num">15</span>aguarda</div>
+          <div class="bar"><span class="num">47</span>trânsito</div>
+          <div class="bar"><span class="num">25</span>entreg.</div>
+        </div>
+        <div class="tag" style="margin-top:6px;">↳ etiquetadas saiu de 8 → 20 (12 novas geradas). Aguarda coleta mantido em 15 (coleta às 14h vai zerar).</div>
+      </div>
+
+      <div class="card fillsoft" style="text-align:center;">
+        <div class="title" style="justify-content:center;">↩ Trabalho feito.</div>
+        <div style="font-size:13px;">Fecha a aba ou continua processando. Seção 3 (Uso & cobrança) não é consultada nesta rotina — é leitura matinal/semanal.</div>
+      </div>
+
+    </div>
+
+    <!-- ============================================ -->
+    <!-- ROTINA C · REVISÃO SEMANAL (~12 min)           -->
+    <!-- ============================================ -->
+    <div class="view" id="view-rotina-c">
+
+      <div class="page-header">
+        <h2 class="h-caveat">Uso & cobrança</h2>
+        <span class="sub">análise da semana · sexta tarde ou segunda manhã · ~12 min</span>
+        <div class="chip-pos">
+          <span class="chip muted">~12 min</span>
+          <span class="chip active">Rotina C</span>
+        </div>
+      </div>
+
+      <div class="rotina-banner">
+        <span class="icon">📚</span>
+        <div class="copy">
+          <span class="h-caveat">Revisão semanal.</span> Não é triagem operacional — é <b>análise de consumo</b>. Foco na Seção 3 expandida: breakdowns por canal/carrier/origem, comparação com ciclos anteriores, identificação de etiquetas excluídas (não cobradas). Decisão típica: comparar projeção atual com faturas pagas anteriores.
+        </div>
+      </div>
+
+      <!-- Seção 4 expandida com filtros e detalhe -->
+      <div class="card fill">
+        <div class="title">💸 Uso & cobrança · ciclo Maio em curso <span class="ord">· análise detalhada</span></div>
+        <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
+          <span class="chip muted">📅 período:</span>
+          <span class="chip">Ciclo atual</span>
+          <span class="chip active">90d ▾</span>
+          <span class="chip" data-go-variant="ciclo-ant">ciclo ant.</span>
+          <span class="chip">↔ personaliz.</span>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-block">
+            <div><div class="kpi-label">etiquetas (90d)</div><div class="kpi-value lg">607</div></div>
+            <div><div class="kpi-label">valor etiquetas</div><div class="kpi-value">€151.75</div></div>
+            <div><div class="kpi-label">média mensal</div><div class="kpi-value">202</div></div>
+            <div><div class="kpi-label">projetado Mai</div><div class="kpi-value highlight">€160.75</div><div class="kpi-foot">acima da média</div></div>
+          </div>
+          <div class="kpi-chart">
+            <div class="label">etiquetas/dia · últimos 90 dias</div>
+            <div class="bars">
+              <div class="b" style="height:25%"></div><div class="b" style="height:35%"></div><div class="b" style="height:42%"></div>
+              <div class="b" style="height:38%"></div><div class="b" style="height:50%"></div><div class="b" style="height:55%"></div>
+              <div class="b" style="height:60%"></div><div class="b" style="height:48%"></div><div class="b" style="height:52%"></div>
+              <div class="b" style="height:65%"></div><div class="b" style="height:70%"></div><div class="b" style="height:72%"></div>
+              <div class="b" style="height:75%"></div><div class="b" style="height:78%"></div><div class="b" style="height:82%"></div>
+              <div class="b proj" style="height:80%"></div>
+            </div>
+            <div class="line-dash"></div>
+            <div class="breakdown">
+              <span><b>canal:</b> Vitrine 40% · big.pt 35% · Amzn 15% · Cdisc 10%</span>
+              <span><b>carrier:</b> DPD 60% · GLS 40%</span>
+            </div>
+            <div class="breakdown">
+              <span><b>origem:</b> Lisboa 65% · Porto 35%</span>
+              <span><b>etiquetas excluídas (não cobradas):</b> 8 (canceladas &lt;60 min)</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+          <span class="btn ghost">Filtrar: só RMA reverso</span>
+          <span class="btn ghost">Filtrar: só excluídas (transparência)</span>
+          <span class="btn ghost">Exportar CSV</span>
+          <span style="flex:1;"></span>
+          <span class="btn primary" data-go="faturas">Comparar com faturas mensais →</span>
+        </div>
+      </div>
+
+      <div class="card info" style="text-align:center;">
+        <div class="title" style="justify-content:center;">📅 Próxima revisão: sexta-feira</div>
+        <div style="font-size:13px;">Tendências (taxa de avaria, SLA por canal, top SKUs com problema) e comparativo "você vs média do mercado" <b>não no v1.5</b> — dependem de telemetria agregada. Release seguinte.</div>
+      </div>
+
+    </div>
+
+    <!-- ============================================ -->
+    <!-- VARIANTES DA ROTINA A — cenários alternativos  -->
+    <!-- ============================================ -->
+    <div class="view" id="view-variante-vazio">
+      <div class="page-header">
+        <h2 class="h-caveat">Uso & cobrança</h2>
+        <span class="sub">primeiro dia · sem pedidos ainda</span>
+        <div class="chip-pos">
+          <span class="chip info">variante: estado vazio</span>
+          <span class="btn ghost" style="font-size:11px;" data-go-back-rotina="a">← voltar à Rotina A</span>
+        </div>
+      </div>
+
+      <div class="rotina-banner">
+        <span class="icon">🌱</span>
+        <div class="copy">
+          <span class="h-caveat">Primeiro acesso pós-setup.</span> Zero pedidos · 1 origem só · sem histórico. Copy de onboarding orienta os primeiros passos. <b>Filtro multi-origem oculto</b> (não há escolha).
+        </div>
+      </div>
+
+      <div class="origem-bar">
+        <span class="chip muted">📍 Origem única:</span>
+        <span class="chip">Depósito Lisboa</span>
+        <span class="tag">cadastre mais em Endereços (Configurações)</span>
+      </div>
+
+      <div class="card fillsoft">
+        <div class="title">🚨 Ações pendentes</div>
+        <div class="empty-state">
+          <div class="es-icon">✓</div>
+          <div class="es-title">Nenhuma ação pendente — dia limpo</div>
+          <div class="es-desc">Quando houver SLA em risco, RMA ou cancelamento, aparecerão aqui.</div>
+        </div>
+      </div>
+
+      <div class="card fillsoft">
+        <div class="title">🚚 Operação corrente</div>
+        <div class="funil">
+          <div class="bar empty"><span class="num">0</span>criado</div>
+          <div class="bar empty"><span class="num">0</span>roteado</div>
+          <div class="bar empty"><span class="num">0</span>etiquet.</div>
+          <div class="bar empty"><span class="num">0</span>aguarda</div>
+          <div class="bar empty"><span class="num">0</span>trânsito</div>
+          <div class="bar empty"><span class="num">0</span>entreg.</div>
+        </div>
+        <div class="empty-state" style="margin-top:10px;">
+          <div class="es-title">Seu primeiro pedido aparecerá aqui</div>
+          <div class="es-desc">Pedidos chegam automaticamente de Vitrine/big.pt · canais externos via CSV.</div>
+          <div style="margin-top:10px;">
+            <span class="btn primary" data-go="pedidos">Ir para Pedidos →</span>
+            <span class="btn ghost">Importar CSV</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card fill">
+        <div class="title">💸 Uso & cobrança</div>
+        <div class="kpi-row">
+          <div class="kpi-block">
+            <div><div class="kpi-label">etiquetas</div><div class="kpi-value lg" style="color:var(--ink-light);">0</div></div>
+            <div><div class="kpi-label">valor etiquetas</div><div class="kpi-value" style="color:var(--ink-light);">€0.00</div></div>
+            <div><div class="kpi-label">+ assinatura</div><div style="font-size:14px;">€99.00</div></div>
+            <div><div class="kpi-label">projetado</div><div class="kpi-value highlight">€99.00</div><div class="kpi-foot">primeiro ciclo</div></div>
+          </div>
+          <div class="kpi-chart" style="justify-content:center;">
+            <div class="empty-state">
+              <div class="es-title">Sem etiquetas geradas ainda</div>
+              <div class="es-desc">Cada etiqueta soma €0.25 ao ciclo. Acompanhe em tempo real aqui.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" id="view-variante-falha">
+      <div class="page-header">
+        <h2 class="h-caveat">Uso & cobrança</h2>
+        <span class="sub">API agregadora retornou erro parcial</span>
+        <div class="chip-pos">
+          <span class="chip danger">variante: falha parcial</span>
+          <span class="btn ghost" style="font-size:11px;" data-go-back-rotina="a">← voltar à Rotina A</span>
+        </div>
+      </div>
+
+      <div class="rotina-banner" style="background:var(--orange-soft);">
+        <span class="icon">⚠</span>
+        <div class="copy">
+          <span class="h-caveat">2 seções não carregaram.</span> Seções 1 (ações) e 2 (operação) atualizadas · Seções 4 (uso) e 5 (tendências) falharam · operação <b>não está bloqueada</b>.
+          <div style="margin-top:6px;"><span class="btn">Recarregar tudo</span></div>
+        </div>
+      </div>
+
+      <div class="card danger">
+        <div class="title">🚨 Ações pendentes <span class="ord">· ✓ carregado</span></div>
+        <div class="action-row danger">
+          <span class="pid">#4521</span>
+          <div class="info"><b>Amazon DE</b><div class="desc">DPD · €54.20</div></div>
+          <span class="chip danger">vence 4h</span>
+          <span class="btn primary" data-go="pedidos">Resolver</span>
+        </div>
+        <div class="action-row warn">
+          <span class="pid">#4502</span>
+          <div class="info"><b>big.pt</b></div>
+          <span class="chip warn">vence 8h</span>
+          <span class="btn" data-go="pedidos">Abrir</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="title">🚚 Operação corrente <span class="ord">· ✓ carregado</span></div>
+        <div class="funil">
+          <div class="bar"><span class="num">5</span>criado</div>
+          <div class="bar"><span class="num">12</span>roteado</div>
+          <div class="bar curr"><span class="num">8</span>etiquet.</div>
+          <div class="bar warn"><span class="num">15</span>aguarda</div>
+          <div class="bar"><span class="num">47</span>trânsito</div>
+          <div class="bar"><span class="num">23</span>entreg.</div>
+        </div>
+      </div>
+
+      <div class="card fillsoft">
+        <div class="title">💸 Uso & cobrança <span class="ord">· ⚠ falhou</span></div>
+        <div class="error-state">
+          <div class="err-title">Não foi possível carregar uso & cobrança</div>
+          <div class="err-desc">API agregadora retornou 503. Dados continuam sendo coletados — é falha de exibição, não de cobrança.</div>
+          <span class="btn primary">Tentar novamente</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" id="view-variante-ciclo-ant">
+      <div class="page-header">
+        <h2 class="h-caveat">Uso & cobrança</h2>
+        <span class="sub">comparando com ciclo fechado</span>
+        <div class="chip-pos">
+          <span class="chip info">variante: ciclo anterior</span>
+          <span class="btn ghost" style="font-size:11px;" data-go-back-rotina="a">← voltar à Rotina A</span>
+        </div>
+      </div>
+
+      <div class="rotina-banner">
+        <span class="icon">📅</span>
+        <div class="copy">
+          <span class="h-caveat">Exibindo Abril 2026 — ciclo fechado.</span> Sem projeção; dados consolidados. Fatura correspondente <b>já foi emitida</b>. Útil para revisão/auditoria. Seções 1 e 2 permanecem real-time.
+        </div>
+      </div>
+
+      <div class="card fill">
+        <div class="title">💸 Uso & cobrança · Abril 2026 <span class="ord">· consolidado</span></div>
+        <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
+          <span class="chip muted">📅 período:</span>
+          <span class="chip" data-go-back-rotina="a" style="cursor:pointer;">Ciclo atual</span>
+          <span class="chip">30d</span>
+          <span class="chip">90d</span>
+          <span class="chip active">Abril 2026 (ciclo ant.) ▾</span>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-block">
+            <div><div class="kpi-label">etiquetas (Abr)</div><div class="kpi-value lg">198</div></div>
+            <div><div class="kpi-label">valor etiquetas</div><div class="kpi-value">€49.50</div></div>
+            <div><div class="kpi-label">+ assinatura</div><div style="font-size:14px;">€99.00</div></div>
+            <div><div class="kpi-label">total cobrado</div><div class="kpi-value highlight">€148.50</div><div class="kpi-foot">fatura paga · 05/Mai</div></div>
+          </div>
+          <div class="kpi-chart">
+            <div class="label">etiquetas/dia · Abril 2026 (sem projeção)</div>
+            <div class="bars">
+              <div class="b" style="height:25%"></div><div class="b" style="height:35%"></div><div class="b" style="height:50%"></div>
+              <div class="b" style="height:60%"></div><div class="b" style="height:55%"></div><div class="b" style="height:70%"></div>
+              <div class="b" style="height:65%"></div><div class="b" style="height:75%"></div>
+              <div class="b" style="height:60%"></div><div class="b" style="height:55%"></div>
+            </div>
+            <div class="line-dash"></div>
+            <div class="breakdown">
+              <span><b>canal:</b> Vitrine 38% · big.pt 32% · Amzn 18% · Cdisc 12%</span>
+              <span><b>carrier:</b> DPD 58% · GLS 42%</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:10px; justify-content:flex-end;">
+          <span class="btn ghost" data-go-back-rotina="a">← voltar ao ciclo atual</span>
+          <span class="btn primary" data-go="faturas">Ver fatura de Abril →</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- STUBS (deep-links cross-module)                -->
+    <!-- ============================================ -->
+    <div class="view" id="view-pedidos">
+      <div class="page-header">
+        <h2 class="h-caveat">Pedidos</h2>
+        <span class="sub">3 SLA em risco · 47 em trânsito · 23 entregues hoje</span>
+        <div class="chip-pos"><span class="btn ghost" data-go-back-rotina="a">← voltar ao dashboard</span></div>
+      </div>
+      <div class="card">
+        <div class="stub-list-row"><span class="pid">#4521</span><div class="info"><b>Amazon DE</b> · Berlim · €54.20<div class="desc">DPD · gerado há 1h</div></div><span class="chip danger">SLA 4h</span><span class="btn">Abrir</span></div>
+        <div class="stub-list-row"><span class="pid">#4517</span><div class="info"><b>bol.com</b> · Amsterdam · €89.00<div class="desc">GLS · gerado há 3h</div></div><span class="chip danger">SLA 6h</span><span class="btn">Abrir</span></div>
+        <div class="stub-list-row"><span class="pid">#4502</span><div class="info"><b>big.pt</b> · Lisboa · €32.50<div class="desc">DPD · gerado há 4h</div></div><span class="chip warn">SLA 8h</span><span class="btn">Abrir</span></div>
+        <div class="stub-list-row"><span class="pid">#4498</span><div class="info"><b>Vitrine</b> · Porto · €112.00<div class="desc">DPD · etiquetado</div></div><span class="chip green">aguarda coleta</span><span class="btn">Abrir</span></div>
+      </div>
+      <div class="tag">↳ stub · fluxo completo em <code>seller-pedido-happy-jornada.html</code></div>
+    </div>
+
+    <div class="view" id="view-coletas">
+      <div class="page-header">
+        <h2 class="h-caveat">Coletas</h2>
+        <span class="sub">próxima · hoje 14h–17h · DPD · 15 pacotes</span>
+        <div class="chip-pos"><span class="btn ghost" data-go-back-rotina="a">← voltar ao dashboard</span></div>
+      </div>
+      <div class="under-construction">
+        <div class="big">Calendário de coletas</div>
+        <div class="sub">Stub. Detalhe completo no protótipo <code>painel-coletas</code>.<br>Maio 2026 · DPD toda terça/quinta · 14h–17h Lisboa.</div>
+      </div>
+    </div>
+
+    <div class="view" id="view-devolucoes">
+      <div class="page-header">
+        <h2 class="h-caveat">Devoluções</h2>
+        <span class="sub">1 aguardando ação · 2 em trânsito reverso</span>
+        <div class="chip-pos"><span class="btn ghost" data-go-back-rotina="a">← voltar ao dashboard</span></div>
+      </div>
+      <div class="card">
+        <div class="stub-list-row" style="background:var(--orange-soft);"><span class="pid">#R-872</span><div class="info"><b>Pedido #4490</b> · arrependimento 14d<div class="desc">solicitado há 2h · big.pt · prazo 11d</div></div><span class="chip warn">aceitar</span><span class="btn primary">Abrir</span></div>
+        <div class="stub-list-row"><span class="pid">#R-865</span><div class="info"><b>Pedido #4380</b> · defeito · Berlim<div class="desc">trânsito reverso · ETA amanhã · DPD</div></div><span class="chip">trânsito</span><span class="btn">Abrir</span></div>
+        <div class="stub-list-row"><span class="pid">#R-871</span><div class="info"><b>Pedido #4412</b> · item errado · Madrid<div class="desc">trânsito reverso · ETA hoje 18h · GLS</div></div><span class="chip">trânsito</span><span class="btn">Abrir</span></div>
+      </div>
+      <div class="tag">↳ stub · fluxo completo em <code>seller-rma-canal-bh-happy-jornada.html</code></div>
+    </div>
+
+    <div class="view" id="view-carriers">
+      <div class="page-header">
+        <h2 class="h-caveat">Carriers & contratos</h2>
+        <span class="sub">DPD próprio + GLS pool BH · 1 alerta</span>
+        <div class="chip-pos"><span class="btn ghost" data-go-back-rotina="a">← voltar ao dashboard</span></div>
+      </div>
+      <div class="under-construction">
+        <div class="big">Reimport de contrato DPD</div>
+        <div class="sub">Stub. Cláusula combustível desatualizada 32d · fluxo completo em <code>seller-importar-contrato-poc-happy-jornada.html</code>.</div>
+      </div>
+    </div>
+
+    <div class="view" id="view-faturas">
+      <div class="page-header">
+        <h2 class="h-caveat">Faturas</h2>
+        <span class="sub">Planos e preços · BIG logistics + módulos do ecossistema</span>
+        <div class="chip-pos"><span class="btn ghost" data-go-back-rotina="a">← voltar ao dashboard</span></div>
+      </div>
+      <div class="card">
+        <div class="stub-list-row" style="background:var(--paper-edge); border:1.5px dashed var(--ink); border-radius:5px; margin-bottom:6px;">
+          <span class="pid">Maio 2026</span>
+          <div class="info"><b>Em curso · projetado €160.75</b><div class="desc">Assinatura €99 + 247 etiquetas × €0.25 = €61.75 · IVA aplicado no fechamento</div></div>
+          <span class="chip warn">em curso</span>
+          <span class="btn" data-go="rotina-a">Ver consumo →</span>
+        </div>
+        <div class="stub-list-row"><span class="pid">Abril 2026</span><div class="info"><b>€148.50</b> · paga em 05/Mai<div class="desc">€99 + 198 × €0.25 = €49.50</div></div><span class="chip green">paga</span><span class="btn">PDF</span></div>
+        <div class="stub-list-row"><span class="pid">Março 2026</span><div class="info"><b>€132.25</b> · paga em 05/Abr<div class="desc">€99 + 133 × €0.25 = €33.25</div></div><span class="chip green">paga</span><span class="btn">PDF</span></div>
+        <div class="stub-list-row"><span class="pid">Fevereiro 2026</span><div class="info"><b>€118.00</b> · paga em 05/Mar<div class="desc">€99 + 76 × €0.25 = €19.00</div></div><span class="chip green">paga</span><span class="btn">PDF</span></div>
+      </div>
+      <div class="tag">↳ stub · fluxo completo em <code>seller-fatura-etiquetas-mensal-happy-jornada.html</code></div>
+    </div>
+
+    <!-- Stubs sidebar simples -->
+    <div class="view" id="view-inicio"><div class="under-construction"><div class="big">Início</div><div class="sub">Visão geral do ecossistema BH.</div></div></div>
+    <div class="view" id="view-catalogo"><div class="under-construction"><div class="big">Catálogo</div><div class="sub">BHIDs, variantes, medidas.</div></div></div>
+    <div class="view" id="view-vitrine"><div class="under-construction"><div class="big">Vitrine</div><div class="sub">Loja própria · canal conectado.</div></div></div>
+    <div class="view" id="view-cadastro"><div class="under-construction"><div class="big">Cadastro</div><div class="sub">Dados fiscais · IVA · VIES.</div></div></div>
+
+  </main>
+
+</div>
+
+<div class="journey-nav-bar" id="journey-nav-bar">
+  <button class="btn back" id="btn-back" onclick="goToPrevRotina()">← rotina anterior</button>
+  <div class="saved"><span class="chip green" style="font-size:9px;">✓</span> dashboard em tempo real</div>
+  <div style="flex:1;"></div>
+  <span class="meta-tag" id="phase-tag"></span>
+  <button class="btn next" id="btn-next" onclick="goToNextRotina()">próxima rotina →</button>
+</div>
+
+<div class="toast" id="toast">
+  <span class="close" onclick="hideToast()">×</span>
+  <b>Como navegar:</b><br>
+  · Dashboard é <b>mono-tela</b>: 3 rotinas de uso (matinal/intra-dia/semanal).<br>
+  · Cada rotina é uma <b>view</b> com subset relevante das 3 seções must-have.<br>
+  · Click no stepper para pular · cenários alternativos via botões na Rotina A.
+</div>
+
+<script>
+const rotinas = [
+  { id: 'a', view: 'rotina-a', label: 'Matinal',   meta: '~3 min · 1×/dia',   tag: 'Rotina A · Olhada matinal · percorra top-down · age em Seção 1, lê Seção 2, confere Seção 4 em &lt;5s' },
+  { id: 'b', view: 'rotina-b', label: 'Intra-dia', meta: '~30s · 3–5×/dia',   tag: 'Rotina B · Conferência intra-dia · só Seções 1 e 2 · reforço de "trabalho feito"' },
+  { id: 'c', view: 'rotina-c', label: 'Semanal',   meta: '~12 min · 1×/sem.', tag: 'Rotina C · Revisão semanal · análise expandida da Seção 3 (consumo) · comparação com ciclos anteriores' },
+];
+
+const breadcrumbMap = {
+  'rotina-a': ['Logística', 'Uso & cobrança'],
+  'rotina-b': ['Logística', 'Uso & cobrança'],
+  'rotina-c': ['Logística', 'Uso & cobrança'],
+  'variante-vazio': ['Logística', 'Uso & cobrança', 'estado vazio'],
+  'variante-falha': ['Logística', 'Uso & cobrança', 'falha parcial'],
+  'variante-ciclo-ant': ['Logística', 'Uso & cobrança', 'ciclo anterior'],
+  'pedidos':    ['Logística', 'Pedidos'],
+  'coletas':    ['Logística', 'Coletas'],
+  'devolucoes': ['Logística', 'Devoluções'],
+  'carriers':   ['Logística', 'Carriers & contratos'],
+  'faturas':    ['Planos e preços', 'Faturas'],
+  'inicio': ['Início'], 'catalogo': ['Catálogo'], 'vitrine': ['Vitrine'], 'cadastro': ['Cadastro'],
+};
+
+let state = { rotinaIndex: 0, inRotina: true };
+
+function renderStepper() {
+  const wrap = document.getElementById('journey-stepper');
+  wrap.innerHTML = '';
+  rotinas.forEach((r, i) => {
+    let cls = '';
+    if (i < state.rotinaIndex) cls = 'done';
+    else if (i === state.rotinaIndex) cls = 'current';
+    const el = document.createElement('div');
+    el.className = `step ${cls}`;
+    el.innerHTML = `<span class="num">${i + 1}</span><span class="lbl">${r.label}</span><span class="meta">${r.meta}</span>`;
+    el.onclick = () => goToRotina(i);
+    wrap.appendChild(el);
+  });
+  document.getElementById('rotina-current-name').textContent = `Rotina ${rotinas[state.rotinaIndex].id.toUpperCase()} · ${rotinas[state.rotinaIndex].label === 'Matinal' ? 'Olhada matinal' : rotinas[state.rotinaIndex].label === 'Intra-dia' ? 'Conferência intra-dia' : 'Revisão semanal'}`;
+}
+
+function renderJourneyNav() {
+  const back = document.getElementById('btn-back');
+  const next = document.getElementById('btn-next');
+  back.disabled = state.rotinaIndex === 0;
+  next.disabled = state.rotinaIndex === rotinas.length - 1;
+  back.style.opacity = back.disabled ? 0.4 : 1;
+  next.style.opacity = next.disabled ? 0.4 : 1;
+  document.getElementById('phase-tag').innerHTML = '↳ ' + rotinas[state.rotinaIndex].tag;
+}
+
+function renderBreadcrumb(crumb) {
+  if (!crumb) return;
+  document.getElementById('crumb').innerHTML = crumb.map((c, i) => i === crumb.length - 1 ? `<b>${c}</b>` : c).join('<span class="sep">›</span>');
+}
+
+function showView(viewId) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const el = document.getElementById('view-' + viewId);
+  if (el) el.classList.add('active');
+  const inRotina = ['rotina-a', 'rotina-b', 'rotina-c'].includes(viewId);
+  state.inRotina = inRotina;
+  document.getElementById('journey-stepper-wrap').style.display = inRotina ? 'block' : 'none';
+  document.getElementById('journey-nav-bar').style.display = inRotina ? 'flex' : 'none';
+  renderBreadcrumb(breadcrumbMap[viewId]);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goToRotina(index) {
+  if (index < 0 || index >= rotinas.length) return;
+  state.rotinaIndex = index;
+  showView(rotinas[index].view);
+  renderStepper();
+  renderJourneyNav();
+}
+
+function goToNextRotina() { goToRotina(state.rotinaIndex + 1); }
+function goToPrevRotina() { goToRotina(state.rotinaIndex - 1); }
+
+function goToView(viewId) { showView(viewId); }
+
+document.querySelectorAll('.nav-item[data-view]').forEach(item => {
+  item.addEventListener('click', () => goToView(item.dataset.view));
+});
+
+document.querySelectorAll('[data-go]').forEach(el => {
+  el.addEventListener('click', e => { e.stopPropagation(); goToView(el.dataset.go); });
+});
+
+document.querySelectorAll('[data-go-variant]').forEach(el => {
+  el.addEventListener('click', e => { e.stopPropagation(); goToView('variante-' + el.dataset.goVariant); });
+});
+
+document.querySelectorAll('[data-go-back-rotina]').forEach(el => {
+  el.addEventListener('click', e => { e.stopPropagation(); goToRotina(0); });
+});
+
+document.querySelectorAll('.action-tabs').forEach(group => {
+  group.querySelectorAll('.action-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      group.querySelectorAll('.action-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+});
+
+function hideToast() { document.getElementById('toast').style.display = 'none'; }
+setTimeout(hideToast, 14000);
+
+renderStepper();
+renderJourneyNav();
+</script>
+
+</body>
+</html>

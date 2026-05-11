@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<title>Wireframe — fila-pedidos (base)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a;
+  --ink-soft: #3d3d3d;
+  --ink-light: #8a8a8a;
+  --ink-faint: #c8c8c8;
+  --paper: #fcfcfa;
+  --paper-edge: #f3f1e8;
+  --yellow: #fff2a8;
+  --yellow-dim: #ffe771;
+  --yellow-edge: #e6c732;
+  --green-soft: #c9e6b8;
+  --red-soft: #f4b8b0;
+  --blue-soft: #b8d4f0;
+  --orange-soft: #f5d0a0;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Patrick Hand', cursive;
+  background: var(--paper);
+  background-image:
+    radial-gradient(circle at 25% 30%, rgba(0,0,0,0.015) 0%, transparent 50%),
+    radial-gradient(circle at 75% 70%, rgba(0,0,0,0.015) 0%, transparent 50%);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.4;
+  margin: 0;
+  padding: 24px 32px 80px;
+}
+
+h1, h2, .var-label, .section-title { font-family: 'Caveat', cursive; }
+
+/* ========== TÍTULO ========== */
+.title-block {
+  border: 2.5px solid var(--ink);
+  border-radius: 10px;
+  padding: 18px 24px 16px;
+  background: var(--paper);
+  box-shadow: 5px 5px 0 var(--ink);
+  margin-bottom: 28px;
+  position: relative;
+}
+.title-block h1 { font-size: 38px; margin: 0 0 4px; line-height: 1.1; letter-spacing: 0.5px; }
+.title-block .meta { font-size: 15px; color: var(--ink-soft); display: flex; gap: 18px; flex-wrap: wrap; margin-top: 4px; }
+.title-block .meta b { color: var(--ink); }
+.title-block .meta .badge-etapa { background: var(--yellow); border: 1.5px solid var(--ink); padding: 2px 12px; border-radius: 100px; font-family: 'Caveat', cursive; font-size: 18px; transform: rotate(-1.5deg); display: inline-block; }
+
+.overview-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 24px;
+  margin-top: 14px;
+  padding: 12px 16px;
+  border: 1.5px dashed var(--ink-light);
+  border-radius: 6px;
+  background: var(--paper-edge);
+  font-size: 14.5px;
+}
+.overview-card b { color: var(--ink); }
+.overview-card .label { color: var(--ink-soft); }
+
+/* ========== FLOOR NAV ========== */
+.floor-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 10px 14px;
+  border: 1.5px dashed var(--ink-light);
+  border-radius: 6px;
+  background: var(--paper-edge);
+  position: sticky;
+  top: 8px;
+  z-index: 10;
+}
+.floor-nav a {
+  padding: 4px 12px;
+  text-decoration: none;
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+  border-radius: 100px;
+  font-size: 14px;
+  background: var(--paper);
+  transition: transform 0.1s;
+}
+.floor-nav a:hover { background: var(--yellow); transform: translate(-1px, -1px); }
+
+/* ========== SECTION ========== */
+.section { margin-bottom: 36px; }
+.section-head { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px dashed var(--ink-light); }
+.section-num { font-family: 'Caveat', cursive; font-size: 64px; font-weight: 700; line-height: 0.85; color: var(--ink); min-width: 56px; text-align: center; background: var(--yellow); border: 2px solid var(--ink); border-radius: 8px; padding: 4px 8px; box-shadow: 3px 3px 0 var(--ink); transform: rotate(-2deg); }
+.section-info { flex: 1; }
+.section-title { font-size: 32px; margin: 0 0 4px; line-height: 1.05; }
+.section-sentiment { display: inline-block; padding: 1px 10px; border-radius: 100px; border: 1.2px solid var(--ink); font-size: 13px; margin-left: 8px; vertical-align: middle; }
+.section-sentiment.neutra { background: var(--paper-edge); }
+.section-sentiment.pos { background: var(--green-soft); }
+.section-sentiment.neg { background: var(--red-soft); }
+.section-desc { font-size: 14.5px; color: var(--ink-soft); max-width: 720px; }
+
+/* ========== VARS GRID ========== */
+.vars { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+.var-card { position: relative; border: 2px solid var(--ink); border-radius: 8px; padding: 14px 14px 10px; background: var(--paper); box-shadow: 3px 3px 0 var(--ink); }
+.var-card::before { content: ''; position: absolute; top: -9px; left: 18px; width: 56px; height: 18px; background: var(--yellow-dim); border: 1px solid var(--ink); transform: rotate(-3deg); z-index: 0; }
+.var-label { font-size: 22px; font-weight: 700; margin: 0; position: relative; z-index: 1; }
+.var-tag { display: inline-block; font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700; background: var(--ink); color: var(--paper); width: 28px; height: 28px; text-align: center; line-height: 26px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+.var-desc { font-size: 13.5px; color: var(--ink-soft); line-height: 1.35; margin: 4px 0 10px; min-height: 36px; }
+.annotate { font-family: 'Kalam', cursive; font-style: italic; font-size: 13px; color: var(--ink-soft); margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--ink-faint); }
+.annotate::before { content: '↳ '; color: var(--ink-light); }
+
+/* ========== SKETCH PRIMITIVES ========== */
+.sk-frame { border: 1.8px solid var(--ink); border-radius: 5px; padding: 8px; background: var(--paper); display: flex; flex-direction: column; gap: 6px; min-height: 200px; font-size: 12px; position: relative; }
+.sk-row { display: flex; gap: 6px; align-items: center; }
+.sk-col { display: flex; flex-direction: column; gap: 4px; }
+.sk-grow { flex: 1; }
+
+.sk-box { border: 1.5px solid var(--ink); border-radius: 4px; padding: 4px 6px; background: var(--paper); font-size: 11.5px; min-height: 18px; display: flex; align-items: center; gap: 4px; }
+.sk-box.dashed { border-style: dashed; border-color: var(--ink-light); }
+.sk-box.fill { background: var(--yellow); }
+.sk-box.fillsoft { background: var(--paper-edge); }
+.sk-box.tiny { padding: 2px 5px; font-size: 11px; }
+.sk-box small { color: var(--ink-light); font-size: 10px; }
+
+.sk-btn { border: 1.5px solid var(--ink); border-radius: 100px; padding: 3px 9px; background: var(--paper); font-size: 11.5px; font-family: inherit; cursor: pointer; }
+.sk-btn.primary { background: var(--yellow); font-weight: 700; }
+.sk-btn.ghost { border-style: dashed; color: var(--ink-soft); }
+.sk-btn.danger { background: var(--red-soft); }
+
+.sk-chip { border: 1.2px solid var(--ink); border-radius: 100px; padding: 1px 7px; font-size: 10.5px; background: var(--paper); display: inline-block; }
+.sk-chip.active { background: var(--yellow); font-weight: 700; }
+.sk-chip.muted { color: var(--ink-light); border-color: var(--ink-faint); }
+.sk-chip.green { background: var(--green-soft); }
+.sk-chip.red { background: var(--red-soft); }
+.sk-chip.orange { background: var(--orange-soft); }
+
+.sk-line { height: 1.2px; background: var(--ink-light); margin: 2px 0; }
+.sk-line.dash { background: transparent; border-top: 1.2px dashed var(--ink-light); }
+
+.sk-table { border: 1.2px solid var(--ink); border-radius: 3px; overflow: hidden; font-size: 10.5px; }
+.sk-table-row { display: flex; border-bottom: 1px dashed var(--ink-light); padding: 3px 5px; gap: 5px; align-items: center; }
+.sk-table-row:last-child { border-bottom: 0; }
+.sk-table-row.head { background: var(--paper-edge); font-weight: 700; font-size: 9.5px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.3px; }
+.sk-table-row.fill { background: var(--yellow); }
+.sk-table-row.risk { background: var(--red-soft); }
+.sk-table-row.warn { background: var(--orange-soft); }
+.sk-table-row .col { flex: 1; }
+
+.sk-mini-card { border: 1.5px solid var(--ink); border-radius: 5px; padding: 5px 7px; background: var(--paper); font-size: 11px; }
+.sk-mini-card.fill { background: var(--yellow); }
+.sk-mini-card.fillsoft { background: var(--paper-edge); }
+.sk-mini-card.danger { background: var(--red-soft); }
+.sk-mini-card.warn { background: var(--orange-soft); }
+.sk-mini-card.green { background: var(--green-soft); }
+
+.sk-stack > * + * { margin-top: 5px; }
+.sk-tag { font-size: 10px; color: var(--ink-light); font-style: italic; }
+
+.sk-placeholder { border: 1.5px dashed var(--ink-light); border-radius: 4px; padding: 10px; text-align: center; font-size: 11px; color: var(--ink-light); background: var(--paper-edge); position: relative; min-height: 36px; display: flex; align-items: center; justify-content: center; }
+.sk-placeholder.thumb { min-height: 24px; padding: 2px; font-size: 10px; }
+
+.sk-search { display: flex; align-items: center; gap: 4px; border: 1.5px solid var(--ink); border-radius: 100px; padding: 3px 10px; background: var(--paper); flex: 1; font-size: 11px; }
+.sk-search.dashed { border-style: dashed; }
+
+.sk-bottombar { position: absolute; bottom: 0; left: 0; right: 0; background: var(--ink); color: var(--paper); padding: 5px 8px; display: flex; align-items: center; gap: 6px; font-size: 11px; border-radius: 0 0 4px 4px; }
+.sk-bottombar .sk-btn { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+.sk-bottombar .sk-btn.primary { background: var(--yellow); border-color: var(--ink); }
+
+.sk-toolbar { background: var(--yellow-dim); border: 1.5px solid var(--ink); border-radius: 4px; padding: 4px 6px; font-size: 11px; display: flex; gap: 6px; align-items: center; }
+
+.sk-sidebar { width: 32%; border-right: 1.8px solid var(--ink); background: var(--paper-edge); padding: 6px; display: flex; flex-direction: column; gap: 6px; font-size: 10.5px; }
+
+.sk-tab { border: 1.5px solid var(--ink); border-bottom: none; border-radius: 5px 5px 0 0; padding: 3px 9px; background: var(--paper); font-size: 11px; }
+.sk-tab.active { background: var(--yellow); font-weight: 700; }
+
+/* ========== CHOSEN MARK ========== */
+.var-card.chosen { box-shadow: 4px 4px 0 var(--ink), inset 0 0 0 2.5px var(--green-soft); }
+.chosen-mark {
+  position: absolute; top: -12px; right: 18px;
+  background: var(--green-soft); border: 1.5px solid var(--ink);
+  padding: 2px 12px; border-radius: 100px;
+  font-family: 'Caveat', cursive; font-size: 16px; font-weight: 700;
+  transform: rotate(2deg); z-index: 1;
+}
+
+/* ========== FOOTER ========== */
+.footer-note { margin-top: 32px; padding: 14px 18px; border: 1.8px dashed var(--ink); border-radius: 6px; background: var(--paper-edge); font-size: 14.5px; color: var(--ink-soft); }
+.footer-note b { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<!-- ========== TÍTULO ========== -->
+<div class="title-block">
+  <h1>Wireframe base — <span style="color: var(--ink-soft);">fila-pedidos</span></h1>
+  <div class="meta">
+    <span class="badge-etapa">Etapa 1 · grid de regiões</span>
+    <span><b>Feature:</b> logistica-fbm</span>
+    <span><b>Hipótese:</b> pool-bh-coleta-unificada</span>
+    <span><b>Tela:</b> fila-pedidos (entry point diário)</span>
+    <span><b>Persona:</b> Seller PF/PJ multi-MKP UE</span>
+  </div>
+  <div class="overview-card">
+    <div><span class="label">Journeys que tocam:</span> <b>seller-pedido-happy</b> (Fase 1 — triagem) · <b>comprador-cancela-antes-coleta</b> (Fase 2 — banner cancel pendente)</div>
+    <div><span class="label">Cenários previstos (Etapa 2):</span> <b>5</b> — happy, vazio, pico (>100 pedidos), banner-cancel-pendente, sla-em-risco-destaque</div>
+    <div><span class="label">Regiões × variações:</span> <b>5 × 3 = 15 mini-sketches</b></div>
+    <div><span class="label">Combinação validada ✓:</span> <b>1A · 2A · 3A · 4A · 5A</b> — pronta para Etapa 2 (cenários) e referência na Etapa 3</div>
+  </div>
+</div>
+
+<!-- ========== FLOOR NAV ========== -->
+<nav class="floor-nav">
+  <a href="#r1">1 · Header</a>
+  <a href="#r2">2 · Filtros + busca</a>
+  <a href="#r3">3 · KPIs / banner</a>
+  <a href="#r4">4 · Linha do pedido</a>
+  <a href="#r5">5 · Ações em batch</a>
+</nav>
+
+<!-- ========== R1 — HEADER ========== -->
+<section id="r1" class="section">
+  <div class="section-head">
+    <div class="section-num">1</div>
+    <div class="section-info">
+      <h2 class="section-title">Header + ações globais <span class="section-sentiment neutra">neutra</span></h2>
+      <p class="section-desc">Topo da tela. Identifica a página + ações que afetam toda a fila (importar CSV, novo pedido manual, modelos por MKP).</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">A</span>Título grande + 2 botões à direita</div>
+      <div class="var-desc">Convenção clássica: título na esquerda, ações primárias na direita. Leitura imediata do que a página é.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-col" style="flex:1;">
+            <div style="font-family:'Caveat',cursive; font-size:24px; font-weight:700;">Pedidos</div>
+            <div style="font-size:10.5px; color:var(--ink-light);">37 pedidos · atualizado há 12s</div>
+          </div>
+          <span class="sk-btn ghost" style="font-size:11px;">Importar CSV</span>
+          <span class="sk-btn primary" style="font-size:11.5px;">+ Novo pedido</span>
+        </div>
+        <div class="sk-line"></div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· conteúdo da fila ···</div>
+      </div>
+      <div class="annotate">previsível e scaneável; em telas estreitas pode forçar quebra de linha</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Tabs no topo</div>
+      <div class="var-desc">Tabs como filtro primário (Todos · Por canal · Em risco) com ações secundárias ao lado. Foco no recorte da fila.</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="align-items:flex-end;">
+          <div class="sk-tab active">Todos · 37</div>
+          <div class="sk-tab">Por canal</div>
+          <div class="sk-tab">⚠ Em risco · 3</div>
+          <div class="sk-grow"></div>
+          <span class="sk-btn ghost" style="font-size:10.5px;">⋯</span>
+        </div>
+        <div class="sk-line" style="margin-top:0;"></div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· conteúdo da fila ···</div>
+      </div>
+      <div class="annotate">recorte rápido de visão; ações de criar/importar ficam escondidas no menu "⋯"</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Header compacto + dropdown "+"</div>
+      <div class="var-desc">Título pequeno + 1 botão único "+" que abre menu (Importar CSV / Novo pedido / Modelos CSV). Maximiza espaço para a fila.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div style="font-family:'Caveat',cursive; font-size:18px; font-weight:700;">Pedidos · 37</div>
+          <div class="sk-grow"></div>
+          <span class="sk-btn primary" style="font-size:13px; padding:2px 12px; font-weight:700;">+</span>
+        </div>
+        <div style="position:absolute; right:14px; top:36px; background:var(--paper); border:1.2px solid var(--ink); border-radius:5px; padding:4px 6px; font-size:10px; box-shadow:2px 2px 0 var(--ink);">
+          <div>Novo pedido manual</div>
+          <div>Importar CSV</div>
+          <div>Modelos por MKP</div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· conteúdo da fila ···</div>
+      </div>
+      <div class="annotate">econômico em espaço; descobrir "Importar CSV" exige 1 click extra</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ========== R2 — FILTROS + BUSCA ========== -->
+<section id="r2" class="section">
+  <div class="section-head">
+    <div class="section-num">2</div>
+    <div class="section-info">
+      <h2 class="section-title">Filtros + busca <span class="section-sentiment neutra">neutra</span></h2>
+      <p class="section-desc">Filtrar a fila por canal, status, origem, prazo, ou buscar por ID/comprador. Sticky para sobreviver ao scroll quando a lista é longa.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">A</span>Barra horizontal + busca à direita</div>
+      <div class="var-desc">Linha de chips/dropdowns horizontais; busca no canto direito. Mantém todos os controles na mesma altura.</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="flex-wrap:wrap;">
+          <div class="sk-box tiny fillsoft">Canal: todos ▾</div>
+          <div class="sk-box tiny fillsoft">Status ▾</div>
+          <div class="sk-box tiny fillsoft">Origem ▾</div>
+          <div class="sk-box tiny fillsoft">Prazo ▾</div>
+          <div class="sk-grow"></div>
+          <div class="sk-search dashed" style="max-width:140px;"><span style="color:var(--ink-light);">⌕</span> ID ou comprador</div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· lista ···</div>
+      </div>
+      <div class="annotate">tudo acessível numa olhada; em mobile precisa colapsar</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Sidebar lateral</div>
+      <div class="var-desc">Filtros agrupados em coluna à esquerda (com ranges, multiselect). Busca no topo. Bom para usos avançados.</div>
+      <div class="sk-frame" style="flex-direction:row; padding:0; min-height:200px;">
+        <div class="sk-sidebar">
+          <div style="font-weight:700;">Filtros</div>
+          <div class="sk-line dash"></div>
+          <div><b>Canal</b></div>
+          <div>☐ Amazon</div>
+          <div>☐ Cdiscount</div>
+          <div>☐ Vitrine</div>
+          <div class="sk-line dash"></div>
+          <div><b>Prazo</b></div>
+          <div>○ Hoje</div>
+          <div>○ ≤2 dias</div>
+        </div>
+        <div style="flex:1; padding:8px; display:flex; flex-direction:column; gap:6px;">
+          <div class="sk-search dashed"><span style="color:var(--ink-light);">⌕</span> ID, comprador…</div>
+          <div class="sk-line dash"></div>
+          <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· lista ···</div>
+        </div>
+      </div>
+      <div class="annotate">bom para volume e filtros densos; rouba largura útil da lista</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Busca dominante + chips toggle</div>
+      <div class="var-desc">Busca grande no centro como ação principal; filtros aparecem como chips clicáveis embaixo (toggles rápidos).</div>
+      <div class="sk-frame">
+        <div class="sk-search" style="padding:6px 12px; font-size:13px;"><span style="color:var(--ink-light); font-size:14px;">⌕</span> Buscar pedido por ID, comprador, produto…</div>
+        <div class="sk-row" style="flex-wrap:wrap; margin-top:4px;">
+          <span class="sk-chip active">Em risco</span>
+          <span class="sk-chip">Hoje</span>
+          <span class="sk-chip">Amazon</span>
+          <span class="sk-chip">Pendente</span>
+          <span class="sk-chip muted">+ filtro</span>
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· lista ···</div>
+      </div>
+      <div class="annotate">acelera filtragem rápida (1 click); filtros densos (multiselect, ranges) ficam difíceis</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ========== R3 — KPIs / BANNER ========== -->
+<section id="r3" class="section">
+  <div class="section-head">
+    <div class="section-num">3</div>
+    <div class="section-info">
+      <h2 class="section-title">KPIs / banner urgência <span class="section-sentiment neg">tensa em risco</span></h2>
+      <p class="section-desc">Sinaliza estado agregado da fila: quantos em risco, quantos cancel pendentes, quantos aguardando coleta. Pain point #1 da journey é SLA em risco.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">A</span>4 cards no topo</div>
+      <div class="var-desc">Stripe horizontal de KPIs (Total · Em risco · Cancel pendente · Aguardando coleta). Visão consolidada.</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="align-items:stretch;">
+          <div class="sk-mini-card fillsoft" style="flex:1; text-align:center;">
+            <div style="font-family:'Caveat',cursive; font-size:20px; font-weight:700;">37</div>
+            <div style="font-size:9px; color:var(--ink-light);">total</div>
+          </div>
+          <div class="sk-mini-card danger" style="flex:1; text-align:center;">
+            <div style="font-family:'Caveat',cursive; font-size:20px; font-weight:700;">3</div>
+            <div style="font-size:9px;">em risco</div>
+          </div>
+          <div class="sk-mini-card warn" style="flex:1; text-align:center;">
+            <div style="font-family:'Caveat',cursive; font-size:20px; font-weight:700;">1</div>
+            <div style="font-size:9px;">cancel pendente</div>
+          </div>
+          <div class="sk-mini-card green" style="flex:1; text-align:center;">
+            <div style="font-family:'Caveat',cursive; font-size:20px; font-weight:700;">12</div>
+            <div style="font-size:9px;">aguard. coleta</div>
+          </div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· lista ···</div>
+      </div>
+      <div class="annotate">visão executiva; ocupa espaço fixo mesmo em dia "limpo" (todos zerados parece vazio)</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Banner contextual</div>
+      <div class="var-desc">Aparece só quando há urgência (1+ em risco ou cancel pendente). Some em dia limpo. Fluido.</div>
+      <div class="sk-frame">
+        <div class="sk-mini-card danger" style="display:flex; gap:8px; align-items:center;">
+          <span style="font-weight:700;">⚠</span>
+          <span style="flex:1;"><b>3 pedidos com SLA em risco</b> · 1 cancel pendente</span>
+          <span class="sk-btn" style="font-size:10px; padding:1px 8px;">ver</span>
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· lista ···</div>
+      </div>
+      <div class="annotate">grita só quando precisa; perde a métrica "quantos no total / aguardando coleta"</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Sem KPIs/banner globais</div>
+      <div class="var-desc">Urgência aparece exclusivamente na cor da linha (Região 4). Maximiza vertical para a lista.</div>
+      <div class="sk-frame">
+        <div style="font-size:10px; color:var(--ink-light); font-style:italic; text-align:center; padding:6px 0;">
+          (sem stripe de KPIs nem banner — informação vive na lista)
+        </div>
+        <div class="sk-table">
+          <div class="sk-table-row risk"><div class="col">#PED-1029</div><div class="col">⚠ SLA hoje</div></div>
+          <div class="sk-table-row warn"><div class="col">#PED-1031</div><div class="col">cancel pendente</div></div>
+          <div class="sk-table-row"><div class="col">#PED-1032</div><div class="col">ok</div></div>
+        </div>
+      </div>
+      <div class="annotate">limpo e econômico; perde visão agregada — "quantos em risco?" exige escanear a lista</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ========== R4 — LINHA DO PEDIDO ========== -->
+<section id="r4" class="section">
+  <div class="section-head">
+    <div class="section-num">4</div>
+    <div class="section-info">
+      <h2 class="section-title">Linha do pedido (coração) <span class="section-sentiment neutra">neutra</span></h2>
+      <p class="section-desc">Densidade e layout da linha. Onde a tela escala (pico) ou quebra. SLA visual por linha é onde a urgência aparece. Maioria dos pedidos tem 1–3 itens.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">A</span>Tabela densa</div>
+      <div class="var-desc">ID · canal · comprador · itens · valor · SLA · prazo · ação. Maximiza pedidos por viewport. Escala bem em pico.</div>
+      <div class="sk-frame">
+        <div class="sk-table">
+          <div class="sk-table-row head">
+            <div class="col">ID</div>
+            <div class="col">canal</div>
+            <div class="col">comprador</div>
+            <div class="col" style="flex:0.5;">itens</div>
+            <div class="col" style="flex:0.7;">valor</div>
+            <div class="col" style="flex:0.8;">SLA</div>
+            <div class="col" style="flex:0.4;"></div>
+          </div>
+          <div class="sk-table-row risk">
+            <div class="col">#1029</div>
+            <div class="col">Amazon</div>
+            <div class="col">M. Silva</div>
+            <div class="col" style="flex:0.5;">3</div>
+            <div class="col" style="flex:0.7;">€87,50</div>
+            <div class="col" style="flex:0.8;">⚠ hoje</div>
+            <div class="col" style="flex:0.4;">→</div>
+          </div>
+          <div class="sk-table-row warn">
+            <div class="col">#1031</div>
+            <div class="col">Cdisc.</div>
+            <div class="col">P. Costa</div>
+            <div class="col" style="flex:0.5;">1</div>
+            <div class="col" style="flex:0.7;">€32,00</div>
+            <div class="col" style="flex:0.8;">cancel</div>
+            <div class="col" style="flex:0.4;">→</div>
+          </div>
+          <div class="sk-table-row">
+            <div class="col">#1032</div>
+            <div class="col">Vitrine</div>
+            <div class="col">R. Lopes</div>
+            <div class="col" style="flex:0.5;">2</div>
+            <div class="col" style="flex:0.7;">€54,90</div>
+            <div class="col" style="flex:0.8;">2 dias</div>
+            <div class="col" style="flex:0.4;">→</div>
+          </div>
+          <div class="sk-table-row">
+            <div class="col">#1033</div>
+            <div class="col">Amazon</div>
+            <div class="col">A. Pinto</div>
+            <div class="col" style="flex:0.5;">1</div>
+            <div class="col" style="flex:0.7;">€19,80</div>
+            <div class="col" style="flex:0.8;">3 dias</div>
+            <div class="col" style="flex:0.4;">→</div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">scaneável e escalável; pouco espaço para foto/preview do produto</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Card por pedido</div>
+      <div class="var-desc">Card grande com info estruturada (canal destacado, itens visíveis, ações inline). Visual amigável.</div>
+      <div class="sk-frame">
+        <div class="sk-mini-card danger">
+          <div class="sk-row">
+            <div class="sk-chip orange">Amazon</div>
+            <span style="font-weight:700;">#PED-1029</span>
+            <div class="sk-grow"></div>
+            <div class="sk-chip red">⚠ SLA hoje</div>
+          </div>
+          <div class="sk-line dash" style="margin:3px 0;"></div>
+          <div class="sk-row" style="font-size:10px;">
+            <span style="flex:1;">M. Silva · 3 itens · €87,50</span>
+            <span class="sk-btn primary" style="font-size:10px; padding:1px 6px;">gerar docs</span>
+          </div>
+        </div>
+        <div class="sk-mini-card">
+          <div class="sk-row">
+            <div class="sk-chip">Vitrine</div>
+            <span style="font-weight:700;">#PED-1032</span>
+            <div class="sk-grow"></div>
+            <div class="sk-chip green">2 dias</div>
+          </div>
+        </div>
+        <div class="sk-mini-card">
+          <div class="sk-row">
+            <div class="sk-chip orange">Amazon</div>
+            <span style="font-weight:700;">#PED-1033</span>
+            <div class="sk-grow"></div>
+            <div class="sk-chip green">3 dias</div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">visual e atraente em volume baixo; em pico (>100) vira scroll infinito de cards</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Lista compacta</div>
+      <div class="var-desc">Linha mínima: ID + comprador + chip canal + chip SLA + 1 ação. Foco em volume sem ruído visual.</div>
+      <div class="sk-frame">
+        <div class="sk-stack" style="font-size:11px;">
+          <div class="sk-row" style="padding:3px 5px; border-bottom:1px dashed var(--ink-light);">
+            <span style="font-weight:700;">#1029</span>
+            <span style="flex:1;">M. Silva</span>
+            <span class="sk-chip orange">Amazon</span>
+            <span class="sk-chip red">⚠ hoje</span>
+            <span class="sk-tag">→</span>
+          </div>
+          <div class="sk-row" style="padding:3px 5px; border-bottom:1px dashed var(--ink-light);">
+            <span style="font-weight:700;">#1031</span>
+            <span style="flex:1;">P. Costa</span>
+            <span class="sk-chip">Cdisc.</span>
+            <span class="sk-chip orange">cancel</span>
+            <span class="sk-tag">→</span>
+          </div>
+          <div class="sk-row" style="padding:3px 5px; border-bottom:1px dashed var(--ink-light);">
+            <span style="font-weight:700;">#1032</span>
+            <span style="flex:1;">R. Lopes</span>
+            <span class="sk-chip">Vitrine</span>
+            <span class="sk-chip green">2 d</span>
+            <span class="sk-tag">→</span>
+          </div>
+          <div class="sk-row" style="padding:3px 5px;">
+            <span style="font-weight:700;">#1033</span>
+            <span style="flex:1;">A. Pinto</span>
+            <span class="sk-chip orange">Amazon</span>
+            <span class="sk-chip green">3 d</span>
+            <span class="sk-tag">→</span>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">enxuto; perde "valor" e "qtd itens" do campo de visão (precisa abrir o pedido)</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ========== R5 — AÇÕES EM BATCH ========== -->
+<section id="r5" class="section">
+  <div class="section-head">
+    <div class="section-num">5</div>
+    <div class="section-info">
+      <h2 class="section-title">Ações em batch <span class="section-sentiment pos">positiva em pico</span></h2>
+      <p class="section-desc">Multi-seleção → "gerar etiquetas em batch", "agendar coleta", "imprimir tudo". Crítico em pico (Black Friday, lançamentos). UI tem que escalar de 1 → 100 pedidos sem mudar paradigma.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">A</span>Sticky bottom bar</div>
+      <div class="var-desc">Barra escura aparece no fundo quando há seleção (X selecionados | gerar | agendar | imprimir). Não polui em estado idle.</div>
+      <div class="sk-frame">
+        <div class="sk-stack" style="font-size:11px; padding-bottom:32px;">
+          <div class="sk-row" style="padding:3px 5px; background:var(--yellow-dim); border:1.2px solid var(--ink); border-radius:3px;"><span>☑</span> #1029 · M. Silva · Amazon</div>
+          <div class="sk-row" style="padding:3px 5px; background:var(--yellow-dim); border:1.2px solid var(--ink); border-radius:3px;"><span>☑</span> #1031 · P. Costa · Cdisc.</div>
+          <div class="sk-row" style="padding:3px 5px;"><span>☐</span> #1032 · R. Lopes · Vitrine</div>
+          <div class="sk-row" style="padding:3px 5px;"><span>☑</span> #1033 · A. Pinto · Amazon</div>
+        </div>
+        <div class="sk-bottombar">
+          <span style="font-weight:700;">3 selecionados</span>
+          <div class="sk-grow"></div>
+          <span class="sk-btn">imprimir</span>
+          <span class="sk-btn">agendar coleta</span>
+          <span class="sk-btn primary">gerar etiquetas</span>
+        </div>
+      </div>
+      <div class="annotate">contextual e claro; ações cobrem parte da última linha — sticky precisa shadow para destacar</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Toolbar acima da lista</div>
+      <div class="var-desc">Botão "modo seleção" liga checkboxes na lista; toolbar permanece visível com ações disponíveis.</div>
+      <div class="sk-frame">
+        <div class="sk-toolbar">
+          <span style="font-weight:700;">☑ Modo seleção</span>
+          <div class="sk-grow"></div>
+          <span class="sk-btn" style="font-size:10px;">imprimir</span>
+          <span class="sk-btn primary" style="font-size:10px;">gerar etiquetas (3)</span>
+        </div>
+        <div class="sk-stack" style="font-size:11px;">
+          <div class="sk-row" style="padding:3px 5px;"><span>☑</span> #1029 · M. Silva</div>
+          <div class="sk-row" style="padding:3px 5px;"><span>☑</span> #1031 · P. Costa</div>
+          <div class="sk-row" style="padding:3px 5px;"><span>☐</span> #1032 · R. Lopes</div>
+          <div class="sk-row" style="padding:3px 5px;"><span>☑</span> #1033 · A. Pinto</div>
+        </div>
+      </div>
+      <div class="annotate">explícito e descobrível; toggle "modo seleção" é click extra que não tem em (A)</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Menu "..." no header</div>
+      <div class="var-desc">Menu contextual aparece quando há seleção. Discreto. Padrão de table tools enterprise.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div style="font-family:'Caveat',cursive; font-size:18px; font-weight:700;">Pedidos</div>
+          <span class="sk-tag">3 selecionados</span>
+          <div class="sk-grow"></div>
+          <span class="sk-btn ghost" style="font-size:11px; font-weight:700;">⋯</span>
+        </div>
+        <div style="position:absolute; right:14px; top:36px; background:var(--paper); border:1.2px solid var(--ink); border-radius:5px; padding:4px 6px; font-size:10px; box-shadow:2px 2px 0 var(--ink);">
+          <div>Gerar etiquetas (3)</div>
+          <div>Agendar coleta</div>
+          <div>Imprimir</div>
+        </div>
+        <div class="sk-stack" style="font-size:11px; margin-top:18px;">
+          <div class="sk-row" style="padding:3px 5px;"><span>☑</span> #1029 · M. Silva</div>
+          <div class="sk-row" style="padding:3px 5px;"><span>☑</span> #1031 · P. Costa</div>
+          <div class="sk-row" style="padding:3px 5px;"><span>☐</span> #1032 · R. Lopes</div>
+        </div>
+      </div>
+      <div class="annotate">limpo no estado idle; descobrir a ação primária exige 2 clicks (selecionar + ⋯)</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<div class="footer-note">
+  <b>Resumo:</b> 5 regiões × 3 variações = <b>15 mini-sketches</b> para validar.<br>
+  <b>Pontos críticos detectados</b>: (1) R3 e R4 carregam a sinalização de SLA em risco — a combinação dessas duas decide a "linguagem visual de urgência" da fila. (2) Cenário "pico (>100 pedidos)" testa R4 — variação A (tabela) escala melhor; B (cards) sofre. (3) Cenário "banner-cancel" da journey de cancelamento aparece como variante da R3 (banner contextual) ou linha vermelha da R4 (chip cancel).<br>
+  <b>Combinação validada ✓</b>: <b>1A · 2A · 3A · 4A · 5A</b><br>
+  <b>Próximo passo</b>: par fila-devolucoes + detalhe-devolucao (ordem #4 do mapa).
+</div>
+
+</body>
+</html>

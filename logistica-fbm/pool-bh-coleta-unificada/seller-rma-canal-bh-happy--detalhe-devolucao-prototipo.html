@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo de tela — detalhe-devolucao (5 cenários)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a; --ink-soft: #3d3d3d; --ink-light: #8a8a8a; --ink-faint: #c8c8c8;
+  --paper: #fcfcfa; --paper-edge: #f3f1e8;
+  --yellow: #fff2a8; --yellow-dim: #ffe771; --yellow-edge: #e6c732;
+  --green-soft: #c9e6b8; --red-soft: #f4b8b0; --blue-soft: #b8d4f0; --orange-soft: #f5d0a0;
+}
+* { box-sizing: border-box; }
+body { font-family: 'Patrick Hand', cursive; background: var(--paper); color: var(--ink); font-size: 16px; line-height: 1.4; margin: 0; padding: 0 0 80px; }
+h1, h2, h3 { font-family: 'Caveat', cursive; }
+
+.title-block { border-bottom: 2.5px solid var(--ink); padding: 16px 28px; background: var(--paper); position: sticky; top: 0; z-index: 50; }
+.title-block .row { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.title-block h1 { font-size: 28px; margin: 0; line-height: 1.05; }
+.title-block .meta { font-size: 13.5px; color: var(--ink-soft); }
+.title-block .meta b { color: var(--ink); }
+.title-block .badge-etapa { background: var(--yellow); border: 1.5px solid var(--ink); padding: 2px 12px; border-radius: 100px; font-family: 'Caveat', cursive; font-size: 16px; transform: rotate(-1.5deg); display: inline-block; }
+.title-block .combo { background: var(--green-soft); border: 1.5px solid var(--ink); padding: 2px 12px; border-radius: 100px; font-size: 13px; }
+
+.proto-nav { position: sticky; top: 64px; z-index: 40; background: var(--paper-edge); padding: 8px 28px; display: flex; gap: 6px; flex-wrap: wrap; border-bottom: 1.5px dashed var(--ink-light); }
+.proto-nav button { border: 1.5px solid var(--ink); border-radius: 100px; padding: 4px 12px; background: var(--paper); font-family: 'Patrick Hand', cursive; font-size: 13px; cursor: pointer; }
+.proto-nav button:hover { background: var(--yellow-dim); transform: translate(-1px, -1px); }
+.proto-nav button.active { background: var(--yellow); font-weight: 700; box-shadow: 2px 2px 0 var(--ink); }
+
+.screen { display: none; padding: 24px 28px 90px; }
+.screen.active { display: block; animation: fadeIn 0.2s; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.scenario-banner { border: 1.8px solid var(--ink); border-radius: 6px; padding: 8px 14px; margin-bottom: 16px; display: flex; gap: 10px; align-items: center; font-size: 13.5px; box-shadow: 3px 3px 0 var(--ink); background: var(--paper-edge); }
+.scenario-banner.happy { background: var(--green-soft); }
+.scenario-banner.warn { background: var(--orange-soft); }
+.scenario-banner.info { background: var(--blue-soft); }
+.scenario-banner.neutra { background: var(--paper-edge); }
+.scenario-banner b { font-family: 'Caveat', cursive; font-size: 16px; }
+.scenario-banner .tag { font-family: 'Caveat', cursive; font-size: 13px; font-weight: 700; border: 1.5px solid var(--ink); padding: 1px 10px; border-radius: 100px; background: var(--paper); }
+
+/* R1=C — Split 2 colunas */
+.tela-header { border: 1.8px solid var(--ink); border-radius: 6px; padding: 12px 16px; margin-bottom: 14px; box-shadow: 3px 3px 0 var(--ink); background: var(--paper); }
+.tela-header .split { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.tela-header .col-rma { padding-right: 12px; }
+.tela-header .col-pedido { border-left: 1.5px dashed var(--ink-light); padding-left: 14px; }
+.tela-header .ph-label { font-size: 10px; color: var(--ink-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+.tela-header .id-big { font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700; line-height: 1; }
+.tela-header .id-med { font-family: 'Caveat', cursive; font-size: 17px; font-weight: 700; }
+.tela-header .meta-row { display: flex; gap: 6px; align-items: center; margin-top: 4px; font-size: 11.5px; color: var(--ink-soft); flex-wrap: wrap; }
+
+/* Body grid */
+.body-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; }
+
+/* Cards */
+.card { border: 1.5px solid var(--ink); border-radius: 6px; padding: 12px 14px; background: var(--paper); box-shadow: 3px 3px 0 var(--ink); margin-bottom: 14px; }
+.card .title { font-family: 'Caveat', cursive; font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.card.green { background: var(--green-soft); }
+.card.warn { background: var(--orange-soft); }
+.card.fillsoft { background: var(--paper-edge); }
+
+/* R2=C — Foco no devolvido */
+.items-returned { display: flex; flex-direction: column; gap: 6px; }
+.items-returned .item { border: 1.5px solid var(--ink); border-radius: 5px; padding: 6px 10px; background: var(--paper); display: flex; gap: 8px; align-items: center; font-size: 12.5px; }
+.items-returned .item .thumb { width: 36px; height: 36px; border: 1.5px dashed var(--ink-light); background: var(--paper-edge); display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--ink-light); border-radius: 4px; }
+.collapse-link { border: 1.5px dashed var(--ink-light); border-radius: 4px; padding: 6px 10px; background: var(--paper-edge); font-size: 12px; color: var(--ink-soft); cursor: pointer; }
+
+/* R3=A — Painel de inspeção (3 cards-radio) */
+.inspection { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.insp-card { border: 1.8px solid var(--ink); border-radius: 6px; padding: 10px 12px; background: var(--paper); cursor: pointer; box-shadow: 2px 2px 0 var(--ink); }
+.insp-card .head { display: flex; gap: 6px; align-items: center; font-weight: 700; font-size: 13px; }
+.insp-card .dot { width: 14px; height: 14px; border: 1.8px solid var(--ink); border-radius: 50%; background: var(--paper); flex-shrink: 0; }
+.insp-card.selected { background: var(--yellow); box-shadow: 3px 3px 0 var(--ink); transform: translate(-1px, -1px); }
+.insp-card.selected .dot { background: var(--ink); }
+.insp-card.danger.selected { background: var(--red-soft); }
+.insp-card.warn.selected { background: var(--orange-soft); }
+.insp-card .desc { font-size: 11px; color: var(--ink-soft); margin-top: 4px; }
+
+.refund-field { display: flex; gap: 8px; align-items: center; padding: 6px 10px; border: 1.5px solid var(--ink); border-radius: 4px; background: var(--paper); font-size: 13px; margin-bottom: 6px; }
+.refund-field .euro { font-weight: 700; }
+.refund-field .val-edit { border: 1.5px dashed var(--ink-light); padding: 2px 6px; background: var(--yellow); font-weight: 700; }
+
+.comment-field { border: 1.5px dashed var(--ink-light); padding: 8px 10px; background: var(--paper); font-size: 12px; color: var(--ink-light); border-radius: 4px; min-height: 36px; margin-bottom: 6px; }
+
+.photo-dropzone { border: 1.8px dashed var(--ink-light); background: var(--paper-edge); padding: 10px; text-align: center; font-size: 12px; color: var(--ink-soft); border-radius: 4px; }
+
+/* R5=A — Stepper horizontal 7 dots */
+.steps-h { display: flex; align-items: center; gap: 0; margin: 6px 0; }
+.steps-h .d { width: 16px; height: 16px; border: 1.5px solid var(--ink); border-radius: 50%; background: var(--paper); flex-shrink: 0; }
+.steps-h .d.done { background: var(--ink); }
+.steps-h .d.current { background: var(--yellow); box-shadow: 0 0 0 3px var(--yellow-dim); }
+.steps-h .d.final { background: var(--green-soft); }
+.steps-h .ln { flex: 1; height: 2px; background: var(--ink-light); border-radius: 1px; }
+.steps-h .ln.done { background: var(--ink); }
+.steps-labels { display: flex; gap: 0; font-size: 10px; color: var(--ink-light); }
+.steps-labels .lbl { flex: 1; text-align: center; }
+.steps-labels .lbl.current { color: var(--ink); font-weight: 700; }
+
+/* R6=B — Tabela detalhada de política */
+.policy-table { border: 1.2px solid var(--ink); border-radius: 4px; overflow: hidden; font-size: 12px; }
+.policy-table .tr { display: flex; padding: 5px 10px; gap: 8px; border-bottom: 1px dashed var(--ink-light); }
+.policy-table .tr:last-child { border-bottom: 0; }
+.policy-table .tr.head { background: var(--paper-edge); font-weight: 700; font-size: 10.5px; color: var(--ink-soft); text-transform: uppercase; }
+.policy-table .tr.total { background: var(--red-soft); font-weight: 700; }
+.policy-table .tr.total.green { background: var(--green-soft); }
+.policy-table .col-item { flex: 1.6; }
+.policy-table .col-rule { flex: 1.4; font-size: 11px; color: var(--ink-soft); }
+.policy-table .col-val { flex: 0.6; text-align: right; }
+
+/* R4=A — Sticky bottom bar */
+.bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--paper-edge); border-top: 1.8px solid var(--ink); padding: 10px 28px; display: flex; gap: 8px; align-items: center; z-index: 30; box-shadow: 0 -2px 0 rgba(0,0,0,0.05); }
+.bottom-bar .meta-tag { font-size: 11px; color: var(--ink-light); font-style: italic; }
+
+.btn { border: 1.5px solid var(--ink); border-radius: 100px; padding: 4px 12px; background: var(--paper); font-family: inherit; font-size: 13px; cursor: pointer; }
+.btn:hover { transform: translate(-1px, -1px); }
+.btn.primary { background: var(--yellow); font-weight: 700; }
+.btn.ghost { border-style: dashed; color: var(--ink-soft); }
+.btn.danger { background: var(--red-soft); }
+.btn.disabled { background: var(--paper-edge); color: var(--ink-light); border-color: var(--ink-faint); cursor: not-allowed; }
+
+.chip { border: 1.2px solid var(--ink); border-radius: 100px; padding: 1px 8px; font-size: 11.5px; background: var(--paper); display: inline-block; }
+.chip.green { background: var(--green-soft); }
+.chip.warn { background: var(--orange-soft); }
+.chip.danger { background: var(--red-soft); }
+.chip.muted { color: var(--ink-light); }
+.chip.info { background: var(--blue-soft); }
+
+.checklist > div { font-size: 12px; padding: 2px 0; }
+.checklist .ck-icon { display: inline-block; width: 16px; }
+
+.tag { font-size: 11px; color: var(--ink-light); font-style: italic; }
+.line-dash { border-top: 1.2px dashed var(--ink-light); margin: 6px 0; }
+
+.tracking-event { display: flex; gap: 6px; align-items: flex-start; font-size: 11.5px; padding: 3px 0; }
+.tracking-event .te-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink); margin-top: 6px; flex-shrink: 0; }
+.tracking-event.future .te-dot { background: var(--paper); border: 1.5px dashed var(--ink-light); }
+.tracking-event.future { opacity: 0.5; }
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <div class="row">
+    <h1>detalhe-devolucao</h1>
+    <span class="badge-etapa">Etapa 2 · 5 cenários</span>
+    <span class="combo">Combinação: 1C · 2C · 3A · 4A · 5A · 6B</span>
+    <div style="flex:1;"></div>
+    <span class="meta"><b>seller-rma-canal-bh-happy</b> · Fases 3 a 7</span>
+  </div>
+</div>
+
+<nav class="proto-nav">
+  <button data-screen="sc-aceita" class="active">1. aceita-checklist (F3)</button>
+  <button data-screen="sc-aguardando">2. aguardando-envio (F4)</button>
+  <button data-screen="sc-transito">3. trânsito reverso (F5)</button>
+  <button data-screen="sc-inspecao">4. marcar-inspeção (F6)</button>
+  <button data-screen="sc-final">5. rma-finalizado (F7)</button>
+</nav>
+
+<!-- ============================================ -->
+<!-- 1 · ACEITA-CHECKLIST (Fase 3)                  -->
+<!-- ============================================ -->
+<section class="screen active" id="sc-aceita">
+  <div class="scenario-banner happy">
+    <span class="tag">aceita</span>
+    <span><b>Devolução aceita · BH executa ações automáticas</b> — etiqueta de retorno gerada, comprador notificado, status atualizado. Tudo em paralelo.</span>
+  </div>
+
+  <div class="tela-header">
+    <div class="split">
+      <div class="col-rma">
+        <div class="ph-label">RMA · Devolução</div>
+        <div class="id-big">#RMA-2901</div>
+        <div class="meta-row">
+          <span class="chip danger">defeito</span>
+          <span class="chip warn">aceita</span>
+          <span class="chip muted">M. Silva · Lisboa</span>
+        </div>
+        <div class="meta-row">
+          <span>Solicitado 12/05 · aceito 12/05 14:30 · prazo inspeção: 5 dias após chegada</span>
+        </div>
+      </div>
+      <div class="col-pedido">
+        <div class="ph-label">Pedido original</div>
+        <div class="id-med">#PED-1029 <span style="text-decoration:underline; font-size:11px; color:var(--ink-soft); margin-left:6px;">↗ ver</span></div>
+        <div class="meta-row">
+          <span class="chip">Amazon</span>
+          <span>€87,50 · entregue 28/04 (14 dias atrás)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="body-grid">
+    <div>
+      <div class="card">
+        <div class="title">Itens que o comprador vai devolver</div>
+        <div class="items-returned">
+          <div class="item">
+            <div class="thumb">×</div>
+            <div style="flex:1;">
+              <b>Camisola Azul · M</b>
+              <div class="tag">B-1042 · qtd 1 · €34,90</div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="thumb">×</div>
+            <div style="flex:1;">
+              <b>Cinto Couro · 95cm</b>
+              <div class="tag">B-2017 · qtd 1 · €52,60</div>
+            </div>
+          </div>
+        </div>
+        <div class="collapse-link" style="margin-top:6px;">▸ Ver pedido original completo (#PED-1029)</div>
+      </div>
+
+      <div class="card">
+        <div class="title">Progresso · RMA</div>
+        <div class="steps-h">
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d current"></div><div class="ln"></div>
+          <div class="d"></div><div class="ln"></div>
+          <div class="d"></div><div class="ln"></div>
+          <div class="d"></div><div class="ln"></div>
+          <div class="d"></div>
+        </div>
+        <div class="steps-labels">
+          <span class="lbl">solicit.</span>
+          <span class="lbl">aceito</span>
+          <span class="lbl current">aguard.</span>
+          <span class="lbl">trânsito</span>
+          <span class="lbl">recebido</span>
+          <span class="lbl">inspec.</span>
+          <span class="lbl">final</span>
+        </div>
+        <div class="tag" style="margin-top:4px;">12/05 14:30 · ações em execução · próximo: comprador despacha pacote</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card green">
+        <div class="title">⚙ Ações em curso</div>
+        <div class="checklist">
+          <div><span class="ck-icon">✓</span> <b>Etiqueta de retorno gerada</b> · DPD-R29-004</div>
+          <div><span class="ck-icon">✓</span> <b>Comprador notificado</b> · email + push enviados</div>
+          <div><span class="ck-icon">✓</span> <b>Status do pedido atualizado</b> · `rma_aguardando_envio_comprador`</div>
+          <div><span class="ck-icon">○</span> Estoque <i>não devolvido ainda</i> · aguardando inspeção</div>
+          <div><span class="ck-icon">○</span> Reembolso <i>não processado ainda</i> · aguardando inspeção</div>
+        </div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px;">
+          <b>Próximo:</b> comprador imprime etiqueta DPD-R29-004 e despacha em ponto de coleta. Prazo sugerido: 7 dias.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="title">Política aplicada</div>
+        <div class="policy-table">
+          <div class="tr head">
+            <div class="col-item">Item</div>
+            <div class="col-rule">Regra</div>
+            <div class="col-val">Valor</div>
+          </div>
+          <div class="tr">
+            <div class="col-item">Frete de retorno</div>
+            <div class="col-rule">defeito · vendedor paga</div>
+            <div class="col-val">−€4,80</div>
+          </div>
+          <div class="tr">
+            <div class="col-item">Reembolso (estimado)</div>
+            <div class="col-rule">após inspeção OK</div>
+            <div class="col-val">−€87,50</div>
+          </div>
+          <div class="tr">
+            <div class="col-item">Frete original</div>
+            <div class="col-rule">defeito · retorna</div>
+            <div class="col-val">+€4,20</div>
+          </div>
+          <div class="tr total">
+            <div class="col-item">Impacto líquido (est.)</div>
+            <div class="col-rule"></div>
+            <div class="col-val">−€88,10</div>
+          </div>
+        </div>
+        <div class="tag" style="margin-top:6px;">↗ por que vendedor paga? garantia legal UE 2 anos</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <span class="meta-tag">↳ ações automáticas concluídas · aguardando comprador</span>
+    <div style="flex:1;"></div>
+    <button class="btn ghost">questionar / reverter</button>
+    <button class="btn disabled">aguardando envio do comprador</button>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 2 · AGUARDANDO ENVIO (Fase 4)                  -->
+<!-- ============================================ -->
+<section class="screen" id="sc-aguardando">
+  <div class="scenario-banner neutra">
+    <span class="tag">aguardando envio</span>
+    <span><b>Passivo · comprador despacha</b> — etiqueta enviada por email/push. Lembrete automático ao comprador no dia 3 e dia 6.</span>
+  </div>
+
+  <div class="tela-header">
+    <div class="split">
+      <div class="col-rma">
+        <div class="ph-label">RMA · Devolução</div>
+        <div class="id-big">#RMA-2901</div>
+        <div class="meta-row">
+          <span class="chip danger">defeito</span>
+          <span class="chip warn">aguardando envio</span>
+          <span class="chip muted">M. Silva</span>
+        </div>
+        <div class="meta-row">
+          <span>Aceito há 2 dias · expira em 5 dias se comprador não despachar</span>
+        </div>
+      </div>
+      <div class="col-pedido">
+        <div class="ph-label">Pedido original</div>
+        <div class="id-med">#PED-1029</div>
+        <div class="meta-row">
+          <span class="chip">Amazon</span>
+          <span>€87,50</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="body-grid">
+    <div>
+      <div class="card">
+        <div class="title">Itens em retorno (aguardando despacho)</div>
+        <div class="items-returned">
+          <div class="item">
+            <div class="thumb">×</div>
+            <div style="flex:1;">
+              <b>Camisola Azul · M</b>
+              <div class="tag">B-1042 · qtd 1</div>
+            </div>
+            <span class="chip muted">aguard.</span>
+          </div>
+          <div class="item">
+            <div class="thumb">×</div>
+            <div style="flex:1;">
+              <b>Cinto Couro · 95cm</b>
+              <div class="tag">B-2017 · qtd 1</div>
+            </div>
+            <span class="chip muted">aguard.</span>
+          </div>
+        </div>
+        <div class="collapse-link" style="margin-top:6px;">▸ Ver pedido original completo (#PED-1029)</div>
+      </div>
+
+      <div class="card">
+        <div class="title">Progresso · RMA</div>
+        <div class="steps-h">
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d current"></div><div class="ln"></div>
+          <div class="d"></div><div class="ln"></div>
+          <div class="d"></div><div class="ln"></div>
+          <div class="d"></div><div class="ln"></div>
+          <div class="d"></div>
+        </div>
+        <div class="steps-labels">
+          <span class="lbl">solicit.</span>
+          <span class="lbl">aceito</span>
+          <span class="lbl current">aguard. envio</span>
+          <span class="lbl">trânsito</span>
+          <span class="lbl">recebido</span>
+          <span class="lbl">inspec.</span>
+          <span class="lbl">final</span>
+        </div>
+        <div class="tag" style="margin-top:4px;">12/05 14:30 → aceito · lembretes ao comprador 15/05 e 18/05</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card fillsoft">
+        <div class="title">Estado da etiqueta de retorno</div>
+        <div style="font-size:12.5px;">
+          <div><b>Tracking:</b> DPD-R29-004</div>
+          <div><b>Enviado ao comprador:</b> 12/05 14:31 (email + push)</div>
+          <div><b>Status carrier:</b> <span class="chip muted">aguardando despacho</span></div>
+        </div>
+        <div class="line-dash"></div>
+        <div class="checklist">
+          <div><span class="ck-icon">✓</span> Etiqueta DPD-R29-004 gerada</div>
+          <div><span class="ck-icon">✓</span> Comprador notificado</div>
+          <div><span class="ck-icon">○</span> Aguardando primeiro scan da DPD</div>
+        </div>
+        <div class="line-dash"></div>
+        <div class="tag">
+          ↳ se comprador não despachar até 19/05 (D+7), solicitação expira automaticamente e seller é avisado.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="title">Política aplicada</div>
+        <div class="policy-table">
+          <div class="tr head">
+            <div class="col-item">Item</div>
+            <div class="col-rule">Regra</div>
+            <div class="col-val">Valor</div>
+          </div>
+          <div class="tr">
+            <div class="col-item">Frete de retorno</div>
+            <div class="col-rule">defeito · vendedor</div>
+            <div class="col-val">−€4,80</div>
+          </div>
+          <div class="tr">
+            <div class="col-item">Reembolso (estimado)</div>
+            <div class="col-rule">após inspeção OK</div>
+            <div class="col-val">−€87,50</div>
+          </div>
+          <div class="tr">
+            <div class="col-item">Frete original</div>
+            <div class="col-rule">defeito · retorna</div>
+            <div class="col-val">+€4,20</div>
+          </div>
+          <div class="tr total">
+            <div class="col-item">Impacto líquido (est.)</div>
+            <div class="col-rule"></div>
+            <div class="col-val">−€88,10</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <span class="meta-tag">↳ esperando comprador despachar · tempo: até 7 dias</span>
+    <div style="flex:1;"></div>
+    <button class="btn ghost">reenviar email ao comprador</button>
+    <button class="btn ghost">cancelar RMA</button>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 3 · TRÂNSITO REVERSO (Fase 5)                  -->
+<!-- ============================================ -->
+<section class="screen" id="sc-transito">
+  <div class="scenario-banner info">
+    <span class="tag">trânsito reverso</span>
+    <span><b>Pacote a caminho · operação passiva</b> — comprador despachou. ETA na agência do seller em 3-4 dias.</span>
+  </div>
+
+  <div class="tela-header">
+    <div class="split">
+      <div class="col-rma">
+        <div class="ph-label">RMA · Devolução</div>
+        <div class="id-big">#RMA-2901</div>
+        <div class="meta-row">
+          <span class="chip danger">defeito</span>
+          <span class="chip info">em trânsito reverso</span>
+        </div>
+        <div class="meta-row">
+          <span>Despachado pelo comprador 14/05 09:14 · ETA: 16/05</span>
+        </div>
+      </div>
+      <div class="col-pedido">
+        <div class="ph-label">Pedido original</div>
+        <div class="id-med">#PED-1029</div>
+        <div class="meta-row">
+          <span class="chip">Amazon</span>
+          <span>€87,50</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="body-grid">
+    <div>
+      <div class="card">
+        <div class="title">Itens em trânsito de retorno</div>
+        <div class="items-returned">
+          <div class="item">
+            <div class="thumb">×</div>
+            <div style="flex:1;">
+              <b>Camisola Azul · M</b>
+              <div class="tag">B-1042 · qtd 1</div>
+            </div>
+            <span class="chip info">trânsito</span>
+          </div>
+          <div class="item">
+            <div class="thumb">×</div>
+            <div style="flex:1;">
+              <b>Cinto Couro · 95cm</b>
+              <div class="tag">B-2017 · qtd 1</div>
+            </div>
+            <span class="chip info">trânsito</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="title">Progresso · RMA</div>
+        <div class="steps-h">
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d current"></div><div class="ln"></div>
+          <div class="d"></div><div class="ln"></div>
+          <div class="d"></div><div class="ln"></div>
+          <div class="d"></div>
+        </div>
+        <div class="steps-labels">
+          <span class="lbl">solicit.</span>
+          <span class="lbl">aceito</span>
+          <span class="lbl">aguard.</span>
+          <span class="lbl current">trânsito</span>
+          <span class="lbl">recebido</span>
+          <span class="lbl">inspec.</span>
+          <span class="lbl">final</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card fillsoft">
+        <div class="title">Eventos da carrier · DPD-R29-004</div>
+        <div class="tracking-event">
+          <div class="te-dot"></div>
+          <div><b>14/05 09:14</b> · Coletado em Lisboa (comprador)</div>
+        </div>
+        <div class="tracking-event">
+          <div class="te-dot"></div>
+          <div><b>14/05 18:30</b> · Saiu hub Lisboa</div>
+        </div>
+        <div class="tracking-event">
+          <div class="te-dot"></div>
+          <div><b>15/05 04:12</b> · Em trânsito · centro de triagem</div>
+        </div>
+        <div class="tracking-event future">
+          <div class="te-dot"></div>
+          <div>Em rota de entrega ao seller</div>
+        </div>
+        <div class="tracking-event future">
+          <div class="te-dot"></div>
+          <div>Entregue ao seller</div>
+        </div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px;">
+          <b>ETA:</b> 16/05 (em 1 dia)<br>
+          <span class="tag">prazo de inspeção começa a contar a partir do recebimento</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="title">Política aplicada</div>
+        <div class="policy-table">
+          <div class="tr head">
+            <div class="col-item">Item</div>
+            <div class="col-rule">Regra</div>
+            <div class="col-val">Valor</div>
+          </div>
+          <div class="tr">
+            <div class="col-item">Frete de retorno</div>
+            <div class="col-rule">defeito · vendedor</div>
+            <div class="col-val">−€4,80</div>
+          </div>
+          <div class="tr">
+            <div class="col-item">Reembolso</div>
+            <div class="col-rule">após inspeção OK</div>
+            <div class="col-val">−€87,50</div>
+          </div>
+          <div class="tr">
+            <div class="col-item">Frete original</div>
+            <div class="col-rule">defeito · retorna</div>
+            <div class="col-val">+€4,20</div>
+          </div>
+          <div class="tr total">
+            <div class="col-item">Impacto líquido (est.)</div>
+            <div class="col-rule"></div>
+            <div class="col-val">−€88,10</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <span class="meta-tag">↳ trânsito reverso · ETA 16/05 · nenhuma ação pendente</span>
+    <div style="flex:1;"></div>
+    <button class="btn ghost">ver tracking completo carrier</button>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 4 · MARCAR INSPEÇÃO (Fase 6) — coração da tela -->
+<!-- ============================================ -->
+<section class="screen" id="sc-inspecao">
+  <div class="scenario-banner warn">
+    <span class="tag">marcar inspeção</span>
+    <span><b>Pacote chegou · decisão central</b> — seller abre, inspeciona o produto e marca em 1 das 3 categorias. Define reembolso, estoque e impacto na margem.</span>
+  </div>
+
+  <div class="tela-header">
+    <div class="split">
+      <div class="col-rma">
+        <div class="ph-label">RMA · Devolução</div>
+        <div class="id-big">#RMA-2901</div>
+        <div class="meta-row">
+          <span class="chip danger">defeito</span>
+          <span class="chip warn">aguardando inspeção</span>
+        </div>
+        <div class="meta-row">
+          <span>Recebido 16/05 14:20 · prazo inspeção: 5 dias úteis</span>
+        </div>
+      </div>
+      <div class="col-pedido">
+        <div class="ph-label">Pedido original</div>
+        <div class="id-med">#PED-1029</div>
+        <div class="meta-row">
+          <span class="chip">Amazon</span>
+          <span>€87,50</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="body-grid">
+    <div>
+      <div class="card">
+        <div class="title">Itens recebidos</div>
+        <div class="items-returned">
+          <div class="item">
+            <div class="thumb">×</div>
+            <div style="flex:1;">
+              <b>Camisola Azul · M</b>
+              <div class="tag">B-1042 · qtd 1</div>
+            </div>
+            <span class="chip green">recebido</span>
+          </div>
+          <div class="item">
+            <div class="thumb">×</div>
+            <div style="flex:1;">
+              <b>Cinto Couro · 95cm</b>
+              <div class="tag">B-2017 · qtd 1</div>
+            </div>
+            <span class="chip green">recebido</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card warn">
+        <div class="title">⚠ Resultado da inspeção · escolha 1 das 3</div>
+        <div class="inspection">
+          <div class="insp-card selected" style="background: var(--green-soft);">
+            <div class="head"><div class="dot"></div> OK</div>
+            <div class="desc">Produto íntegro · volta ao estoque</div>
+          </div>
+          <div class="insp-card warn">
+            <div class="head"><div class="dot"></div> Danificado</div>
+            <div class="desc">Avariado · não volta ao estoque</div>
+          </div>
+          <div class="insp-card danger">
+            <div class="head"><div class="dot"></div> Faltando peça</div>
+            <div class="desc">Incompleto · decidir reembolso</div>
+          </div>
+        </div>
+        <div class="line-dash"></div>
+        <div class="refund-field">
+          <span>Reembolso ao comprador:</span>
+          <span class="val-edit">€ 87,50</span>
+          <span class="tag">total do pedido · editar para parcial</span>
+        </div>
+        <div class="comment-field">
+          Comentário interno (opcional): "Embalagem original conservada. Etiqueta interna intacta. Produto sem sinais de uso."
+        </div>
+        <div class="photo-dropzone">
+          📷 Anexar foto da inspeção (opcional, guard-rail anti-disputa)
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="title">Progresso · RMA</div>
+        <div class="steps-h">
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d current"></div><div class="ln"></div>
+          <div class="d"></div>
+        </div>
+        <div class="steps-labels">
+          <span class="lbl">solicit.</span>
+          <span class="lbl">aceito</span>
+          <span class="lbl">aguard.</span>
+          <span class="lbl">trânsito</span>
+          <span class="lbl">recebido</span>
+          <span class="lbl current">inspeção</span>
+          <span class="lbl">final</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="title">O que vai acontecer ao confirmar OK</div>
+        <div class="checklist">
+          <div><span class="ck-icon">→</span> <b>Reembolso integral</b> · €87,50 via gateway BH</div>
+          <div><span class="ck-icon">→</span> <b>Estoque devolvido</b> · +1 Camisola · +1 Cinto Couro</div>
+          <div><span class="ck-icon">→</span> <b>Evento "RMA finalizado"</b> ao canal (NF crédito Amazon)</div>
+          <div><span class="ck-icon">→</span> <b>Comprador notificado</b> · reembolso processado</div>
+        </div>
+        <div class="line-dash"></div>
+        <div class="tag">↳ click "Marcar inspeção" abaixo dispara estas 4 ações em paralelo.</div>
+      </div>
+
+      <div class="card">
+        <div class="title">Política aplicada (com OK selecionado)</div>
+        <div class="policy-table">
+          <div class="tr head">
+            <div class="col-item">Item</div>
+            <div class="col-rule">Regra</div>
+            <div class="col-val">Valor</div>
+          </div>
+          <div class="tr">
+            <div class="col-item">Frete de retorno</div>
+            <div class="col-rule">defeito · vendedor paga</div>
+            <div class="col-val">−€4,80</div>
+          </div>
+          <div class="tr">
+            <div class="col-item">Reembolso (OK)</div>
+            <div class="col-rule">inspeção OK · integral</div>
+            <div class="col-val">−€87,50</div>
+          </div>
+          <div class="tr">
+            <div class="col-item">Frete original</div>
+            <div class="col-rule">defeito · devolvido</div>
+            <div class="col-val">+€4,20</div>
+          </div>
+          <div class="tr">
+            <div class="col-item">Estoque recuperado</div>
+            <div class="col-rule">2 itens · valor catalógo</div>
+            <div class="col-val">+€87,50</div>
+          </div>
+          <div class="tr total green">
+            <div class="col-item">Impacto líquido</div>
+            <div class="col-rule"></div>
+            <div class="col-val">−€0,60</div>
+          </div>
+        </div>
+        <div class="tag" style="margin-top:6px;">↳ inspeção OK minimiza perda · apenas custo do frete retorno (vendedor)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <button class="btn ghost">salvar rascunho</button>
+    <span class="meta-tag" style="margin-left:8px;">↳ rascunho salvo há 4s</span>
+    <div style="flex:1;"></div>
+    <button class="btn ghost">contestar / questionar comprador</button>
+    <button class="btn primary">Marcar inspeção · OK ✓</button>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 5 · RMA FINALIZADO (Fase 7)                    -->
+<!-- ============================================ -->
+<section class="screen" id="sc-final">
+  <div class="scenario-banner happy">
+    <span class="tag">finalizado</span>
+    <span><b>Ciclo fechado · todas as ações automáticas concluídas</b> — reembolso processado, estoque devolvido, NF de crédito disparada ao canal, comprador notificado.</span>
+  </div>
+
+  <div class="tela-header">
+    <div class="split">
+      <div class="col-rma">
+        <div class="ph-label">RMA · Devolução</div>
+        <div class="id-big">#RMA-2901</div>
+        <div class="meta-row">
+          <span class="chip danger">defeito</span>
+          <span class="chip green">finalizado ✓</span>
+        </div>
+        <div class="meta-row">
+          <span>Inspeção 17/05 às 09:14 (OK) · reembolso processado · ciclo encerrado</span>
+        </div>
+      </div>
+      <div class="col-pedido">
+        <div class="ph-label">Pedido original</div>
+        <div class="id-med">#PED-1029</div>
+        <div class="meta-row">
+          <span class="chip">Amazon</span>
+          <span>€87,50 · ↗ ver histórico</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="body-grid">
+    <div>
+      <div class="card">
+        <div class="title">Itens · resultado da inspeção</div>
+        <div class="items-returned">
+          <div class="item" style="background:var(--green-soft);">
+            <div class="thumb">×</div>
+            <div style="flex:1;">
+              <b>Camisola Azul · M</b>
+              <div class="tag">B-1042 · estoque +1 · íntegro</div>
+            </div>
+            <span class="chip green">OK</span>
+          </div>
+          <div class="item" style="background:var(--green-soft);">
+            <div class="thumb">×</div>
+            <div style="flex:1;">
+              <b>Cinto Couro · 95cm</b>
+              <div class="tag">B-2017 · estoque +1 · íntegro</div>
+            </div>
+            <span class="chip green">OK</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card green">
+        <div class="title">✓ Ações automáticas concluídas</div>
+        <div class="checklist">
+          <div><span class="ck-icon">✓</span> <b>Reembolso de €87,50</b> · 17/05 09:15 via gateway · ref REF-XYZ-2901</div>
+          <div><span class="ck-icon">✓</span> <b>Estoque devolvido</b> · 2 itens incrementados no catálogo</div>
+          <div><span class="ck-icon">✓</span> <b>Evento RMA finalizado</b> · disparado ao Amazon (NF crédito a emitir)</div>
+          <div><span class="ck-icon">✓</span> <b>Comprador notificado</b> · "reembolso processado, será visível em 5-14 dias"</div>
+          <div><span class="ck-icon">✓</span> <b>Métricas SLA atualizadas</b> · RMA conta como pós-venda, não atraso</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="title">Progresso · RMA</div>
+        <div class="steps-h">
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d final"></div>
+        </div>
+        <div class="steps-labels">
+          <span class="lbl">solicit.</span>
+          <span class="lbl">aceito</span>
+          <span class="lbl">aguard.</span>
+          <span class="lbl">trânsito</span>
+          <span class="lbl">recebido</span>
+          <span class="lbl">inspec.</span>
+          <span class="lbl current">finalizado ✓</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="title">Política aplicada · resultado real</div>
+        <div class="policy-table">
+          <div class="tr head">
+            <div class="col-item">Item</div>
+            <div class="col-rule">Regra</div>
+            <div class="col-val">Valor</div>
+          </div>
+          <div class="tr">
+            <div class="col-item">Frete de retorno</div>
+            <div class="col-rule">defeito · vendedor paga</div>
+            <div class="col-val">−€4,80</div>
+          </div>
+          <div class="tr">
+            <div class="col-item">Reembolso ao comprador</div>
+            <div class="col-rule">inspeção OK · integral</div>
+            <div class="col-val">−€87,50</div>
+          </div>
+          <div class="tr">
+            <div class="col-item">Frete original</div>
+            <div class="col-rule">defeito · retorna</div>
+            <div class="col-val">+€4,20</div>
+          </div>
+          <div class="tr">
+            <div class="col-item">Estoque recuperado</div>
+            <div class="col-rule">2 itens íntegros</div>
+            <div class="col-val">+€87,50</div>
+          </div>
+          <div class="tr total green">
+            <div class="col-item">Impacto líquido final</div>
+            <div class="col-rule"></div>
+            <div class="col-val">−€0,60</div>
+          </div>
+        </div>
+        <div class="tag" style="margin-top:6px;">↗ ver histórico de eventos · auditoria completa</div>
+      </div>
+
+      <div class="card fillsoft">
+        <div class="title">📊 Telemetria deste RMA</div>
+        <div style="font-size:11.5px;">
+          <div><b>Tempo total:</b> 5 dias (solicit. → finalizado)</div>
+          <div><b>Tempo digital do seller:</b> ~3 min</div>
+          <div><b>Tempo físico do seller:</b> ~2 min (inspeção)</div>
+          <div><b>Custo total para o seller:</b> €0,60</div>
+        </div>
+        <div class="tag" style="margin-top:4px;">↳ comparativo: sem BH seria 15–35 min digital + maior custo de gestão.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <span class="meta-tag">↳ ciclo encerrado · histórico arquivado</span>
+    <div style="flex:1;"></div>
+    <button class="btn ghost">↓ baixar histórico (PDF auditoria)</button>
+    <button class="btn">→ voltar à fila de devoluções</button>
+  </div>
+</section>
+
+<script>
+document.querySelectorAll('.proto-nav button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.screen;
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(target).classList.add('active');
+    document.querySelectorAll('.proto-nav button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    window.scrollTo({ top: 130, behavior: 'smooth' });
+  });
+});
+
+// Inspection cards click toggle (cenário 4)
+document.querySelectorAll('#sc-inspecao .insp-card').forEach(c => {
+  c.addEventListener('click', () => {
+    document.querySelectorAll('#sc-inspecao .insp-card').forEach(x => {
+      x.classList.remove('selected');
+      x.style.background = '';
+    });
+    c.classList.add('selected');
+    if (c.classList.contains('warn')) c.style.background = 'var(--orange-soft)';
+    else if (c.classList.contains('danger')) c.style.background = 'var(--red-soft)';
+    else c.style.background = 'var(--green-soft)';
+  });
+});
+</script>
+
+</body>
+</html>

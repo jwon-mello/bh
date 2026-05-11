@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo navegável de jornada — seller-rma-canal-bh-happy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a; --ink-soft: #3d3d3d; --ink-light: #8a8a8a; --ink-faint: #c8c8c8;
+  --paper: #fcfcfa; --paper-edge: #f3f1e8;
+  --yellow: #fff2a8; --yellow-dim: #ffe771; --yellow-edge: #e6c732;
+  --green-soft: #c9e6b8; --red-soft: #f4b8b0; --blue-soft: #b8d4f0; --orange-soft: #f5d0a0;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: 'Patrick Hand', cursive; background: var(--paper); color: var(--ink); font-size: 15px; line-height: 1.4; }
+h1, h2, h3, .h-caveat { font-family: 'Caveat', cursive; }
+
+/* ===== SHELL GRID ===== */
+.bh-shell {
+  display: grid;
+  grid-template-rows: 56px 1fr;
+  grid-template-columns: 240px 1fr;
+  grid-template-areas: "topbar topbar" "sidebar main";
+  min-height: 100vh;
+}
+
+/* ===== TOPBAR ===== */
+.bh-topbar {
+  grid-area: topbar;
+  position: sticky; top: 0; z-index: 100;
+  background: var(--paper);
+  border-bottom: 2px solid var(--ink);
+  display: flex; align-items: center; padding: 0 18px; gap: 18px;
+}
+.bh-logo { font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700; background: var(--yellow); border: 1.8px solid var(--ink); border-radius: 100px; padding: 2px 14px; transform: rotate(-3deg); }
+.bh-breadcrumb { font-size: 13.5px; color: var(--ink-soft); flex: 1; }
+.bh-breadcrumb b { color: var(--ink); font-weight: 700; }
+.bh-breadcrumb .sep { color: var(--ink-light); margin: 0 6px; }
+.bh-search { width: 220px; border: 1.5px dashed var(--ink-light); border-radius: 100px; padding: 4px 14px; font-size: 12.5px; color: var(--ink-light); background: var(--paper-edge); }
+.bh-user { display: flex; align-items: center; gap: 8px; font-size: 13px; border: 1.5px solid var(--ink); border-radius: 100px; padding: 3px 12px 3px 4px; background: var(--paper); }
+.bh-user .avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--blue-soft); border: 1.5px solid var(--ink); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; }
+
+/* ===== SIDEBAR ===== */
+.bh-sidebar {
+  grid-area: sidebar;
+  position: sticky; top: 56px;
+  height: calc(100vh - 56px);
+  background: var(--paper-edge);
+  border-right: 2px solid var(--ink);
+  overflow-y: auto;
+  padding: 12px 8px;
+}
+.nav-section { margin-bottom: 14px; }
+.nav-group-title { font-size: 10.5px; color: var(--ink-light); text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 10px; }
+.nav-item { display: flex; align-items: center; gap: 8px; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--ink-soft); margin-bottom: 1px; }
+.nav-item:hover { background: var(--paper); }
+.nav-item.active { background: var(--yellow); color: var(--ink); font-weight: 700; box-shadow: 2px 2px 0 var(--ink); transform: translate(-1px, -1px); }
+.nav-item .badge { margin-left: auto; background: var(--red-soft); border: 1.2px solid var(--ink); border-radius: 100px; padding: 0 6px; font-size: 10px; font-weight: 700; }
+.nav-item .ico { width: 14px; font-size: 12px; opacity: 0.7; }
+
+/* ===== MAIN ===== */
+.bh-main {
+  grid-area: main;
+  padding: 20px 28px 100px;
+  overflow-x: hidden;
+}
+
+/* ===== JOURNEY STEPPER ===== */
+.journey-stepper-wrap {
+  border: 1.8px solid var(--ink); border-radius: 6px; background: var(--paper);
+  padding: 10px 16px; margin-bottom: 16px; box-shadow: 3px 3px 0 var(--ink);
+}
+.journey-stepper-wrap .title { font-family: 'Caveat', cursive; font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.journey-stepper { display: flex; gap: 4px; }
+.journey-stepper .step { flex: 1; padding: 4px 6px; border: 1.4px solid var(--ink-light); border-radius: 4px; background: var(--paper); font-size: 10.5px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.journey-stepper .step:hover { background: var(--yellow-dim); }
+.journey-stepper .step.done { background: var(--paper-edge); border-color: var(--ink); color: var(--ink-soft); }
+.journey-stepper .step.current { background: var(--yellow); border-color: var(--ink); font-weight: 700; box-shadow: 2px 2px 0 var(--ink); }
+.journey-stepper .step.final { background: var(--green-soft); border-color: var(--ink); font-weight: 700; }
+.journey-stepper .step .num { font-family: 'Caveat', cursive; font-weight: 700; font-size: 13px; }
+.journey-stepper .step .lbl { font-size: 10px; }
+
+/* ===== VIEW ===== */
+.view { display: none; }
+.view.active { display: block; animation: fadeIn 0.2s; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ===== JOURNEY NAV (sticky bottom) ===== */
+.journey-nav-bar {
+  position: fixed; bottom: 0; left: 240px; right: 0;
+  background: var(--paper-edge); border-top: 1.8px solid var(--ink);
+  padding: 10px 28px; display: flex; gap: 10px; align-items: center; z-index: 30;
+}
+.journey-nav-bar .back { color: var(--ink-soft); }
+.journey-nav-bar .next { background: var(--yellow); font-weight: 700; }
+.journey-nav-bar .meta-tag { font-size: 11.5px; color: var(--ink-light); font-style: italic; }
+
+/* ===== Common page bits ===== */
+.page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.page-header h2 { font-size: 24px; margin: 0; }
+.page-header .ctas { margin-left: auto; display: flex; gap: 6px; }
+
+.card { border: 1.5px solid var(--ink); border-radius: 6px; padding: 12px 14px; background: var(--paper); box-shadow: 3px 3px 0 var(--ink); margin-bottom: 14px; }
+.card .title { font-family: 'Caveat', cursive; font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.card.green { background: var(--green-soft); }
+.card.warn { background: var(--orange-soft); }
+.card.fillsoft { background: var(--paper-edge); }
+.card.info { background: var(--blue-soft); }
+
+.btn { border: 1.5px solid var(--ink); border-radius: 100px; padding: 4px 12px; background: var(--paper); font-family: inherit; font-size: 13px; cursor: pointer; }
+.btn:hover { transform: translate(-1px, -1px); }
+.btn.primary { background: var(--yellow); font-weight: 700; }
+.btn.ghost { border-style: dashed; color: var(--ink-soft); }
+.btn.danger { background: var(--red-soft); }
+.btn.disabled { background: var(--paper-edge); color: var(--ink-light); border-color: var(--ink-faint); cursor: not-allowed; }
+
+.chip { border: 1.2px solid var(--ink); border-radius: 100px; padding: 1px 8px; font-size: 11.5px; background: var(--paper); display: inline-block; }
+.chip.green { background: var(--green-soft); }
+.chip.warn { background: var(--orange-soft); }
+.chip.danger { background: var(--red-soft); }
+.chip.info { background: var(--blue-soft); }
+.chip.muted { color: var(--ink-light); }
+.chip.active { background: var(--yellow); font-weight: 700; }
+
+.tag { font-size: 11.5px; color: var(--ink-light); font-style: italic; }
+.line-dash { border-top: 1.2px dashed var(--ink-light); margin: 6px 0; }
+
+/* ===== UNDER CONSTRUCTION ===== */
+.under-construction { border: 1.8px dashed var(--ink-light); border-radius: 8px; padding: 40px; background: var(--paper-edge); text-align: center; }
+.under-construction .big { font-family: 'Caveat', cursive; font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+.under-construction .sub { font-size: 13.5px; color: var(--ink-soft); }
+
+.stub-list { border: 1.5px solid var(--ink); border-radius: 5px; overflow: hidden; background: var(--paper); }
+.stub-list .row { display: flex; padding: 6px 12px; gap: 10px; border-bottom: 1px dashed var(--ink-light); align-items: center; font-size: 12.5px; }
+.stub-list .row:last-child { border: 0; }
+.stub-list .row.head { background: var(--paper-edge); font-weight: 700; font-size: 10.5px; color: var(--ink-soft); text-transform: uppercase; }
+
+/* ===== KPI cards (fila-devolucoes) ===== */
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
+.kpi { border: 1.5px solid var(--ink); border-radius: 5px; padding: 10px; background: var(--paper); text-align: center; box-shadow: 2px 2px 0 var(--ink); }
+.kpi .v { font-family: 'Caveat', cursive; font-size: 28px; font-weight: 700; line-height: 1; }
+.kpi .l { font-size: 10.5px; color: var(--ink-light); text-transform: uppercase; }
+.kpi.danger { background: var(--red-soft); }
+.kpi.warn { background: var(--orange-soft); }
+.kpi.green { background: var(--green-soft); }
+
+/* ===== Tabs (fila-devolucoes R1=B) ===== */
+.tabs-row { display: flex; gap: 4px; border-bottom: 1.5px solid var(--ink); margin-bottom: 14px; }
+.tab { border: 1.5px solid var(--ink); border-bottom: none; border-radius: 5px 5px 0 0; padding: 5px 14px; background: var(--paper); font-size: 13px; cursor: pointer; position: relative; bottom: -1.5px; }
+.tab.active { background: var(--yellow); font-weight: 700; }
+
+/* ===== Tabela densa (fila-devolucoes) ===== */
+.dense-table { border: 1.5px solid var(--ink); border-radius: 5px; overflow: hidden; font-size: 12.5px; background: var(--paper); box-shadow: 3px 3px 0 var(--ink); }
+.dense-table .tr { display: flex; border-bottom: 1px dashed var(--ink-light); padding: 5px 10px; gap: 8px; align-items: center; cursor: pointer; }
+.dense-table .tr:last-child { border: 0; }
+.dense-table .tr:hover { background: var(--yellow-dim); }
+.dense-table .tr.head { background: var(--paper-edge); font-weight: 700; font-size: 10.5px; color: var(--ink-soft); text-transform: uppercase; cursor: default; }
+.dense-table .tr.head:hover { background: var(--paper-edge); }
+.dense-table .tr.risk { background: var(--red-soft); }
+.dense-table .tr.warn { background: var(--orange-soft); }
+.dense-table .col { flex: 1; }
+.dense-table .col-s { flex: 0.5; }
+.dense-table .col-m { flex: 0.7; }
+.dense-table .col-l { flex: 1.2; }
+
+/* ===== detalhe-devolucao header split 2 cols ===== */
+.dd-header { border: 1.8px solid var(--ink); border-radius: 6px; padding: 12px 16px; box-shadow: 3px 3px 0 var(--ink); background: var(--paper); margin-bottom: 14px; }
+.dd-header .split { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.dd-header .col-rma { padding-right: 12px; }
+.dd-header .col-pedido { border-left: 1.5px dashed var(--ink-light); padding-left: 14px; }
+.dd-header .ph-label { font-size: 10px; color: var(--ink-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+.dd-header .id-big { font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700; line-height: 1; }
+.dd-header .id-med { font-family: 'Caveat', cursive; font-size: 17px; font-weight: 700; }
+.dd-header .meta-row { display: flex; gap: 6px; align-items: center; margin-top: 4px; font-size: 11.5px; color: var(--ink-soft); flex-wrap: wrap; }
+
+/* ===== Main grid 2 col detalhe ===== */
+.body-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; }
+
+/* ===== Items returned ===== */
+.items-returned { display: flex; flex-direction: column; gap: 6px; }
+.items-returned .item { border: 1.5px solid var(--ink); border-radius: 5px; padding: 6px 10px; background: var(--paper); display: flex; gap: 8px; align-items: center; font-size: 12.5px; }
+.items-returned .item .thumb { width: 36px; height: 36px; border: 1.5px dashed var(--ink-light); background: var(--paper-edge); display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--ink-light); border-radius: 4px; }
+.collapse-link { border: 1.5px dashed var(--ink-light); border-radius: 4px; padding: 6px 10px; background: var(--paper-edge); font-size: 12px; color: var(--ink-soft); cursor: pointer; }
+
+/* ===== Inspection 3 cards ===== */
+.inspection { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.insp-card { border: 1.8px solid var(--ink); border-radius: 6px; padding: 10px 12px; background: var(--paper); cursor: pointer; box-shadow: 2px 2px 0 var(--ink); }
+.insp-card .head { display: flex; gap: 6px; align-items: center; font-weight: 700; font-size: 13px; }
+.insp-card .dot { width: 14px; height: 14px; border: 1.8px solid var(--ink); border-radius: 50%; background: var(--paper); flex-shrink: 0; }
+.insp-card.selected { background: var(--green-soft); box-shadow: 3px 3px 0 var(--ink); transform: translate(-1px, -1px); }
+.insp-card.selected .dot { background: var(--ink); }
+.insp-card .desc { font-size: 11px; color: var(--ink-soft); margin-top: 4px; }
+
+.refund-field { display: flex; gap: 8px; align-items: center; padding: 6px 10px; border: 1.5px solid var(--ink); border-radius: 4px; background: var(--paper); font-size: 13px; margin-bottom: 6px; }
+.refund-field .val-edit { border: 1.5px dashed var(--ink-light); padding: 2px 6px; background: var(--yellow); font-weight: 700; }
+.comment-field { border: 1.5px dashed var(--ink-light); padding: 8px 10px; background: var(--paper); font-size: 12px; color: var(--ink-light); border-radius: 4px; min-height: 36px; margin-bottom: 6px; }
+.photo-dropzone { border: 1.8px dashed var(--ink-light); background: var(--paper-edge); padding: 10px; text-align: center; font-size: 12px; color: var(--ink-soft); border-radius: 4px; }
+
+/* ===== Stepper 7 dots ===== */
+.steps-h { display: flex; align-items: center; gap: 0; margin: 6px 0; }
+.steps-h .d { width: 14px; height: 14px; border: 1.5px solid var(--ink); border-radius: 50%; background: var(--paper); flex-shrink: 0; }
+.steps-h .d.done { background: var(--ink); }
+.steps-h .d.current { background: var(--yellow); box-shadow: 0 0 0 3px var(--yellow-dim); }
+.steps-h .d.final { background: var(--green-soft); }
+.steps-h .ln { flex: 1; height: 2px; background: var(--ink-light); border-radius: 1px; }
+.steps-h .ln.done { background: var(--ink); }
+.steps-labels { display: flex; gap: 0; font-size: 10px; color: var(--ink-light); }
+.steps-labels .lbl { flex: 1; text-align: center; }
+.steps-labels .lbl.current { color: var(--ink); font-weight: 700; }
+
+/* ===== Policy table (R6=B) ===== */
+.policy-table { border: 1.2px solid var(--ink); border-radius: 4px; overflow: hidden; font-size: 12px; }
+.policy-table .tr { display: flex; padding: 5px 10px; gap: 8px; border-bottom: 1px dashed var(--ink-light); }
+.policy-table .tr:last-child { border-bottom: 0; }
+.policy-table .tr.head { background: var(--paper-edge); font-weight: 700; font-size: 10.5px; color: var(--ink-soft); text-transform: uppercase; }
+.policy-table .tr.total { background: var(--red-soft); font-weight: 700; }
+.policy-table .tr.total.green { background: var(--green-soft); }
+.policy-table .col-item { flex: 1.6; }
+.policy-table .col-rule { flex: 1.4; font-size: 11px; color: var(--ink-soft); }
+.policy-table .col-val { flex: 0.6; text-align: right; }
+
+/* ===== Checklist ===== */
+.checklist > div { font-size: 12px; padding: 2px 0; }
+.checklist .ck-icon { display: inline-block; width: 16px; }
+
+/* ===== Tracking events ===== */
+.tracking-event { display: flex; gap: 6px; align-items: flex-start; font-size: 11.5px; padding: 3px 0; }
+.tracking-event .te-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink); margin-top: 6px; flex-shrink: 0; }
+.tracking-event.future .te-dot { background: var(--paper); border: 1.5px dashed var(--ink-light); }
+.tracking-event.future { opacity: 0.5; }
+
+/* ===== Toast ===== */
+.toast { position: fixed; bottom: 80px; right: 20px; background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 8px; box-shadow: 4px 4px 0 rgba(0,0,0,0.2); z-index: 200; font-size: 13px; max-width: 300px; }
+.toast .close { position: absolute; top: 4px; right: 8px; cursor: pointer; opacity: 0.7; }
+</style>
+</head>
+<body>
+
+<div class="bh-shell">
+
+  <!-- ============ TOPBAR ============ -->
+  <header class="bh-topbar">
+    <div class="bh-logo">BH</div>
+    <nav class="bh-breadcrumb" id="crumb">
+      <b>Logística</b><span class="sep">›</span><b>Devoluções</b>
+    </nav>
+    <div class="bh-search">⌕ buscar pedidos, BHIDs, devoluções…</div>
+    <div class="bh-user"><div class="avatar">J</div>Jhonatan</div>
+  </header>
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="bh-sidebar">
+    <div class="nav-section">
+      <div class="nav-item" data-view="inicio"><span class="ico">⌂</span>Início</div>
+      <div class="nav-item" data-view="catalogo"><span class="ico">▥</span>Catálogo</div>
+      <div class="nav-item" data-view="vitrine"><span class="ico">▣</span>Vitrine</div>
+      <div class="nav-item" data-view="cadastro"><span class="ico">⊞</span>Cadastro</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-group-title">Logística</div>
+      <div class="nav-item" data-view="fila-pedidos"><span class="ico">▤</span>Pedidos <span class="badge">3</span></div>
+      <div class="nav-item" data-view="painel-coletas"><span class="ico">▦</span>Coletas</div>
+      <div class="nav-item active" data-view="fila-devolucoes"><span class="ico">▩</span>Devoluções <span class="badge">1</span></div>
+      <div class="nav-item" data-view="enderecos"><span class="ico">◉</span>Endereços</div>
+      <div class="nav-item" data-view="embalagens"><span class="ico">▢</span>Embalagens</div>
+      <div class="nav-item" data-view="carriers"><span class="ico">▶</span>Carriers</div>
+      <div class="nav-item" data-view="dashboard-uso"><span class="ico">▥</span>Uso & cobrança</div>
+      <div class="nav-item" data-view="config-logistica"><span class="ico">⚙</span>Configurações</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-group-title">Planos e preços</div>
+      <div class="nav-item" data-view="modulos"><span class="ico">▥</span>Módulos</div>
+      <div class="nav-item" data-view="subscricoes"><span class="ico">▤</span>Subscrições</div>
+      <div class="nav-item" data-view="faturas"><span class="ico">▦</span>Faturas</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-item" data-view="suporte"><span class="ico">?</span>Suporte</div>
+      <div class="nav-item" data-view="config-geral"><span class="ico">⚙</span>Configurações</div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="bh-main">
+
+    <!-- JOURNEY STEPPER -->
+    <div class="journey-stepper-wrap" id="journey-stepper-wrap">
+      <div class="title">↩ Jornada — RMA em canal BH (passo <span id="step-current">1</span> de 6)</div>
+      <div class="journey-stepper" id="journey-stepper"></div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- VIEW: FILA-DEVOLUCOES (Fase 1)               -->
+    <!-- ============================================ -->
+    <div class="view active" id="view-fila-devolucoes" data-journey-phase="0">
+      <div class="page-header">
+        <h2 class="h-caveat">Devoluções · 18</h2>
+        <span class="chip danger">⚠ 2 com prazo &lt;7d</span>
+        <div class="ctas">
+          <button class="btn ghost">Exportar histórico</button>
+          <button class="btn ghost">⚙ política</button>
+        </div>
+      </div>
+
+      <div class="tabs-row">
+        <div class="tab active">⚠ Aguard. ação · 4</div>
+        <div class="tab">Em trânsito · 7</div>
+        <div class="tab">Aguard. inspeção · 5</div>
+        <div class="tab">Concluídas · 38</div>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi"><div class="v">18</div><div class="l">total</div></div>
+        <div class="kpi danger"><div class="v">2</div><div class="l">prazo &lt;7d</div></div>
+        <div class="kpi warn"><div class="v">5</div><div class="l">aguard. inspeção</div></div>
+        <div class="kpi green"><div class="v">7</div><div class="l">em curso</div></div>
+      </div>
+
+      <div class="dense-table">
+        <div class="tr head">
+          <div class="col col-m">RMA</div>
+          <div class="col col-m">Pedido</div>
+          <div class="col">Motivo</div>
+          <div class="col">Comprador</div>
+          <div class="col col-m">Valor</div>
+          <div class="col col-m">Paga</div>
+          <div class="col col-l">Status</div>
+          <div class="col col-s">Prazo</div>
+        </div>
+        <div class="tr risk" onclick="goToPhase(1)">
+          <div class="col col-m">#2901</div>
+          <div class="col col-m">#1029</div>
+          <div class="col">defeito</div>
+          <div class="col">M. Silva</div>
+          <div class="col col-m">€87,50</div>
+          <div class="col col-m">vendedor</div>
+          <div class="col col-l">⚠ aguard. ação</div>
+          <div class="col col-s">5d</div>
+        </div>
+        <div class="tr warn">
+          <div class="col col-m">#2903</div>
+          <div class="col col-m">#1031</div>
+          <div class="col">arrep. 14d</div>
+          <div class="col">P. Costa</div>
+          <div class="col col-m">€32,00</div>
+          <div class="col col-m">comprador</div>
+          <div class="col col-l">aguard. inspeção</div>
+          <div class="col col-s">12d</div>
+        </div>
+        <div class="tr">
+          <div class="col col-m">#2905</div>
+          <div class="col col-m">#1033</div>
+          <div class="col">item errado</div>
+          <div class="col">A. Pinto</div>
+          <div class="col col-m">€19,80</div>
+          <div class="col col-m">vendedor</div>
+          <div class="col col-l">em trânsito</div>
+          <div class="col col-s">—</div>
+        </div>
+        <div class="tr">
+          <div class="col col-m">#2907</div>
+          <div class="col col-m">#1035</div>
+          <div class="col">defeito</div>
+          <div class="col">L. Faria</div>
+          <div class="col col-m">€44,90</div>
+          <div class="col col-m">vendedor</div>
+          <div class="col col-l">aguard. envio</div>
+          <div class="col col-s">9d</div>
+        </div>
+      </div>
+
+      <div class="tag" style="margin-top:8px;">↳ <b>click numa linha</b> para abrir o RMA e avançar para a Fase 2 da jornada (Aceitar devolução).</div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- VIEW: DETALHE-DEVOLUCAO (Fases 2 a 6)        -->
+    <!-- ============================================ -->
+    <div class="view" id="view-detalhe-devolucao">
+      <div class="dd-header">
+        <div class="split">
+          <div class="col-rma">
+            <div class="ph-label">RMA · Devolução</div>
+            <div class="id-big">#RMA-2901</div>
+            <div class="meta-row">
+              <span class="chip danger">defeito</span>
+              <span class="chip" id="dd-status-chip">aceita</span>
+              <span class="chip muted">M. Silva · Lisboa</span>
+            </div>
+            <div class="meta-row" id="dd-context">
+              Solicitado 12/05 · aguardando ação do seller
+            </div>
+          </div>
+          <div class="col-pedido">
+            <div class="ph-label">Pedido original</div>
+            <div class="id-med">#PED-1029 <span style="text-decoration:underline; font-size:11px; color:var(--ink-soft); margin-left:6px;" onclick="goToView('fila-pedidos')">↗ ver</span></div>
+            <div class="meta-row">
+              <span class="chip">Amazon</span>
+              <span>€87,50 · entregue 28/04 (14 dias atrás)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="body-grid">
+        <div>
+          <div class="card" id="dd-items-card">
+            <!-- preenchido por JS por cenário -->
+          </div>
+
+          <div class="card" id="dd-progress-card">
+            <div class="title">Progresso · RMA</div>
+            <div class="steps-h" id="dd-steps"></div>
+            <div class="steps-labels" id="dd-step-labels">
+              <span class="lbl">solicit.</span>
+              <span class="lbl">aceito</span>
+              <span class="lbl">aguard.</span>
+              <span class="lbl">trânsito</span>
+              <span class="lbl">recebido</span>
+              <span class="lbl">inspec.</span>
+              <span class="lbl">final</span>
+            </div>
+            <div class="tag" style="margin-top:4px;" id="dd-timestamp"></div>
+          </div>
+
+          <div id="dd-inspection-card-wrap"><!-- cenário 4 injeta painel de inspeção --></div>
+        </div>
+
+        <div>
+          <div id="dd-context-card"><!-- preenchido por JS: checklist, eventos, ou resumo final --></div>
+
+          <div class="card">
+            <div class="title">Política aplicada</div>
+            <div class="policy-table" id="dd-policy-table"></div>
+            <div class="tag" style="margin-top:6px;">↗ por que vendedor paga? garantia legal UE 2 anos</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- STUBS                                         -->
+    <!-- ============================================ -->
+    <div class="view" id="view-fila-pedidos">
+      <div class="page-header"><h2 class="h-caveat">Pedidos · 37</h2></div>
+      <div class="stub-list">
+        <div class="row head"><div style="flex:1;">ID</div><div style="flex:1;">Canal</div><div style="flex:1;">Comprador</div><div style="flex:0.7;">Status</div></div>
+        <div class="row"><div style="flex:1;">#PED-1029</div><div style="flex:1;">Amazon</div><div style="flex:1;">M. Silva</div><div style="flex:0.7;"><span class="chip green">entregue</span></div></div>
+        <div class="row"><div style="flex:1;">#PED-1033</div><div style="flex:1;">Amazon</div><div style="flex:1;">A. Pinto</div><div style="flex:0.7;"><span class="chip">em trânsito</span></div></div>
+      </div>
+      <div class="tag" style="margin-top:8px;">↗ #PED-1029 é o pedido original deste RMA. Click no ID volta à journey.</div>
+    </div>
+
+    <div class="view" id="view-painel-coletas">
+      <div class="page-header"><h2 class="h-caveat">Coletas</h2></div>
+      <div class="under-construction" style="padding:24px;">
+        <div class="big">Próxima coleta de retorno</div>
+        <div class="sub">RMA gera etiqueta de retorno; carrier coleta no comprador (Fase 4 do RMA). Stub aqui.</div>
+      </div>
+    </div>
+
+    <div class="view" id="view-faturas">
+      <div class="page-header"><h2 class="h-caveat">Planos e preços · Faturas</h2></div>
+      <div class="stub-list">
+        <div class="row head"><div style="flex:1;">Nº fatura</div><div style="flex:1;">Ciclo</div><div style="flex:0.5;">Status</div><div style="flex:0.8;">Total</div></div>
+        <div class="row"><div style="flex:1;">FAT 2026/04-1029</div><div style="flex:1;">abr 2026</div><div style="flex:0.5;"><span class="chip warn">em curso</span></div><div style="flex:0.8;">€197,72</div></div>
+      </div>
+      <div class="tag" style="margin-top:8px;">↗ etiqueta de retorno gerada conta como €0,25 no ciclo (decisão #20 PRD).</div>
+    </div>
+
+    <div class="view" id="view-dashboard-uso"><div class="under-construction"><div class="big">Uso & cobrança</div><div class="sub">Dashboard com Seção 1 (Ações pendentes) inclui RMAs com prazo crítico.</div></div></div>
+    <div class="view" id="view-inicio"><div class="under-construction"><div class="big">Início</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-catalogo"><div class="under-construction"><div class="big">Catálogo</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-vitrine"><div class="under-construction"><div class="big">Vitrine</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-cadastro"><div class="under-construction"><div class="big">Cadastro</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-enderecos"><div class="under-construction"><div class="big">Endereços</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-embalagens"><div class="under-construction"><div class="big">Embalagens</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-carriers"><div class="under-construction"><div class="big">Carriers</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-config-logistica"><div class="under-construction"><div class="big">Configurações · Logística</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-modulos"><div class="under-construction"><div class="big">Módulos</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-subscricoes"><div class="under-construction"><div class="big">Subscrições</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-suporte"><div class="under-construction"><div class="big">Suporte</div><div class="sub">Stub.</div></div></div>
+    <div class="view" id="view-config-geral"><div class="under-construction"><div class="big">Configurações gerais</div><div class="sub">Stub.</div></div></div>
+
+  </main>
+
+</div>
+
+<!-- ============ FIXED JOURNEY NAV BAR (sticky bottom) ============ -->
+<div class="journey-nav-bar" id="journey-nav-bar">
+  <button class="btn back" id="btn-back" onclick="goToPrevPhase()">← passo anterior</button>
+  <span class="meta-tag" id="phase-tag"></span>
+  <div style="flex:1;"></div>
+  <span id="phase-ctas"></span>
+  <button class="btn next" id="btn-next" onclick="goToNextPhase()">avançar →</button>
+</div>
+
+<!-- ============ TOAST ============ -->
+<div class="toast" id="toast">
+  <span class="close" onclick="hideToast()">×</span>
+  <b>Como navegar:</b><br>
+  · Use <b>← passo anterior</b> / <b>avançar →</b> para seguir a jornada do RMA.<br>
+  · Click numa linha da fila para abrir o RMA.<br>
+  · Sidebar permite sair do fluxo a qualquer momento.
+</div>
+
+<script>
+// ============================================
+// JOURNEY STATE
+// ============================================
+const journeyPhases = [
+  { id: 'notif',     view: 'fila-devolucoes',    label: 'BH notifica seller' },
+  { id: 'aceita',    view: 'detalhe-devolucao',  scenario: 'aceita',     label: 'Seller aceita' },
+  { id: 'aguard',    view: 'detalhe-devolucao',  scenario: 'aguardando', label: 'Aguarda envio' },
+  { id: 'transito',  view: 'detalhe-devolucao',  scenario: 'transito',   label: 'Trânsito reverso' },
+  { id: 'inspecao',  view: 'detalhe-devolucao',  scenario: 'inspecao',   label: 'Inspecionar' },
+  { id: 'final',     view: 'detalhe-devolucao',  scenario: 'final',      label: 'Finalizado' },
+];
+
+const breadcrumbMap = {
+  'fila-devolucoes':   ['Logística', 'Devoluções'],
+  'detalhe-devolucao': ['Logística', 'Devoluções', '#RMA-2901'],
+  'fila-pedidos':      ['Logística', 'Pedidos'],
+  'painel-coletas':    ['Logística', 'Coletas'],
+  'faturas':           ['Planos e preços', 'Faturas'],
+  'dashboard-uso':     ['Logística', 'Uso & cobrança'],
+  'inicio': ['Início'], 'catalogo': ['Catálogo'], 'vitrine': ['Vitrine'], 'cadastro': ['Cadastro'],
+  'enderecos': ['Logística', 'Endereços'], 'embalagens': ['Logística', 'Embalagens'],
+  'carriers': ['Logística', 'Carriers'], 'config-logistica': ['Logística', 'Configurações'],
+  'modulos': ['Planos e preços', 'Módulos'], 'subscricoes': ['Planos e preços', 'Subscrições'],
+  'suporte': ['Suporte'], 'config-geral': ['Configurações'],
+};
+
+let state = { phaseIndex: 0, inJourney: true };
+
+// ============================================
+// CENÁRIOS DO detalhe-devolucao
+// ============================================
+const itemsBlock = `
+  <div class="title">Itens devolvidos</div>
+  <div class="items-returned">
+    <div class="item">
+      <div class="thumb">×</div>
+      <div style="flex:1;"><b>Camisola Azul · M</b><div class="tag">B-1042 · qtd 1 · €34,90</div></div>
+    </div>
+    <div class="item">
+      <div class="thumb">×</div>
+      <div style="flex:1;"><b>Cinto Couro · 95cm</b><div class="tag">B-2017 · qtd 1 · €52,60</div></div>
+    </div>
+  </div>
+  <div class="collapse-link" style="margin-top:6px;">▸ Ver pedido original completo (#PED-1029)</div>
+`;
+
+const itemsWithOK = `
+  <div class="title">Itens devolvidos · inspeção OK</div>
+  <div class="items-returned">
+    <div class="item" style="background:var(--green-soft);">
+      <div class="thumb">×</div>
+      <div style="flex:1;"><b>Camisola Azul · M</b><div class="tag">B-1042 · estoque +1 · íntegro</div></div>
+      <span class="chip green">OK</span>
+    </div>
+    <div class="item" style="background:var(--green-soft);">
+      <div class="thumb">×</div>
+      <div style="flex:1;"><b>Cinto Couro · 95cm</b><div class="tag">B-2017 · estoque +1 · íntegro</div></div>
+      <span class="chip green">OK</span>
+    </div>
+  </div>
+`;
+
+const policyEst = `
+  <div class="tr head"><div class="col-item">Item</div><div class="col-rule">Regra</div><div class="col-val">Valor</div></div>
+  <div class="tr"><div class="col-item">Frete de retorno</div><div class="col-rule">defeito · vendedor</div><div class="col-val">−€4,80</div></div>
+  <div class="tr"><div class="col-item">Reembolso (estimado)</div><div class="col-rule">após inspeção OK</div><div class="col-val">−€87,50</div></div>
+  <div class="tr"><div class="col-item">Frete original</div><div class="col-rule">defeito · retorna</div><div class="col-val">+€4,20</div></div>
+  <div class="tr total"><div class="col-item">Impacto líquido (est.)</div><div class="col-rule"></div><div class="col-val">−€88,10</div></div>
+`;
+
+const policyFinal = `
+  <div class="tr head"><div class="col-item">Item</div><div class="col-rule">Regra</div><div class="col-val">Valor</div></div>
+  <div class="tr"><div class="col-item">Frete de retorno</div><div class="col-rule">defeito · vendedor paga</div><div class="col-val">−€4,80</div></div>
+  <div class="tr"><div class="col-item">Reembolso ao comprador</div><div class="col-rule">inspeção OK · integral</div><div class="col-val">−€87,50</div></div>
+  <div class="tr"><div class="col-item">Frete original</div><div class="col-rule">defeito · retorna</div><div class="col-val">+€4,20</div></div>
+  <div class="tr"><div class="col-item">Estoque recuperado</div><div class="col-rule">2 itens íntegros</div><div class="col-val">+€87,50</div></div>
+  <div class="tr total green"><div class="col-item">Impacto líquido final</div><div class="col-rule"></div><div class="col-val">−€0,60</div></div>
+`;
+
+const ddScenarios = {
+  aceita: {
+    statusChip: { text: 'aceita', cls: 'warn' },
+    context: 'Solicitado 12/05 · aceito 12/05 14:30 · prazo inspeção: 5 dias após chegada',
+    stepIdx: 2,
+    items: itemsBlock,
+    contextCard: `
+      <div class="card green">
+        <div class="title">⚙ Ações concluídas</div>
+        <div class="checklist">
+          <div><span class="ck-icon">✓</span> <b>Etiqueta de retorno gerada</b> · DPD-R29-004</div>
+          <div><span class="ck-icon">✓</span> <b>Comprador notificado</b> · email + push</div>
+          <div><span class="ck-icon">✓</span> <b>Status atualizado</b> · rma_aguardando_envio</div>
+          <div><span class="ck-icon">○</span> Estoque <i>não devolvido ainda</i></div>
+          <div><span class="ck-icon">○</span> Reembolso <i>não processado ainda</i></div>
+        </div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px;"><b>Próximo:</b> comprador despacha o pacote (prazo sugerido: 7 dias).</div>
+      </div>
+    `,
+    policy: policyEst,
+    phaseTag: '<b>Fase 2 · Seller aceita</b> · ações automáticas em execução.',
+    ctas: '<button class="btn ghost">questionar / reverter</button>',
+  },
+  aguardando: {
+    statusChip: { text: 'aguardando envio', cls: 'warn' },
+    context: 'Aceito há 2 dias · expira em 5 dias se comprador não despachar',
+    stepIdx: 2,
+    items: itemsBlock,
+    contextCard: `
+      <div class="card fillsoft">
+        <div class="title">Estado da etiqueta de retorno</div>
+        <div style="font-size:12.5px;">
+          <div><b>Tracking:</b> DPD-R29-004</div>
+          <div><b>Enviado ao comprador:</b> 12/05 14:31 (email + push)</div>
+          <div><b>Status carrier:</b> <span class="chip muted">aguardando despacho</span></div>
+        </div>
+        <div class="line-dash"></div>
+        <div class="checklist">
+          <div><span class="ck-icon">✓</span> Etiqueta DPD-R29-004 gerada</div>
+          <div><span class="ck-icon">✓</span> Comprador notificado</div>
+          <div><span class="ck-icon">○</span> Aguardando primeiro scan da DPD</div>
+        </div>
+        <div class="line-dash"></div>
+        <div class="tag">↳ se comprador não despachar até 19/05 (D+7), solicitação expira automaticamente e seller é avisado.</div>
+      </div>
+    `,
+    policy: policyEst,
+    phaseTag: '<b>Fase 3 · Aguarda envio</b> · passivo · comprador despacha.',
+    ctas: '<button class="btn ghost">reenviar email</button><button class="btn ghost">cancelar RMA</button>',
+  },
+  transito: {
+    statusChip: { text: 'em trânsito reverso', cls: 'info' },
+    context: 'Despachado pelo comprador 14/05 09:14 · ETA: 16/05',
+    stepIdx: 3,
+    items: itemsBlock,
+    contextCard: `
+      <div class="card fillsoft">
+        <div class="title">Eventos da carrier · DPD-R29-004</div>
+        <div class="tracking-event"><div class="te-dot"></div><div><b>14/05 09:14</b> · Coletado em Lisboa (comprador)</div></div>
+        <div class="tracking-event"><div class="te-dot"></div><div><b>14/05 18:30</b> · Saiu hub Lisboa</div></div>
+        <div class="tracking-event"><div class="te-dot"></div><div><b>15/05 04:12</b> · Em trânsito · centro de triagem</div></div>
+        <div class="tracking-event future"><div class="te-dot"></div><div>Em rota de entrega ao seller</div></div>
+        <div class="tracking-event future"><div class="te-dot"></div><div>Entregue ao seller</div></div>
+        <div class="line-dash"></div>
+        <div style="font-size:11.5px;"><b>ETA:</b> 16/05 (em 1 dia)<br><span class="tag">prazo de inspeção começa a contar a partir do recebimento</span></div>
+      </div>
+    `,
+    policy: policyEst,
+    phaseTag: '<b>Fase 4 · Trânsito reverso</b> · operação passiva · ETA 16/05.',
+    ctas: '<button class="btn ghost">ver tracking completo</button>',
+  },
+  inspecao: {
+    statusChip: { text: 'aguardando inspeção', cls: 'warn' },
+    context: 'Recebido 16/05 14:20 · prazo inspeção: 5 dias úteis',
+    stepIdx: 5,
+    items: `
+      <div class="title">Itens recebidos</div>
+      <div class="items-returned">
+        <div class="item">
+          <div class="thumb">×</div>
+          <div style="flex:1;"><b>Camisola Azul · M</b><div class="tag">B-1042 · qtd 1</div></div>
+          <span class="chip green">recebido</span>
+        </div>
+        <div class="item">
+          <div class="thumb">×</div>
+          <div style="flex:1;"><b>Cinto Couro · 95cm</b><div class="tag">B-2017 · qtd 1</div></div>
+          <span class="chip green">recebido</span>
+        </div>
+      </div>
+    `,
+    inspectionCard: `
+      <div class="card warn">
+        <div class="title">⚠ Resultado da inspeção · escolha 1 das 3</div>
+        <div class="inspection">
+          <div class="insp-card selected"><div class="head"><div class="dot"></div> OK</div><div class="desc">Produto íntegro · volta ao estoque</div></div>
+          <div class="insp-card"><div class="head"><div class="dot"></div> Danificado</div><div class="desc">Avariado · não volta ao estoque</div></div>
+          <div class="insp-card"><div class="head"><div class="dot"></div> Faltando peça</div><div class="desc">Incompleto · decidir reembolso</div></div>
+        </div>
+        <div class="line-dash"></div>
+        <div class="refund-field">
+          <span>Reembolso ao comprador:</span>
+          <span class="val-edit">€ 87,50</span>
+          <span class="tag">total do pedido</span>
+        </div>
+        <div class="comment-field">Comentário interno (opcional): "Embalagem original conservada. Produto sem sinais de uso."</div>
+        <div class="photo-dropzone">📷 Anexar foto da inspeção (opcional, guard-rail anti-disputa)</div>
+      </div>
+    `,
+    contextCard: `
+      <div class="card">
+        <div class="title">O que vai acontecer ao confirmar OK</div>
+        <div class="checklist">
+          <div><span class="ck-icon">→</span> <b>Reembolso integral</b> · €87,50 via gateway BH</div>
+          <div><span class="ck-icon">→</span> <b>Estoque devolvido</b> · +1 Camisola · +1 Cinto Couro</div>
+          <div><span class="ck-icon">→</span> <b>Evento "RMA finalizado"</b> ao canal (NF crédito Amazon)</div>
+          <div><span class="ck-icon">→</span> <b>Comprador notificado</b> · reembolso processado</div>
+        </div>
+        <div class="line-dash"></div>
+        <div class="tag">↳ click "Marcar inspeção · OK ✓" abaixo dispara estas 4 ações em paralelo.</div>
+      </div>
+    `,
+    policy: policyFinal,
+    phaseTag: '<b>Fase 5 · Inspecionar</b> · decisão central · OK / Danificado / Faltando peça.',
+    ctas: '<button class="btn ghost">salvar rascunho</button><button class="btn ghost">contestar comprador</button>',
+    nextLabel: 'Marcar inspeção · OK ✓ →',
+  },
+  final: {
+    statusChip: { text: 'finalizado ✓', cls: 'green' },
+    context: 'Inspeção 17/05 às 09:14 (OK) · reembolso processado · ciclo encerrado',
+    stepIdx: 6,
+    items: itemsWithOK,
+    contextCard: `
+      <div class="card green">
+        <div class="title">✓ Ações automáticas concluídas</div>
+        <div class="checklist">
+          <div><span class="ck-icon">✓</span> <b>Reembolso €87,50</b> · 17/05 09:15 · ref REF-XYZ-2901</div>
+          <div><span class="ck-icon">✓</span> <b>Estoque devolvido</b> · 2 itens incrementados</div>
+          <div><span class="ck-icon">✓</span> <b>Evento RMA finalizado</b> · disparado ao Amazon</div>
+          <div><span class="ck-icon">✓</span> <b>Comprador notificado</b> · reembolso processado</div>
+          <div><span class="ck-icon">✓</span> <b>SLA atualizado</b> · RMA não conta como atraso</div>
+        </div>
+      </div>
+      <div class="card fillsoft">
+        <div class="title">📊 Telemetria deste RMA</div>
+        <div style="font-size:11.5px;">
+          <div><b>Tempo total:</b> 5 dias (solicit. → finalizado)</div>
+          <div><b>Tempo digital do seller:</b> ~3 min</div>
+          <div><b>Tempo físico do seller:</b> ~2 min (inspeção)</div>
+          <div><b>Custo total para o seller:</b> €0,60</div>
+        </div>
+        <div class="tag" style="margin-top:4px;">↳ sem BH seria 15–35 min digital + maior custo.</div>
+      </div>
+    `,
+    policy: policyFinal,
+    phaseTag: '<b>Fase 6 · Finalizado</b> · ciclo encerrado · histórico arquivado.',
+    ctas: '<button class="btn ghost">↓ baixar histórico (auditoria)</button><button class="btn" onclick="goToView(\'fila-devolucoes\'); state.phaseIndex=0; renderStepper(); renderJourneyNav();">→ voltar à fila</button>',
+    nextHide: true,
+  },
+};
+
+// ============================================
+// FUNÇÕES
+// ============================================
+function renderStepper() {
+  const wrap = document.getElementById('journey-stepper');
+  wrap.innerHTML = '';
+  journeyPhases.forEach((p, i) => {
+    let cls = '';
+    if (i === journeyPhases.length - 1 && state.phaseIndex >= journeyPhases.length - 1) cls = 'final';
+    else if (i < state.phaseIndex) cls = 'done';
+    else if (i === state.phaseIndex) cls = 'current';
+    const el = document.createElement('div');
+    el.className = `step ${cls}`;
+    el.innerHTML = `<div class="num">${i + 1}</div><div class="lbl">${p.label}</div>`;
+    el.onclick = () => goToPhase(i);
+    wrap.appendChild(el);
+  });
+  document.getElementById('step-current').textContent = state.phaseIndex + 1;
+}
+
+function renderJourneyNav() {
+  const back = document.getElementById('btn-back');
+  const next = document.getElementById('btn-next');
+  back.disabled = state.phaseIndex === 0;
+
+  const phase = journeyPhases[state.phaseIndex];
+  let scenario = null;
+  if (phase && phase.scenario) scenario = ddScenarios[phase.scenario];
+
+  if (scenario) {
+    document.getElementById('phase-tag').innerHTML = '↳ ' + scenario.phaseTag;
+    document.getElementById('phase-ctas').innerHTML = scenario.ctas || '';
+    if (scenario.nextHide) {
+      next.style.display = 'none';
+    } else {
+      next.style.display = '';
+      next.textContent = scenario.nextLabel || 'avançar →';
+    }
+  } else if (phase && phase.view === 'fila-devolucoes') {
+    document.getElementById('phase-tag').innerHTML = '↳ <b>Fase 1 · BH detectou cancelamento</b> · click na linha do #RMA-2901 para avançar.';
+    document.getElementById('phase-ctas').innerHTML = '';
+    next.style.display = '';
+    next.textContent = 'avançar →';
+  } else {
+    document.getElementById('phase-tag').innerHTML = '';
+    document.getElementById('phase-ctas').innerHTML = '';
+    next.textContent = 'avançar →';
+  }
+}
+
+function renderDetalheDevolucao(scenarioId) {
+  const sc = ddScenarios[scenarioId];
+  if (!sc) return;
+
+  // Status chip
+  const statusEl = document.getElementById('dd-status-chip');
+  statusEl.textContent = sc.statusChip.text;
+  statusEl.className = `chip ${sc.statusChip.cls}`;
+
+  document.getElementById('dd-context').textContent = sc.context;
+
+  // Items
+  document.getElementById('dd-items-card').innerHTML = sc.items;
+
+  // Inspection card (cenário 5)
+  document.getElementById('dd-inspection-card-wrap').innerHTML = sc.inspectionCard || '';
+
+  // Context card (right column)
+  document.getElementById('dd-context-card').innerHTML = sc.contextCard || '';
+
+  // Policy table
+  document.getElementById('dd-policy-table').innerHTML = sc.policy;
+
+  // Steps (7 dots: solicit · aceito · aguard · trânsito · recebido · inspec · final)
+  const stepsHtml = [];
+  const labels = ['solicit.', 'aceito', 'aguard.', 'trânsito', 'recebido', 'inspec.', 'final'];
+  for (let i = 0; i < 7; i++) {
+    let cls = '';
+    if (i === 6 && sc.stepIdx === 6) cls = 'final';
+    else if (i < sc.stepIdx) cls = 'done';
+    else if (i === sc.stepIdx) cls = 'current';
+    stepsHtml.push(`<div class="d ${cls}"></div>`);
+    if (i < 6) stepsHtml.push(`<div class="ln ${i < sc.stepIdx ? 'done' : ''}"></div>`);
+  }
+  document.getElementById('dd-steps').innerHTML = stepsHtml.join('');
+
+  const labelsEl = document.getElementById('dd-step-labels');
+  labelsEl.innerHTML = labels.map((l, i) => `<span class="lbl ${i === sc.stepIdx ? 'current' : ''}">${l}</span>`).join('');
+
+  document.getElementById('dd-timestamp').textContent = sc.context.split('·')[0].trim();
+
+  // Reattach inspection card click handlers
+  document.querySelectorAll('#dd-inspection-card-wrap .insp-card').forEach(c => {
+    c.addEventListener('click', () => {
+      document.querySelectorAll('#dd-inspection-card-wrap .insp-card').forEach(x => {
+        x.classList.remove('selected');
+        x.style.background = '';
+      });
+      c.classList.add('selected');
+      const text = c.querySelector('.head').textContent.trim();
+      if (text.includes('Danificado')) c.style.background = 'var(--orange-soft)';
+      else if (text.includes('Faltando')) c.style.background = 'var(--red-soft)';
+      else c.style.background = 'var(--green-soft)';
+    });
+  });
+}
+
+function goToPhase(index) {
+  if (index < 0 || index >= journeyPhases.length) return;
+  state.phaseIndex = index;
+  state.inJourney = true;
+  const phase = journeyPhases[index];
+  showView(phase.view);
+  if (phase.scenario) renderDetalheDevolucao(phase.scenario);
+  renderStepper();
+  renderJourneyNav();
+  renderBreadcrumb(breadcrumbMap[phase.view]);
+  setSidebarActive(phase.view);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goToNextPhase() { goToPhase(state.phaseIndex + 1); }
+function goToPrevPhase() { goToPhase(state.phaseIndex - 1); }
+
+function goToView(viewId) {
+  state.inJourney = (viewId === 'fila-devolucoes' || viewId === 'detalhe-devolucao');
+  showView(viewId);
+  setSidebarActive(viewId);
+  renderBreadcrumb(breadcrumbMap[viewId]);
+  document.getElementById('journey-stepper-wrap').style.display = state.inJourney ? 'block' : 'none';
+  document.getElementById('journey-nav-bar').style.display = state.inJourney ? 'flex' : 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showView(viewId) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const el = document.getElementById('view-' + viewId);
+  if (el) el.classList.add('active');
+  document.getElementById('journey-stepper-wrap').style.display = state.inJourney ? 'block' : 'none';
+  document.getElementById('journey-nav-bar').style.display = state.inJourney ? 'flex' : 'none';
+}
+
+function setSidebarActive(viewId) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const sb = document.querySelector(`.nav-item[data-view="${viewId}"]`);
+  if (sb) sb.classList.add('active');
+}
+
+function renderBreadcrumb(crumb) {
+  if (!crumb) return;
+  document.getElementById('crumb').innerHTML = crumb.map((c, i) => i === crumb.length - 1 ? `<b>${c}</b>` : c).join('<span class="sep">›</span>');
+}
+
+// Sidebar handlers
+document.querySelectorAll('.nav-item[data-view]').forEach(item => {
+  item.addEventListener('click', () => goToView(item.dataset.view));
+});
+
+// Toast
+function hideToast() { document.getElementById('toast').style.display = 'none'; }
+setTimeout(hideToast, 14000);
+
+// Boot
+renderStepper();
+renderJourneyNav();
+</script>
+
+</body>
+</html>

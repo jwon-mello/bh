@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<title>Wireframe — detalhe-devolucao (base)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a; --ink-soft: #3d3d3d; --ink-light: #8a8a8a; --ink-faint: #c8c8c8;
+  --paper: #fcfcfa; --paper-edge: #f3f1e8;
+  --yellow: #fff2a8; --yellow-dim: #ffe771; --yellow-edge: #e6c732;
+  --green-soft: #c9e6b8; --red-soft: #f4b8b0; --blue-soft: #b8d4f0; --orange-soft: #f5d0a0;
+}
+* { box-sizing: border-box; }
+body { font-family: 'Patrick Hand', cursive; background: var(--paper); background-image: radial-gradient(circle at 25% 30%, rgba(0,0,0,0.015) 0%, transparent 50%), radial-gradient(circle at 75% 70%, rgba(0,0,0,0.015) 0%, transparent 50%); color: var(--ink); font-size: 16px; line-height: 1.4; margin: 0; padding: 24px 32px 80px; }
+h1, h2, .var-label, .section-title { font-family: 'Caveat', cursive; }
+
+.title-block { border: 2.5px solid var(--ink); border-radius: 10px; padding: 18px 24px 16px; background: var(--paper); box-shadow: 5px 5px 0 var(--ink); margin-bottom: 28px; }
+.title-block h1 { font-size: 38px; margin: 0 0 4px; line-height: 1.1; }
+.title-block .meta { font-size: 15px; color: var(--ink-soft); display: flex; gap: 18px; flex-wrap: wrap; margin-top: 4px; }
+.title-block .meta b { color: var(--ink); }
+.title-block .meta .badge-etapa { background: var(--yellow); border: 1.5px solid var(--ink); padding: 2px 12px; border-radius: 100px; font-family: 'Caveat', cursive; font-size: 18px; transform: rotate(-1.5deg); display: inline-block; }
+.overview-card { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; margin-top: 14px; padding: 12px 16px; border: 1.5px dashed var(--ink-light); border-radius: 6px; background: var(--paper-edge); font-size: 14.5px; }
+.overview-card b { color: var(--ink); }
+.overview-card .label { color: var(--ink-soft); }
+
+.floor-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; padding: 10px 14px; border: 1.5px dashed var(--ink-light); border-radius: 6px; background: var(--paper-edge); position: sticky; top: 8px; z-index: 10; }
+.floor-nav a { padding: 4px 12px; text-decoration: none; color: var(--ink); border: 1.5px solid var(--ink); border-radius: 100px; font-size: 14px; background: var(--paper); }
+.floor-nav a:hover { background: var(--yellow); }
+
+.section { margin-bottom: 36px; }
+.section-head { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px dashed var(--ink-light); }
+.section-num { font-family: 'Caveat', cursive; font-size: 64px; font-weight: 700; line-height: 0.85; color: var(--ink); min-width: 56px; text-align: center; background: var(--yellow); border: 2px solid var(--ink); border-radius: 8px; padding: 4px 8px; box-shadow: 3px 3px 0 var(--ink); transform: rotate(-2deg); }
+.section-info { flex: 1; }
+.section-title { font-size: 32px; margin: 0 0 4px; line-height: 1.05; }
+.section-sentiment { display: inline-block; padding: 1px 10px; border-radius: 100px; border: 1.2px solid var(--ink); font-size: 13px; margin-left: 8px; vertical-align: middle; }
+.section-sentiment.neutra { background: var(--paper-edge); }
+.section-sentiment.pos { background: var(--green-soft); }
+.section-sentiment.neg { background: var(--red-soft); }
+.section-desc { font-size: 14.5px; color: var(--ink-soft); max-width: 720px; }
+
+.vars { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+.var-card { position: relative; border: 2px solid var(--ink); border-radius: 8px; padding: 14px 14px 10px; background: var(--paper); box-shadow: 3px 3px 0 var(--ink); }
+.var-card::before { content: ''; position: absolute; top: -9px; left: 18px; width: 56px; height: 18px; background: var(--yellow-dim); border: 1px solid var(--ink); transform: rotate(-3deg); z-index: 0; }
+.var-label { font-size: 22px; font-weight: 700; margin: 0; position: relative; z-index: 1; }
+.var-tag { display: inline-block; font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700; background: var(--ink); color: var(--paper); width: 28px; height: 28px; text-align: center; line-height: 26px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+.var-desc { font-size: 13.5px; color: var(--ink-soft); line-height: 1.35; margin: 4px 0 10px; min-height: 36px; }
+.annotate { font-family: 'Kalam', cursive; font-style: italic; font-size: 13px; color: var(--ink-soft); margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--ink-faint); }
+.annotate::before { content: '↳ '; color: var(--ink-light); }
+
+.sk-frame { border: 1.8px solid var(--ink); border-radius: 5px; padding: 8px; background: var(--paper); display: flex; flex-direction: column; gap: 6px; min-height: 200px; font-size: 12px; position: relative; }
+.sk-row { display: flex; gap: 6px; align-items: center; }
+.sk-col { display: flex; flex-direction: column; gap: 4px; }
+.sk-grow { flex: 1; }
+.sk-box { border: 1.5px solid var(--ink); border-radius: 4px; padding: 4px 6px; background: var(--paper); font-size: 11.5px; min-height: 18px; display: flex; align-items: center; gap: 4px; }
+.sk-box.dashed { border-style: dashed; border-color: var(--ink-light); }
+.sk-box.fill { background: var(--yellow); }
+.sk-box.fillsoft { background: var(--paper-edge); }
+.sk-box.tiny { padding: 2px 5px; font-size: 11px; }
+.sk-btn { border: 1.5px solid var(--ink); border-radius: 100px; padding: 3px 9px; background: var(--paper); font-size: 11.5px; font-family: inherit; }
+.sk-btn.primary { background: var(--yellow); font-weight: 700; }
+.sk-btn.ghost { border-style: dashed; color: var(--ink-soft); }
+.sk-btn.danger { background: var(--red-soft); }
+.sk-chip { border: 1.2px solid var(--ink); border-radius: 100px; padding: 1px 7px; font-size: 10.5px; background: var(--paper); display: inline-block; }
+.sk-chip.active { background: var(--yellow); font-weight: 700; }
+.sk-chip.muted { color: var(--ink-light); border-color: var(--ink-faint); }
+.sk-chip.green { background: var(--green-soft); }
+.sk-chip.red { background: var(--red-soft); }
+.sk-chip.orange { background: var(--orange-soft); }
+.sk-line { height: 1.2px; background: var(--ink-light); margin: 2px 0; }
+.sk-line.dash { background: transparent; border-top: 1.2px dashed var(--ink-light); }
+.sk-table { border: 1.2px solid var(--ink); border-radius: 3px; overflow: hidden; font-size: 10.5px; }
+.sk-table-row { display: flex; border-bottom: 1px dashed var(--ink-light); padding: 3px 5px; gap: 5px; align-items: center; }
+.sk-table-row:last-child { border-bottom: 0; }
+.sk-table-row.head { background: var(--paper-edge); font-weight: 700; font-size: 9.5px; color: var(--ink-soft); text-transform: uppercase; }
+.sk-table-row .col { flex: 1; }
+.sk-mini-card { border: 1.5px solid var(--ink); border-radius: 5px; padding: 5px 7px; background: var(--paper); font-size: 11px; }
+.sk-mini-card.fill { background: var(--yellow); }
+.sk-mini-card.fillsoft { background: var(--paper-edge); }
+.sk-mini-card.danger { background: var(--red-soft); }
+.sk-mini-card.warn { background: var(--orange-soft); }
+.sk-mini-card.green { background: var(--green-soft); }
+.sk-stack > * + * { margin-top: 5px; }
+.sk-tag { font-size: 10px; color: var(--ink-light); font-style: italic; }
+.sk-placeholder { border: 1.5px dashed var(--ink-light); border-radius: 4px; padding: 10px; text-align: center; font-size: 11px; color: var(--ink-light); background: var(--paper-edge); position: relative; min-height: 36px; display: flex; align-items: center; justify-content: center; }
+.sk-placeholder.thumb { min-height: 24px; padding: 2px; font-size: 10px; }
+
+.sk-radio-card { border: 1.5px solid var(--ink); border-radius: 5px; padding: 6px 8px; background: var(--paper); font-size: 11px; flex: 1; cursor: pointer; }
+.sk-radio-card.active { background: var(--yellow); box-shadow: 2px 2px 0 var(--ink); }
+.sk-radio-card.danger { background: var(--red-soft); }
+.sk-radio-card.warn { background: var(--orange-soft); }
+.sk-radio-card .head-radio { display: flex; align-items: center; gap: 4px; font-weight: 700; font-size: 11.5px; }
+.sk-radio-card .dot { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--ink); background: var(--paper); }
+.sk-radio-card.active .dot { background: var(--ink); }
+
+.sk-fab { position: absolute; right: 12px; bottom: 12px; width: 30px; height: 30px; border: 1.8px solid var(--ink); border-radius: 50%; background: var(--yellow); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; }
+
+.sk-steps { display: flex; align-items: center; gap: 0; }
+.sk-steps .d { width: 14px; height: 14px; border: 1.5px solid var(--ink); border-radius: 50%; background: var(--paper); flex-shrink: 0; }
+.sk-steps .d.done { background: var(--ink); }
+.sk-steps .d.current { background: var(--yellow); box-shadow: 0 0 0 3px var(--yellow-dim); }
+.sk-steps .ln { flex: 1; height: 2px; background: var(--ink-light); border-radius: 1px; }
+.sk-steps .ln.done { background: var(--ink); }
+
+.sk-progress { height: 8px; background: var(--paper-edge); border: 1.2px solid var(--ink); border-radius: 100px; overflow: hidden; }
+.sk-progress .fill { height: 100%; background: var(--yellow-edge); }
+
+.sk-collapse { border: 1.5px solid var(--ink); border-radius: 4px; padding: 4px 6px; background: var(--paper-edge); font-size: 11px; display: flex; align-items: center; justify-content: space-between; }
+
+.var-card.chosen { box-shadow: 4px 4px 0 var(--ink), inset 0 0 0 2.5px var(--green-soft); }
+.chosen-mark { position: absolute; top: -12px; right: 18px; background: var(--green-soft); border: 1.5px solid var(--ink); padding: 2px 12px; border-radius: 100px; font-family: 'Caveat', cursive; font-size: 16px; font-weight: 700; transform: rotate(2deg); z-index: 1; }
+
+.footer-note { margin-top: 32px; padding: 14px 18px; border: 1.8px dashed var(--ink); border-radius: 6px; background: var(--paper-edge); font-size: 14.5px; color: var(--ink-soft); }
+.footer-note b { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <h1>Wireframe base — <span style="color: var(--ink-soft);">detalhe-devolucao</span></h1>
+  <div class="meta">
+    <span class="badge-etapa">Etapa 1 · grid de regiões</span>
+    <span><b>Feature:</b> logistica-fbm</span>
+    <span><b>Hipótese:</b> pool-bh-coleta-unificada</span>
+    <span><b>Tela:</b> detalhe-devolucao</span>
+    <span><b>Persona:</b> Seller — canais BH (Vitrine/big.pt MKP)</span>
+  </div>
+  <div class="overview-card">
+    <div><span class="label">Journey:</span> <b>seller-rma-canal-bh-happy</b> (Fases 3–7)</div>
+    <div><span class="label">Cenários previstos (Etapa 2):</span> <b>5</b> — aceita-checklist, aguardando-envio, em-transito-rev, marcar-inspecao, rma-finalizado</div>
+    <div><span class="label">Regiões × variações:</span> <b>6 × 3 = 18 mini-sketches</b></div>
+    <div><span class="label">Combinação validada ✓:</span> <b>1C · 2C · 3A · 4A · 5A · 6B</b> — pronta para Etapa 2 (cenários)</div>
+  </div>
+</div>
+
+<nav class="floor-nav">
+  <a href="#r1">1 · Header</a>
+  <a href="#r2">2 · Itens devolvidos</a>
+  <a href="#r3">3 · Painel de inspeção</a>
+  <a href="#r4">4 · Ações primárias</a>
+  <a href="#r5">5 · Timeline RMA</a>
+  <a href="#r6">6 · Política aplicada</a>
+</nav>
+
+<!-- R1 -->
+<section id="r1" class="section">
+  <div class="section-head">
+    <div class="section-num">1</div>
+    <div class="section-info">
+      <h2 class="section-title">Header — identidade da devolução <span class="section-sentiment neutra">neutra</span></h2>
+      <p class="section-desc">Topo da tela. ID RMA, ref ao pedido original, status RMA, motivo, valor envolvido. Espelha estrutura do header de detalhe-pedido com adições específicas de RMA.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">A</span>Stripe denso</div>
+      <div class="var-desc">Tudo numa linha: ID RMA, pedido orig, motivo chip, status, valor. Maximiza vertical.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny" style="font-weight:700;">#RMA-2901</div>
+          <span class="sk-tag">←</span>
+          <div class="sk-box tiny fillsoft">#PED-1029</div>
+          <div class="sk-chip red">defeito</div>
+          <div class="sk-chip active">aguard. ação</div>
+          <div class="sk-grow"></div>
+          <div class="sk-box tiny" style="font-weight:700;">€87,50</div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="sk-row" style="font-size:10.5px; color:var(--ink-light);">
+          <span>M. Silva · Lisboa</span>
+          <div class="sk-grow"></div>
+          <span>Solicitado 12/05 14:20 · prazo 5d</span>
+        </div>
+      </div>
+      <div class="annotate">denso e eficiente; chip de motivo perto do status confunde — são dimensões diferentes</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Card hierárquico</div>
+      <div class="var-desc">ID RMA grande + chips em segunda linha + ref pedido original em destaque visível. Hierarquia clara.</div>
+      <div class="sk-frame">
+        <div style="font-family:'Caveat',cursive; font-size:22px; font-weight:700;">#RMA-2901</div>
+        <div style="font-size:11px; color:var(--ink-soft);">← devolução do pedido <b>#PED-1029</b></div>
+        <div class="sk-row">
+          <div class="sk-chip red">defeito</div>
+          <div class="sk-chip active">aguard. ação</div>
+          <div class="sk-chip orange">prazo 5d</div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="font-size:10.5px; color:var(--ink-soft);">
+          <span>M. Silva · Lisboa, PT · </span>
+          <span>Total: <b>€87,50</b></span>
+        </div>
+      </div>
+      <div class="annotate">leitura natural; consome mais altura</div>
+    </article>
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">C</span>Split 2 colunas (RMA | pedido orig)</div>
+      <div class="var-desc">Esquerda: RMA atual. Direita: dados do pedido original (link). Útil quando seller precisa contexto cross-tela.</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="align-items:flex-start;">
+          <div class="sk-col" style="flex:1;">
+            <div style="font-family:'Caveat',cursive; font-size:18px; font-weight:700;">#RMA-2901</div>
+            <div class="sk-chip red" style="margin-top:2px;">defeito</div>
+            <div class="sk-chip active" style="margin-top:2px;">aguard. ação</div>
+            <div style="font-size:10px; margin-top:3px; color:var(--ink-light);">prazo 5d</div>
+          </div>
+          <div style="border-left:1.2px dashed var(--ink-light); padding-left:8px; flex:1;">
+            <div style="font-size:10px; color:var(--ink-light);">PEDIDO ORIGINAL</div>
+            <div style="font-weight:700; font-size:13px;">#PED-1029</div>
+            <div style="font-size:10.5px;">M. Silva · €87,50</div>
+            <div style="font-size:10px; color:var(--ink-light);">entregue 28/04</div>
+            <div style="font-size:10px; text-decoration:underline;">ver pedido →</div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">excelente para auditoria/disputa; "valor" perde destaque do main</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- R2 -->
+<section id="r2" class="section">
+  <div class="section-head">
+    <div class="section-num">2</div>
+    <div class="section-info">
+      <h2 class="section-title">Itens devolvidos + ref pedido <span class="section-sentiment neutra">neutra</span></h2>
+      <p class="section-desc">No MVP a devolução é integral (sem parcial multi-item). A região mostra o que veio comparado ao que foi enviado. Reuso parcial do padrão do detalhe-pedido.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">A</span>Tabela compacta (espelho R3 detalhe-pedido)</div>
+      <div class="var-desc">BHID · variante · qtd · foto. Mesmo padrão da tela de pedido — herança visual.</div>
+      <div class="sk-frame">
+        <div class="sk-table">
+          <div class="sk-table-row head">
+            <div class="col">BHID</div>
+            <div class="col" style="flex:2;">Item</div>
+            <div class="col" style="flex:0.5;">Qtd</div>
+            <div class="col" style="flex:0.7;">Foto</div>
+          </div>
+          <div class="sk-table-row">
+            <div class="col">B-1042</div>
+            <div class="col" style="flex:2;">Camisola Azul · M</div>
+            <div class="col" style="flex:0.5;">1</div>
+            <div class="col" style="flex:0.7;"><div class="sk-placeholder thumb">×</div></div>
+          </div>
+          <div class="sk-table-row">
+            <div class="col">B-2017</div>
+            <div class="col" style="flex:2;">Cinto Couro · 95cm</div>
+            <div class="col" style="flex:0.5;">1</div>
+            <div class="col" style="flex:0.7;"><div class="sk-placeholder thumb">×</div></div>
+          </div>
+        </div>
+        <div class="sk-tag">↳ todos os itens do pedido (devolução integral no v1.5)</div>
+      </div>
+      <div class="annotate">familiar e econômico; falta clareza visual sobre "o que foi enviado vs o que voltou"</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Lista comparativa lado a lado</div>
+      <div class="var-desc">"Enviado vs Recebido" em colunas paralelas. Reforça que é uma comparação. Útil para verificação visual.</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="font-size:9.5px; font-weight:700; color:var(--ink-light); text-transform:uppercase;">
+          <div style="flex:1;">enviado (28/04)</div>
+          <div style="flex:1;">recebido (12/05)</div>
+        </div>
+        <div class="sk-row" style="align-items:stretch;">
+          <div class="sk-mini-card fillsoft" style="flex:1;">
+            <div style="font-size:10px;">Camisola Azul · M</div>
+            <div class="sk-tag">B-1042 · qtd 1</div>
+          </div>
+          <span class="sk-tag" style="align-self:center;">→</span>
+          <div class="sk-mini-card warn" style="flex:1;">
+            <div style="font-size:10px;">Camisola Azul · M</div>
+            <div class="sk-tag">⚠ aguarda inspeção</div>
+          </div>
+        </div>
+        <div class="sk-row" style="align-items:stretch;">
+          <div class="sk-mini-card fillsoft" style="flex:1;">
+            <div style="font-size:10px;">Cinto Couro · 95cm</div>
+            <div class="sk-tag">B-2017 · qtd 1</div>
+          </div>
+          <span class="sk-tag" style="align-self:center;">→</span>
+          <div class="sk-mini-card warn" style="flex:1;">
+            <div style="font-size:10px;">Cinto Couro · 95cm</div>
+            <div class="sk-tag">⚠ aguarda inspeção</div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">explícito em comparação; consome muito vertical para casos triviais (devolução integral)</div>
+    </article>
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">C</span>Foco no devolvido</div>
+      <div class="var-desc">Lista do que comprador devolveu; pedido original num colapsável "ver pedido completo". Reduz ruído.</div>
+      <div class="sk-frame">
+        <div style="font-size:10px; font-weight:700; color:var(--ink-light); text-transform:uppercase;">o que veio de volta</div>
+        <div class="sk-mini-card">
+          <div class="sk-row">
+            <div class="sk-placeholder thumb" style="width:32px;">×</div>
+            <div style="flex:1;">
+              <div style="font-weight:700; font-size:11px;">Camisola Azul · M</div>
+              <div style="font-size:10px; color:var(--ink-light);">B-1042 · qtd 1</div>
+            </div>
+          </div>
+        </div>
+        <div class="sk-mini-card">
+          <div class="sk-row">
+            <div class="sk-placeholder thumb" style="width:32px;">×</div>
+            <div style="flex:1;">
+              <div style="font-weight:700; font-size:11px;">Cinto Couro · 95cm</div>
+              <div style="font-size:10px; color:var(--ink-light);">B-2017 · qtd 1</div>
+            </div>
+          </div>
+        </div>
+        <div class="sk-collapse">
+          <span style="font-size:11px;">▸ Ver pedido original completo (#PED-1029)</span>
+        </div>
+      </div>
+      <div class="annotate">limpo no caso típico; quando o seller precisa cross-checar com o original, click extra</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- R3 -->
+<section id="r3" class="section">
+  <div class="section-head">
+    <div class="section-num">3</div>
+    <div class="section-info">
+      <h2 class="section-title">Painel de inspeção (região nova) <span class="section-sentiment neg">decisão crítica</span></h2>
+      <p class="section-desc">3 categorias OK / Danificado / Faltando peça + valor de reembolso + comentário + foto opcional. É a decisão central da Fase 6 da journey RMA. Crítica: define reembolso, estoque e impacto na margem.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">A</span>3 cards-radio grandes</div>
+      <div class="var-desc">3 cards lado a lado com radio destacado. Valor de reembolso e comentário aparecem inline ao escolher. Foto como dropzone.</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="align-items:stretch;">
+          <div class="sk-radio-card active green">
+            <div class="head-radio"><div class="dot"></div>OK</div>
+            <div style="font-size:10px; color:var(--ink-soft);">íntegro · volta ao estoque</div>
+          </div>
+          <div class="sk-radio-card warn">
+            <div class="head-radio"><div class="dot"></div>Danificado</div>
+            <div style="font-size:10px;">avariado · não volta ao estoque</div>
+          </div>
+          <div class="sk-radio-card danger">
+            <div class="head-radio"><div class="dot"></div>Faltando peça</div>
+            <div style="font-size:10px;">incompleto</div>
+          </div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="sk-row">
+          <div class="sk-box tiny fillsoft" style="flex:1;">Reembolso: <b>€87,50</b> ▾</div>
+          <div class="sk-box tiny dashed" style="flex:1;">Comentário (opcional)…</div>
+        </div>
+        <div class="sk-placeholder" style="min-height:24px; font-size:10px;">📎 anexar foto da inspeção (opcional)</div>
+      </div>
+      <div class="annotate">decisão clara; consome bastante vertical mas é a "decisão do dia"</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Stepper guiado em 3 passos</div>
+      <div class="var-desc">1) escolha categoria · 2) defina valor · 3) comentário/foto. Guia o seller. Pode ser overkill em caso típico.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-steps" style="flex:1;">
+            <div class="d done"></div>
+            <div class="ln done"></div>
+            <div class="d current"></div>
+            <div class="ln"></div>
+            <div class="d"></div>
+          </div>
+        </div>
+        <div class="sk-row" style="font-size:9.5px; color:var(--ink-light);">
+          <span style="flex:1;">categoria</span>
+          <span style="flex:1; color:var(--ink); font-weight:700;">valor</span>
+          <span style="flex:1;">comentário</span>
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="sk-mini-card fillsoft">
+          <div style="font-size:11px;">Categoria escolhida: <b>OK</b> ✓</div>
+        </div>
+        <div class="sk-row">
+          <div style="font-size:11px;">Reembolso:</div>
+          <div class="sk-box tiny fill"><b>€87,50</b></div>
+          <span class="sk-btn ghost" style="font-size:10px; padding:1px 6px;">ajustar</span>
+        </div>
+        <div class="sk-row">
+          <span class="sk-btn ghost" style="font-size:10px;">← voltar</span>
+          <div class="sk-grow"></div>
+          <span class="sk-btn primary" style="font-size:11px;">próximo</span>
+        </div>
+      </div>
+      <div class="annotate">guiado e didático; lento para sellers experientes (3 telas para 1 decisão)</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Form único compacto</div>
+      <div class="var-desc">Radio + número + texto + upload tudo numa tela densa. Tudo visível, decisão em 1 click + 1 enter.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div style="font-size:11px; font-weight:700;">Resultado:</div>
+          <span class="sk-chip active">○ OK</span>
+          <span class="sk-chip">○ Danificado</span>
+          <span class="sk-chip">○ Faltando</span>
+        </div>
+        <div class="sk-row">
+          <div style="font-size:11px;">Reembolso:</div>
+          <div class="sk-box tiny" style="flex:1;"><b>€</b> 87,50</div>
+        </div>
+        <div class="sk-box dashed" style="flex:1; min-height:30px; align-items:flex-start;">
+          <small>Comentário (opcional)…</small>
+        </div>
+        <div class="sk-placeholder" style="min-height:20px; font-size:10px;">📎 foto (opcional)</div>
+      </div>
+      <div class="annotate">eficiente para sellers experientes; pode parecer "muito" para primeira vez</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- R4 -->
+<section id="r4" class="section">
+  <div class="section-head">
+    <div class="section-num">4</div>
+    <div class="section-info">
+      <h2 class="section-title">Ações primárias (CTA stateful) <span class="section-sentiment pos">positiva</span></h2>
+      <p class="section-desc">CTA muda por fase: <b>Aceitar devolução</b> (Fase 2/3 — entry) · <b>Marcar inspeção</b> (Fase 6) · <b>Processar reembolso</b> (Fase 7 já automático, raro botão manual).</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">A</span>Sticky bottom bar</div>
+      <div class="var-desc">CTA primário grande + secundárias fixas no rodapé. Convenção familiar do detalhe-pedido.</div>
+      <div class="sk-frame">
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· conteúdo ···</div>
+        <div class="sk-line dash"></div>
+        <div class="sk-row" style="background:var(--paper-edge); padding:6px; margin:-8px; margin-top:0; border-top:1.5px solid var(--ink);">
+          <span class="sk-btn ghost" style="font-size:11px;">questionar</span>
+          <div class="sk-grow"></div>
+          <span class="sk-btn primary" style="font-size:12px; font-weight:700;">Aceitar devolução</span>
+        </div>
+      </div>
+      <div class="annotate">previsível e consistente com detalhe-pedido; em telas longas o CTA sai do viewport</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Barra superior fixa</div>
+      <div class="var-desc">Sticky no topo, sempre visível. Bom para decisões rápidas com scroll de info.</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="background:var(--yellow-dim); padding:6px; margin:-8px; margin-bottom:0; border-bottom:1.5px solid var(--ink);">
+          <span class="sk-btn primary" style="font-size:11.5px;">Aceitar devolução</span>
+          <span class="sk-btn ghost" style="font-size:11px;">questionar</span>
+          <div class="sk-grow"></div>
+          <span class="sk-tag">prazo: 5d</span>
+        </div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· conteúdo ···</div>
+      </div>
+      <div class="annotate">ação sempre acessível; compete visualmente com header da R1</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>FAB + menu</div>
+      <div class="var-desc">Botão flutuante no canto. Padrão mobile, raro em desktop B2B.</div>
+      <div class="sk-frame" style="position:relative;">
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· conteúdo ···</div>
+        <div class="sk-fab">+</div>
+        <div style="position:absolute; right:12px; bottom:48px; background:var(--paper); border:1.2px solid var(--ink); border-radius:4px; padding:3px 6px; font-size:10px;">Aceitar</div>
+      </div>
+      <div class="annotate">não compete com layout; quebra convenção desktop e dificulta scaneabilidade</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- R5 -->
+<section id="r5" class="section">
+  <div class="section-head">
+    <div class="section-num">5</div>
+    <div class="section-info">
+      <h2 class="section-title">Timeline RMA (7 fases) <span class="section-sentiment neutra">neutra</span></h2>
+      <p class="section-desc">Solicitado → Aceito → Aguardando envio → Trânsito reverso → Recebido → Inspecionado → Finalizado. 7 dots vs 5 do pedido — densidade maior.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">A</span>Stepper horizontal de 7 dots</div>
+      <div class="var-desc">7 dots compactos. Pode ficar apertado em mobile/laterais estreitas; eficiente em desktop.</div>
+      <div class="sk-frame">
+        <div class="sk-steps">
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d done"></div><div class="ln done"></div>
+          <div class="d current"></div><div class="ln"></div>
+          <div class="d"></div><div class="ln"></div>
+          <div class="d"></div><div class="ln"></div>
+          <div class="d"></div>
+        </div>
+        <div class="sk-row" style="font-size:8.5px; color:var(--ink-light);">
+          <span style="flex:1;">solicit.</span>
+          <span style="flex:1;">aceito</span>
+          <span style="flex:1;">aguard.</span>
+          <span style="flex:1; color:var(--ink); font-weight:700;">trânsito</span>
+          <span style="flex:1;">recebido</span>
+          <span style="flex:1;">inspec.</span>
+          <span style="flex:1;">final</span>
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="sk-tag">timestamp da fase atual: 14/05 09:00</div>
+      </div>
+      <div class="annotate">leitura instantânea; texto abaixo dos dots fica abreviado</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Timeline vertical com timestamps</div>
+      <div class="var-desc">Eventos detalhados com timestamps. Bom para auditoria e disputas; consome muito vertical.</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="align-items:flex-start;">
+          <div style="width:14px; height:14px; border:1.5px solid var(--ink); border-radius:50%; background:var(--ink); flex-shrink:0; margin-top:2px;"></div>
+          <div style="flex:1;">
+            <div style="font-size:11px;"><b>Aceito pelo seller</b></div>
+            <div style="font-size:10px; color:var(--ink-light);">12/05 14:30</div>
+          </div>
+        </div>
+        <div style="border-left:1.5px solid var(--ink); margin-left:6px; height:6px;"></div>
+        <div class="sk-row" style="align-items:flex-start;">
+          <div style="width:14px; height:14px; border:1.5px solid var(--ink); border-radius:50%; background:var(--yellow); flex-shrink:0; margin-top:2px; box-shadow:0 0 0 2px var(--yellow-dim);"></div>
+          <div style="flex:1;">
+            <div style="font-size:11px;"><b>Em trânsito reverso</b> ←</div>
+            <div style="font-size:10px; color:var(--ink-light);">14/05 09:00 · DPD pickup ponto Lisboa</div>
+          </div>
+        </div>
+        <div style="border-left:1.2px dashed var(--ink-light); margin-left:6px; height:6px;"></div>
+        <div class="sk-row" style="align-items:flex-start; opacity:0.4;">
+          <div style="width:14px; height:14px; border:1.5px dashed var(--ink-light); border-radius:50%; flex-shrink:0; margin-top:2px;"></div>
+          <div style="font-size:10.5px;">Recebido pelo seller</div>
+        </div>
+      </div>
+      <div class="annotate">rica em info para auditoria; compete com R6 (política) por espaço</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Barra de progresso + colapsável</div>
+      <div class="var-desc">Barra horizontal com fase em destaque; histórico em "▾ ver eventos" colapsável. Limpo.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div style="flex:1;">
+            <div style="font-size:11px;">Fase atual: <b>Em trânsito reverso</b></div>
+            <div style="font-size:10px; color:var(--ink-light);">4 de 7 · ETA: 16/05</div>
+          </div>
+          <div class="sk-tag">4/7</div>
+        </div>
+        <div class="sk-progress"><div class="fill" style="width:57%;"></div></div>
+        <div class="sk-line dash"></div>
+        <div class="sk-collapse">
+          <span style="font-size:11px; color:var(--ink-soft);">▸ ver histórico de eventos</span>
+        </div>
+      </div>
+      <div class="annotate">limpo e econômico; histórico fica escondido — perde para auditoria</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- R6 -->
+<section id="r6" class="section">
+  <div class="section-head">
+    <div class="section-num">6</div>
+    <div class="section-info">
+      <h2 class="section-title">Política aplicada (transparência) <span class="section-sentiment neutra">neutra</span></h2>
+      <p class="section-desc">Mostra "quem paga" calculado pelo BH + valores (custo retorno, reembolso, impacto líquido). Reduz fricção emocional ("por que estou pagando?"). Específico de RMA.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">A</span>Card de transparência (3 linhas)</div>
+      <div class="var-desc">Custo retorno · Reembolso · Impacto líquido em 3 linhas claras + tooltip "por que esta política?". Equilibra informação e clareza.</div>
+      <div class="sk-frame">
+        <div class="sk-mini-card fillsoft">
+          <div style="font-weight:700; font-size:11.5px;">Política aplicada</div>
+          <div style="font-size:10px; color:var(--ink-soft);">defeito · vendedor paga · garantia legal UE</div>
+        </div>
+        <div class="sk-table">
+          <div class="sk-table-row">
+            <div class="col">Custo do retorno</div>
+            <div class="col" style="flex:0.4; text-align:right; font-weight:700;">€4,80</div>
+          </div>
+          <div class="sk-table-row">
+            <div class="col">Reembolso ao comprador</div>
+            <div class="col" style="flex:0.4; text-align:right; font-weight:700;">€87,50</div>
+          </div>
+          <div class="sk-table-row" style="background:var(--red-soft);">
+            <div class="col"><b>Impacto líquido</b></div>
+            <div class="col" style="flex:0.4; text-align:right; font-weight:700;">−€92,30</div>
+          </div>
+        </div>
+        <div class="sk-tag">por que vendedor paga? <span style="text-decoration:underline;">ver regra</span></div>
+      </div>
+      <div class="annotate">transparente sem ser pesado; "impacto líquido" pode ser difícil para sellers iniciantes</div>
+    </article>
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">B</span>Tabela detalhada</div>
+      <div class="var-desc">Motivo · regra aplicada · valor — formato auditoria. Para sellers que querem ver "as contas".</div>
+      <div class="sk-frame">
+        <div class="sk-table">
+          <div class="sk-table-row head">
+            <div class="col" style="flex:1.5;">item</div>
+            <div class="col">regra</div>
+            <div class="col" style="flex:0.5;">valor</div>
+          </div>
+          <div class="sk-table-row">
+            <div class="col" style="flex:1.5;">Frete retorno</div>
+            <div class="col">defeito · vendedor</div>
+            <div class="col" style="flex:0.5;">−€4,80</div>
+          </div>
+          <div class="sk-table-row">
+            <div class="col" style="flex:1.5;">Produto reembolsado</div>
+            <div class="col">após inspeção OK</div>
+            <div class="col" style="flex:0.5;">−€87,50</div>
+          </div>
+          <div class="sk-table-row">
+            <div class="col" style="flex:1.5;">Frete original</div>
+            <div class="col">arrep. = retorna</div>
+            <div class="col" style="flex:0.5;">€0,00</div>
+          </div>
+          <div class="sk-table-row" style="background:var(--red-soft); font-weight:700;">
+            <div class="col" style="flex:1.5;">total</div>
+            <div class="col"></div>
+            <div class="col" style="flex:0.5;">−€92,30</div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">excelente para auditoria; ruidoso em casos triviais</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Resumo 1-linha + link "ver detalhe"</div>
+      <div class="var-desc">"Custo: €4,80 · Reembolso: €87,50" + link colapsado para detalhes. Esconde complexidade.</div>
+      <div class="sk-frame">
+        <div class="sk-mini-card fillsoft">
+          <div style="font-size:11px;">
+            Custo retorno: <b>€4,80</b> · Reembolso: <b>€87,50</b> · Impacto líquido: <b style="color:var(--ink);">−€92,30</b>
+          </div>
+        </div>
+        <div class="sk-collapse">
+          <span style="font-size:11px;">▸ Ver detalhe da política aplicada</span>
+        </div>
+        <div class="sk-tag" style="margin-top:auto;">vendedor paga · garantia legal UE</div>
+      </div>
+      <div class="annotate">limpo; "por que esta política?" precisa de 1 click extra — risco de seller não entender</div>
+    </article>
+
+  </div>
+</section>
+
+<div class="footer-note">
+  <b>Resumo:</b> 6 regiões × 3 variações = <b>18 mini-sketches</b> para validar.<br>
+  <b>Pontos críticos detectados</b>: (1) <b>R3 (painel de inspeção) é o coração da tela</b> — escolha aqui define a UX da decisão central. (2) <b>R6 (política aplicada)</b> é específica de RMA — transparência reduz fricção emocional do seller; esconder demais (variação C) pode confundir. (3) Reuso de R1, R2, R4, R5 do detalhe-pedido = curva de aprendizagem zero.<br>
+  <b>Combinação validada ✓</b>: <b>1C · 2C · 3A · 4A · 5A · 6B</b><br>
+  <b>Próximo passo</b>: próxima tela do mapa: importar-contrato-preview (POC layout único).
+</div>
+
+</body>
+</html>

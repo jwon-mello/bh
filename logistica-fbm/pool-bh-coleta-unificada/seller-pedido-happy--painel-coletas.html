@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<title>Wireframe — painel-coletas (base)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a; --ink-soft: #3d3d3d; --ink-light: #8a8a8a; --ink-faint: #c8c8c8;
+  --paper: #fcfcfa; --paper-edge: #f3f1e8;
+  --yellow: #fff2a8; --yellow-dim: #ffe771; --yellow-edge: #e6c732;
+  --green-soft: #c9e6b8; --red-soft: #f4b8b0; --blue-soft: #b8d4f0; --orange-soft: #f5d0a0;
+}
+* { box-sizing: border-box; }
+body { font-family: 'Patrick Hand', cursive; background: var(--paper); background-image: radial-gradient(circle at 25% 30%, rgba(0,0,0,0.015) 0%, transparent 50%), radial-gradient(circle at 75% 70%, rgba(0,0,0,0.015) 0%, transparent 50%); color: var(--ink); font-size: 16px; line-height: 1.4; margin: 0; padding: 24px 32px 80px; }
+h1, h2, .var-label, .section-title { font-family: 'Caveat', cursive; }
+
+.title-block { border: 2.5px solid var(--ink); border-radius: 10px; padding: 18px 24px 16px; background: var(--paper); box-shadow: 5px 5px 0 var(--ink); margin-bottom: 28px; }
+.title-block h1 { font-size: 38px; margin: 0 0 4px; line-height: 1.1; }
+.title-block .meta { font-size: 15px; color: var(--ink-soft); display: flex; gap: 18px; flex-wrap: wrap; margin-top: 4px; }
+.title-block .meta b { color: var(--ink); }
+.title-block .meta .badge-etapa { background: var(--yellow); border: 1.5px solid var(--ink); padding: 2px 12px; border-radius: 100px; font-family: 'Caveat', cursive; font-size: 18px; transform: rotate(-1.5deg); display: inline-block; }
+.overview-card { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; margin-top: 14px; padding: 12px 16px; border: 1.5px dashed var(--ink-light); border-radius: 6px; background: var(--paper-edge); font-size: 14.5px; }
+.overview-card b { color: var(--ink); }
+.overview-card .label { color: var(--ink-soft); }
+
+.floor-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; padding: 10px 14px; border: 1.5px dashed var(--ink-light); border-radius: 6px; background: var(--paper-edge); position: sticky; top: 8px; z-index: 10; }
+.floor-nav a { padding: 4px 12px; text-decoration: none; color: var(--ink); border: 1.5px solid var(--ink); border-radius: 100px; font-size: 14px; background: var(--paper); }
+.floor-nav a:hover { background: var(--yellow); }
+
+.section { margin-bottom: 36px; }
+.section-head { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px dashed var(--ink-light); }
+.section-num { font-family: 'Caveat', cursive; font-size: 64px; font-weight: 700; line-height: 0.85; color: var(--ink); min-width: 56px; text-align: center; background: var(--yellow); border: 2px solid var(--ink); border-radius: 8px; padding: 4px 8px; box-shadow: 3px 3px 0 var(--ink); transform: rotate(-2deg); }
+.section-info { flex: 1; }
+.section-title { font-size: 32px; margin: 0 0 4px; line-height: 1.05; }
+.section-sentiment { display: inline-block; padding: 1px 10px; border-radius: 100px; border: 1.2px solid var(--ink); font-size: 13px; margin-left: 8px; vertical-align: middle; }
+.section-sentiment.neutra { background: var(--paper-edge); }
+.section-sentiment.pos { background: var(--green-soft); }
+.section-sentiment.neg { background: var(--red-soft); }
+.section-desc { font-size: 14.5px; color: var(--ink-soft); max-width: 720px; }
+
+.vars { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+.var-card { position: relative; border: 2px solid var(--ink); border-radius: 8px; padding: 14px 14px 10px; background: var(--paper); box-shadow: 3px 3px 0 var(--ink); }
+.var-card::before { content: ''; position: absolute; top: -9px; left: 18px; width: 56px; height: 18px; background: var(--yellow-dim); border: 1px solid var(--ink); transform: rotate(-3deg); z-index: 0; }
+.var-label { font-size: 22px; font-weight: 700; margin: 0; position: relative; z-index: 1; }
+.var-tag { display: inline-block; font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700; background: var(--ink); color: var(--paper); width: 28px; height: 28px; text-align: center; line-height: 26px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+.var-desc { font-size: 13.5px; color: var(--ink-soft); line-height: 1.35; margin: 4px 0 10px; min-height: 36px; }
+.annotate { font-family: 'Kalam', cursive; font-style: italic; font-size: 13px; color: var(--ink-soft); margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--ink-faint); }
+.annotate::before { content: '↳ '; color: var(--ink-light); }
+
+.sk-frame { border: 1.8px solid var(--ink); border-radius: 5px; padding: 8px; background: var(--paper); display: flex; flex-direction: column; gap: 6px; min-height: 200px; font-size: 12px; position: relative; }
+.sk-row { display: flex; gap: 6px; align-items: center; }
+.sk-col { display: flex; flex-direction: column; gap: 4px; }
+.sk-grow { flex: 1; }
+.sk-box { border: 1.5px solid var(--ink); border-radius: 4px; padding: 4px 6px; background: var(--paper); font-size: 11.5px; min-height: 18px; display: flex; align-items: center; gap: 4px; }
+.sk-box.dashed { border-style: dashed; border-color: var(--ink-light); }
+.sk-box.fill { background: var(--yellow); }
+.sk-box.fillsoft { background: var(--paper-edge); }
+.sk-box.tiny { padding: 2px 5px; font-size: 11px; }
+.sk-btn { border: 1.5px solid var(--ink); border-radius: 100px; padding: 3px 9px; background: var(--paper); font-size: 11.5px; font-family: inherit; }
+.sk-btn.primary { background: var(--yellow); font-weight: 700; }
+.sk-btn.ghost { border-style: dashed; color: var(--ink-soft); }
+.sk-chip { border: 1.2px solid var(--ink); border-radius: 100px; padding: 1px 7px; font-size: 10.5px; background: var(--paper); display: inline-block; }
+.sk-chip.active { background: var(--yellow); font-weight: 700; }
+.sk-chip.muted { color: var(--ink-light); border-color: var(--ink-faint); }
+.sk-chip.green { background: var(--green-soft); }
+.sk-chip.red { background: var(--red-soft); }
+.sk-chip.orange { background: var(--orange-soft); }
+.sk-chip.blue { background: var(--blue-soft); }
+.sk-line { height: 1.2px; background: var(--ink-light); margin: 2px 0; }
+.sk-line.dash { background: transparent; border-top: 1.2px dashed var(--ink-light); }
+.sk-table { border: 1.2px solid var(--ink); border-radius: 3px; overflow: hidden; font-size: 10.5px; }
+.sk-table-row { display: flex; border-bottom: 1px dashed var(--ink-light); padding: 3px 5px; gap: 5px; align-items: center; }
+.sk-table-row:last-child { border-bottom: 0; }
+.sk-table-row.head { background: var(--paper-edge); font-weight: 700; font-size: 9.5px; color: var(--ink-soft); text-transform: uppercase; }
+.sk-table-row .col { flex: 1; }
+.sk-mini-card { border: 1.5px solid var(--ink); border-radius: 5px; padding: 5px 7px; background: var(--paper); font-size: 11px; }
+.sk-mini-card.fill { background: var(--yellow); }
+.sk-mini-card.fillsoft { background: var(--paper-edge); }
+.sk-mini-card.danger { background: var(--red-soft); }
+.sk-mini-card.warn { background: var(--orange-soft); }
+.sk-mini-card.green { background: var(--green-soft); }
+.sk-mini-card.blue { background: var(--blue-soft); }
+.sk-stack > * + * { margin-top: 5px; }
+.sk-tag { font-size: 10px; color: var(--ink-light); font-style: italic; }
+.sk-tab { border: 1.5px solid var(--ink); border-bottom: none; border-radius: 5px 5px 0 0; padding: 3px 9px; background: var(--paper); font-size: 11px; }
+.sk-tab.active { background: var(--yellow); font-weight: 700; }
+
+/* Calendar primitives */
+.sk-cal-week { display: grid; grid-template-columns: 30px repeat(7, 1fr); gap: 2px; border: 1.2px solid var(--ink); border-radius: 3px; padding: 3px; background: var(--paper); font-size: 9px; }
+.sk-cal-week .h { font-weight: 700; text-align: center; padding: 2px 0; color: var(--ink-soft); font-size: 8.5px; text-transform: uppercase; }
+.sk-cal-week .col-h { color: var(--ink-light); font-size: 8px; text-align: right; padding-right: 3px; }
+.sk-cal-week .slot { border: 1px dashed var(--ink-faint); border-radius: 2px; min-height: 14px; }
+.sk-cal-week .pickup { border: 1.2px solid var(--ink); border-radius: 2px; padding: 1px 3px; font-size: 8px; font-weight: 700; }
+.sk-cal-week .pickup.dpd { background: var(--yellow); }
+.sk-cal-week .pickup.gls { background: var(--green-soft); }
+
+.sk-cal-month { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; font-size: 9px; }
+.sk-cal-month .h { font-weight: 700; text-align: center; color: var(--ink-soft); font-size: 8.5px; text-transform: uppercase; padding-bottom: 1px; }
+.sk-cal-month .d { border: 1px solid var(--ink-faint); border-radius: 2px; min-height: 22px; padding: 1px 3px; position: relative; background: var(--paper); }
+.sk-cal-month .d.has { background: var(--yellow-dim); border-color: var(--ink); }
+.sk-cal-month .d.heavy { background: var(--orange-soft); border-color: var(--ink); }
+.sk-cal-month .d .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--ink); display: inline-block; margin-right: 2px; }
+
+.sk-bottombar { position: absolute; bottom: 0; left: 0; right: 0; background: var(--ink); color: var(--paper); padding: 5px 8px; display: flex; align-items: center; gap: 6px; font-size: 11px; border-radius: 0 0 4px 4px; }
+.sk-bottombar .sk-btn { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+.sk-bottombar .sk-btn.primary { background: var(--yellow); border-color: var(--ink); }
+
+.var-card.chosen { box-shadow: 4px 4px 0 var(--ink), inset 0 0 0 2.5px var(--green-soft); }
+.chosen-mark { position: absolute; top: -12px; right: 18px; background: var(--green-soft); border: 1.5px solid var(--ink); padding: 2px 12px; border-radius: 100px; font-family: 'Caveat', cursive; font-size: 16px; font-weight: 700; transform: rotate(2deg); z-index: 1; }
+
+.footer-note { margin-top: 32px; padding: 14px 18px; border: 1.8px dashed var(--ink); border-radius: 6px; background: var(--paper-edge); font-size: 14.5px; color: var(--ink-soft); }
+.footer-note b { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <h1>Wireframe base — <span style="color: var(--ink-soft);">painel-coletas</span></h1>
+  <div class="meta">
+    <span class="badge-etapa">Etapa 1 · grid de regiões</span>
+    <span><b>Feature:</b> logistica-fbm</span>
+    <span><b>Hipótese:</b> pool-bh-coleta-unificada</span>
+    <span><b>Tela:</b> painel-coletas (decisão #2 do mapa)</span>
+    <span><b>Persona:</b> Seller multi-origem</span>
+  </div>
+  <div class="overview-card">
+    <div><span class="label">Journey:</span> <b>seller-pedido-happy</b> Fase 4 ("Pacote pronto, aguarda coleta")</div>
+    <div><span class="label">Cenários previstos (Etapa 2):</span> <b>3</b> — happy 1 origem · multi-origem × carrier · urgência (próxima &lt;1h)</div>
+    <div><span class="label">Regiões × variações:</span> <b>5 × 3 = 15 mini-sketches</b></div>
+    <div><span class="label">Combinação validada ✓:</span> <b>1A · 2A · 3B · 4A · 5B</b> — pronta para Etapa 2</div>
+  </div>
+</div>
+
+<nav class="floor-nav">
+  <a href="#r1">1 · Header + filtro</a>
+  <a href="#r2">2 · Próxima coleta</a>
+  <a href="#r3">3 · Calendário</a>
+  <a href="#r4">4 · Pacotes aguardando</a>
+  <a href="#r5">5 · Ações</a>
+</nav>
+
+<!-- R1 -->
+<section id="r1" class="section">
+  <div class="section-head">
+    <div class="section-num">1</div>
+    <div class="section-info">
+      <h2 class="section-title">Header + filtro origem <span class="section-sentiment neutra">orientadora</span></h2>
+      <p class="section-desc">Título · alterna visões (semana/mês/lista) · filtro origem (multi-origem). Filtro origem é crítico para sellers com 2+ warehouses — cada origem tem janelas de coleta próprias.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">A</span>Tabs visões + dropdown origem</div>
+      <div class="var-desc">Tabs (semana / mês / lista) à esquerda + dropdown filtro origem à direita. Convenção familiar.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div style="font-family:'Caveat',cursive; font-size:22px; font-weight:700;">Coletas</div>
+          <div class="sk-grow"></div>
+          <div class="sk-box tiny fillsoft">Origem: todas (3) ▾</div>
+        </div>
+        <div class="sk-row" style="align-items:flex-end;">
+          <div class="sk-tab active">semana</div>
+          <div class="sk-tab">mês</div>
+          <div class="sk-tab">lista</div>
+        </div>
+        <div class="sk-line" style="margin-top:0;"></div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· conteúdo ···</div>
+      </div>
+      <div class="annotate">familiar e padrão; com 5+ origens o dropdown vira lista longa</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Título grande + chips de origem</div>
+      <div class="var-desc">Origens visíveis como chips toggle (Todas · Lisboa · Porto · Faro). Multi-origem num olhar.</div>
+      <div class="sk-frame">
+        <div style="font-family:'Caveat',cursive; font-size:22px; font-weight:700;">Coletas</div>
+        <div class="sk-row" style="flex-wrap:wrap;">
+          <span class="sk-chip active">Todas (3)</span>
+          <span class="sk-chip">Lisboa</span>
+          <span class="sk-chip">Porto</span>
+          <span class="sk-chip">Faro</span>
+          <div class="sk-grow"></div>
+          <span class="sk-tag">visão: semana ▾</span>
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· conteúdo ···</div>
+      </div>
+      <div class="annotate">multi-origem visível e clicável; com 8+ origens o stripe quebra a linha</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Header compacto + segmented control</div>
+      <div class="var-desc">Título pequeno + segmented control [semana | mês | lista] + filtro origem inline. Maximiza vertical.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div style="font-family:'Caveat',cursive; font-size:18px; font-weight:700;">Coletas · 3 origens</div>
+          <div class="sk-grow"></div>
+          <div style="display:flex; border:1.5px solid var(--ink); border-radius:100px; overflow:hidden; font-size:10px;">
+            <span style="padding:2px 8px; background:var(--yellow); font-weight:700;">semana</span>
+            <span style="padding:2px 8px;">mês</span>
+            <span style="padding:2px 8px;">lista</span>
+          </div>
+          <div class="sk-box tiny" style="font-size:10px;">⚲ origem</div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· conteúdo ···</div>
+      </div>
+      <div class="annotate">denso e moderno; segmented control com 3 opções pode ficar pequeno</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- R2 -->
+<section id="r2" class="section">
+  <div class="section-head">
+    <div class="section-num">2</div>
+    <div class="section-info">
+      <h2 class="section-title">Próxima coleta destacada <span class="section-sentiment pos">redução do pain</span></h2>
+      <p class="section-desc">Onde mora a redução do pain point #1 ("esquecer da próxima coleta"). Quanto mais visível, menor o risco de perder a janela.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">A</span>Card grande horizontal</div>
+      <div class="var-desc">Card destacado no topo: qtd · hora · carrier · origem · countdown. "Obrigatório esquecer".</div>
+      <div class="sk-frame">
+        <div class="sk-mini-card fill" style="padding:10px;">
+          <div class="sk-row">
+            <div class="sk-col" style="flex:1;">
+              <div style="font-size:9px; color:var(--ink-soft);">PRÓXIMA COLETA</div>
+              <div style="font-family:'Caveat',cursive; font-size:24px; font-weight:700; line-height:1;">Hoje · 16:00</div>
+              <div class="sk-row" style="margin-top:3px;">
+                <span class="sk-chip">DPD</span>
+                <span class="sk-chip muted">Lisboa</span>
+              </div>
+            </div>
+            <div class="sk-col" style="align-items:flex-end;">
+              <div style="font-family:'Caveat',cursive; font-size:28px; font-weight:700;">12</div>
+              <div style="font-size:9px; color:var(--ink-light);">pacotes</div>
+              <div class="sk-chip orange" style="margin-top:3px;">⏱ 2h 14min</div>
+            </div>
+          </div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· calendário ···</div>
+      </div>
+      <div class="annotate">impossível ignorar; em dia sem coleta marcada o card fica vazio ou deslocado</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Mini-card discreto integrado</div>
+      <div class="var-desc">Linha pequena no header (após R1): "Próxima: hoje 16h · DPD · 12 pacotes". Compacto, sem dominar a tela.</div>
+      <div class="sk-frame">
+        <div class="sk-row" style="background:var(--yellow-dim); padding:5px 8px; border:1.5px solid var(--ink); border-radius:4px;">
+          <span style="font-size:11px;">Próxima: <b>hoje 16:00</b> · DPD · Lisboa · <b>12 pacotes</b></span>
+          <div class="sk-grow"></div>
+          <span class="sk-chip orange" style="font-size:9px;">2h 14min</span>
+        </div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· calendário ···</div>
+      </div>
+      <div class="annotate">não rouba espaço; em urgência (cenário) precisa virar banner — design dual</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Banner contextual</div>
+      <div class="var-desc">Aparece só quando próxima coleta está em &lt;2h. Some em dia tranquilo. "Grita só quando precisa".</div>
+      <div class="sk-frame">
+        <div class="sk-mini-card warn" style="display:flex; gap:8px; align-items:center;">
+          <span style="font-weight:700;">⏱</span>
+          <span style="flex:1;"><b>Coleta em 38 min</b> · Lisboa · DPD · 12 pacotes prontos</span>
+          <span class="sk-btn" style="font-size:10px; padding:1px 8px;">ver</span>
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· calendário ···</div>
+      </div>
+      <div class="annotate">grita só na urgência; em dia normal seller não tem ancoragem visual da próxima coleta</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- R3 -->
+<section id="r3" class="section">
+  <div class="section-head">
+    <div class="section-num">3</div>
+    <div class="section-info">
+      <h2 class="section-title">Calendário / visualização (líder) <span class="section-sentiment pos">aposta</span></h2>
+      <p class="section-desc">A linguagem visual da tela. Calendário semanal é mais imediato; lista escala melhor com multi-origem×carrier; mensal é overview.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">A</span>Calendário semanal</div>
+      <div class="var-desc">7 colunas (dias) × linhas horárias. Slots de coleta como blocos coloridos por carrier. Visual imediato.</div>
+      <div class="sk-frame">
+        <div class="sk-cal-week">
+          <div class="h"></div>
+          <div class="h">Seg</div><div class="h">Ter</div><div class="h">Qua</div><div class="h">Qui</div><div class="h">Sex</div><div class="h">Sáb</div><div class="h">Dom</div>
+          <div class="col-h">10h</div>
+          <div class="slot"></div><div class="pickup gls">GLS·8</div><div class="slot"></div><div class="pickup gls">GLS·5</div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
+          <div class="col-h">14h</div>
+          <div class="slot"></div><div class="slot"></div><div class="pickup dpd">DPD·12</div><div class="slot"></div><div class="pickup dpd">DPD·6</div><div class="slot"></div><div class="slot"></div>
+          <div class="col-h">16h</div>
+          <div class="pickup dpd" style="background:var(--yellow-edge);">⏱ DPD·12</div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
+          <div class="col-h">18h</div>
+          <div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
+        </div>
+        <div class="sk-row" style="font-size:9px; color:var(--ink-light);">
+          <span class="sk-chip" style="background:var(--yellow); font-size:8px;">DPD</span>
+          <span class="sk-chip" style="background:var(--green-soft); font-size:8px;">GLS</span>
+        </div>
+      </div>
+      <div class="annotate">visual rico e imediato; multi-origem×carrier denso pode lotar (slots sobrepostos)</div>
+    </article>
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">B</span>Lista vertical agrupada por dia</div>
+      <div class="var-desc">"Hoje · Amanhã · Quarta..." cada dia com coletas listadas. Escala bem com volume e multi-origem.</div>
+      <div class="sk-frame">
+        <div class="sk-stack" style="font-size:10.5px;">
+          <div style="font-weight:700;">Hoje · 09 mai</div>
+          <div class="sk-mini-card fill" style="padding:3px 6px;">
+            <div class="sk-row" style="font-size:10px;">
+              <span class="sk-chip" style="font-size:9px;">DPD</span>
+              <span class="sk-chip muted" style="font-size:9px;">Lisboa</span>
+              <span style="flex:1;">16:00 · 12 pac.</span>
+              <span class="sk-chip orange" style="font-size:9px;">2h</span>
+            </div>
+          </div>
+          <div style="font-weight:700; margin-top:4px;">Amanhã · 10 mai</div>
+          <div class="sk-mini-card" style="padding:3px 6px;">
+            <div class="sk-row" style="font-size:10px;">
+              <span class="sk-chip" style="font-size:9px;">GLS</span>
+              <span class="sk-chip muted" style="font-size:9px;">Porto</span>
+              <span style="flex:1;">10:00 · 8 pac.</span>
+            </div>
+          </div>
+          <div class="sk-mini-card" style="padding:3px 6px;">
+            <div class="sk-row" style="font-size:10px;">
+              <span class="sk-chip" style="font-size:9px;">DPD</span>
+              <span class="sk-chip muted" style="font-size:9px;">Lisboa</span>
+              <span style="flex:1;">14:00 · 5 pac.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">escala bem com volume e multi-origem; perde "visual de calendário" — sellers que pensam em semana sofrem</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Grid mensal com indicadores</div>
+      <div class="var-desc">Calendário mensal; dias com coleta destacados (heatmap por quantidade). Bom overview, esconde detalhe.</div>
+      <div class="sk-frame">
+        <div class="sk-cal-month">
+          <div class="h">D</div><div class="h">S</div><div class="h">T</div><div class="h">Q</div><div class="h">Q</div><div class="h">S</div><div class="h">S</div>
+          <div class="d"></div>
+          <div class="d"><span style="color:var(--ink-light);">5</span></div>
+          <div class="d has"><span>6</span><br><span class="dot"></span><span class="dot"></span></div>
+          <div class="d"><span>7</span></div>
+          <div class="d has"><span>8</span><br><span class="dot"></span></div>
+          <div class="d heavy"><span><b>9</b></span><br><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <div class="d"><span>10</span></div>
+          <div class="d"><span>11</span></div>
+          <div class="d has"><span>12</span><br><span class="dot"></span></div>
+          <div class="d"><span>13</span></div>
+          <div class="d has"><span>14</span><br><span class="dot"></span></div>
+          <div class="d"><span>15</span></div>
+          <div class="d"><span>16</span></div>
+          <div class="d"><span>17</span></div>
+        </div>
+        <div class="sk-tag">↳ amarelo: tem coleta · laranja: 3+ coletas no dia</div>
+      </div>
+      <div class="annotate">overview do mês inteiro; clicar num dia para ver detalhe = navegação extra</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- R4 -->
+<section id="r4" class="section">
+  <div class="section-head">
+    <div class="section-num">4</div>
+    <div class="section-info">
+      <h2 class="section-title">Lista de pacotes aguardando <span class="section-sentiment neutra">operacional</span></h2>
+      <p class="section-desc">Quais pacotes vão sair em qual coleta. Crítico no momento físico ("quais pacotes coloco na zona de coleta?"). Multi-origem agrupa por warehouse.</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">A</span>Tabela densa por coleta</div>
+      <div class="var-desc">Cada coleta agendada é uma seção com tabela (carrier · origem · hora · qtd · IDs pedidos). Operacional.</div>
+      <div class="sk-frame">
+        <div class="sk-mini-card fill" style="padding:4px 6px;">
+          <div style="font-size:10.5px; font-weight:700;">DPD · Lisboa · hoje 16:00 · 12 pacotes</div>
+        </div>
+        <div class="sk-table">
+          <div class="sk-table-row head">
+            <div class="col">Pedido</div>
+            <div class="col">Comprador</div>
+            <div class="col" style="flex:0.5;">Tracking</div>
+          </div>
+          <div class="sk-table-row"><div class="col">#PED-1029</div><div class="col">M. Silva</div><div class="col" style="flex:0.5;">DPD-X29</div></div>
+          <div class="sk-table-row"><div class="col">#PED-1031</div><div class="col">P. Costa</div><div class="col" style="flex:0.5;">DPD-X31</div></div>
+          <div class="sk-table-row"><div class="col">#PED-1032</div><div class="col">R. Lopes</div><div class="col" style="flex:0.5;">DPD-X32</div></div>
+        </div>
+        <div class="sk-tag">+ 9 pacotes</div>
+      </div>
+      <div class="annotate">útil para conferência física; em dia com 6+ coletas vira scroll longo</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">B</span>Cards por coleta agendada</div>
+      <div class="var-desc">Cada coleta é um card; pacotes listados inline com IDs. Visual por coleta.</div>
+      <div class="sk-frame">
+        <div class="sk-mini-card fill">
+          <div class="sk-row">
+            <span class="sk-chip" style="font-size:9px;">DPD</span>
+            <span class="sk-chip muted" style="font-size:9px;">Lisboa</span>
+            <div class="sk-grow"></div>
+            <span style="font-weight:700;">16:00 · 12 pac.</span>
+          </div>
+          <div style="font-size:10px; margin-top:3px;">#PED-1029 · #PED-1031 · #PED-1032 · +9</div>
+        </div>
+        <div class="sk-mini-card">
+          <div class="sk-row">
+            <span class="sk-chip" style="font-size:9px;">GLS</span>
+            <span class="sk-chip muted" style="font-size:9px;">Porto</span>
+            <div class="sk-grow"></div>
+            <span style="font-weight:700;">amanhã 10h · 8 pac.</span>
+          </div>
+          <div style="font-size:10px; margin-top:3px;">#PED-1041 · #PED-1043 · +6</div>
+        </div>
+      </div>
+      <div class="annotate">visual amigável; lista inline de IDs vira string truncada com 50+ pacotes</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Lista compacta agrupada por origem</div>
+      <div class="var-desc">Origem (Lisboa) → sub-grupo por carrier (DPD · GLS). Hierarquia operacional natural.</div>
+      <div class="sk-frame">
+        <div style="font-weight:700; font-size:11px;">▾ Lisboa</div>
+        <div style="padding-left:8px; font-size:10px;">
+          <div style="font-weight:700;">DPD · hoje 16h · 12 pacotes</div>
+          <div style="color:var(--ink-light);">  · #PED-1029, 1031, 1032… +9</div>
+          <div style="font-weight:700; margin-top:3px;">DPD · qua 14h · 6 pacotes</div>
+        </div>
+        <div style="font-weight:700; font-size:11px; margin-top:4px;">▾ Porto</div>
+        <div style="padding-left:8px; font-size:10px;">
+          <div style="font-weight:700;">GLS · amanhã 10h · 8 pacotes</div>
+        </div>
+      </div>
+      <div class="annotate">hierarquia clara para multi-origem; em 1-origem o agrupamento é redundante</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- R5 -->
+<section id="r5" class="section">
+  <div class="section-head">
+    <div class="section-num">5</div>
+    <div class="section-info">
+      <h2 class="section-title">Ações <span class="section-sentiment pos">utilitária</span></h2>
+      <p class="section-desc">Agendar coleta extra (volume excepcional, Black Friday) · Exportar manifesto (PDF para arquivar) · Marcar coletado (fallback se webhook falhar).</p>
+    </div>
+  </div>
+  <div class="vars">
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">A</span>Sticky bottom bar</div>
+      <div class="var-desc">3 ações fixas no rodapé. Convenção do detalhe-pedido / fila / fatura.</div>
+      <div class="sk-frame">
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· conteúdo ···</div>
+        <div class="sk-line dash"></div>
+        <div class="sk-bottombar">
+          <span class="sk-btn" style="font-size:10.5px;">↓ manifesto</span>
+          <div class="sk-grow"></div>
+          <span class="sk-btn" style="font-size:10.5px;">marcar coletado</span>
+          <span class="sk-btn primary" style="font-size:11px;">+ coleta extra</span>
+        </div>
+      </div>
+      <div class="annotate">consistente com outras telas; em estado idle (sem ação pendente) parece "exigente"</div>
+    </article>
+
+    <article class="var-card chosen">
+      <span class="chosen-mark">✓ escolhida</span>
+      <div class="var-label"><span class="var-tag">B</span>Top right discreto</div>
+      <div class="var-desc">Icon-buttons pequenos no topo direito (+ extra · ↓ manifesto). Discreto e sempre acessível.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div style="font-family:'Caveat',cursive; font-size:18px; font-weight:700;">Coletas</div>
+          <div class="sk-grow"></div>
+          <span class="sk-btn ghost" style="font-size:10px; padding:1px 6px;">↓ manifesto</span>
+          <span class="sk-btn primary" style="font-size:10px; padding:1px 6px;">+ extra</span>
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· conteúdo ···</div>
+      </div>
+      <div class="annotate">discreto; "marcar coletado" precisa morar dentro de R2 ou R4</div>
+    </article>
+
+    <article class="var-card">
+      <div class="var-label"><span class="var-tag">C</span>Inline na próxima coleta (R2)</div>
+      <div class="var-desc">Botões dentro do card destacado de R2. "Ações dentro da próxima coleta". Contextual.</div>
+      <div class="sk-frame">
+        <div class="sk-mini-card fill">
+          <div class="sk-row">
+            <div class="sk-col" style="flex:1;">
+              <div style="font-size:9px;">PRÓXIMA COLETA</div>
+              <div style="font-family:'Caveat',cursive; font-size:18px; font-weight:700;">Hoje 16:00 · DPD</div>
+              <div style="font-size:10px;">Lisboa · 12 pacotes</div>
+            </div>
+            <div class="sk-col" style="gap:3px;">
+              <span class="sk-btn primary" style="font-size:10px;">marcar coletado</span>
+              <span class="sk-btn ghost" style="font-size:10px;">↓ manifesto</span>
+            </div>
+          </div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--ink-light); font-size:11px; font-style:italic;">··· calendário ···</div>
+        <div style="text-align:right;"><span class="sk-btn primary" style="font-size:10px;">+ coleta extra</span></div>
+      </div>
+      <div class="annotate">contextual e direto; "exportar manifesto" disperso pode ficar perdido</div>
+    </article>
+
+  </div>
+</section>
+
+<div class="footer-note">
+  <b>Resumo:</b> 5 regiões × 3 variações = <b>15 mini-sketches</b> para validar.<br>
+  <b>Pontos críticos detectados</b>: (1) <b>R3 (calendário) é o líder</b> — semanal (A) é imediato; lista (B) escala com multi-origem; mensal (C) é overview que esconde detalhe. (2) <b>R2 reduz o pain point #1</b> — card grande (A) é "obrigatório esquecer"; banner (C) some em dia tranquilo (cancela o ponto). (3) <b>Multi-origem afeta R1, R3 e R4</b> — sellers com 5+ origens estressam densidade. (4) <b>Cenário "urgência"</b> ativa R2 (countdown) e pode pulsar R5 (Marcar coletado).<br>
+  <b>Combinação validada ✓</b>: <b>1A · 2A · 3B · 4A · 5B</b><br>
+  <b>Observação</b>: R3=B (lista por dia) prioriza escalabilidade multi-origem em detrimento do "feel calendário".<br>
+  <b>Próximo passo</b>: par config-hub + regra-builder.
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1048 @@
+<!doctype html>
+<html lang="pt-pt">
+<head>
+<meta charset="utf-8">
+<title>Cadastro de Lojistas · H5a Eligibility Universal · PF Aspirante Happy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a; --ink-soft: #3d3d3d; --ink-light: #8a8a8a;
+  --paper: #fcfcfa; --yellow: #fff2a8; --yellow-dim: #ffe771; --yellow-edge: #e6c732;
+  --red-soft: #ffd0c9;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: 'Patrick Hand', cursive;
+  background: var(--paper);
+  background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.02) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--ink);
+  padding: 40px 60px 80px;
+  line-height: 1.45;
+}
+h1, h2, h3, .section-title, .var-label, .section-num { font-family: 'Caveat', cursive; letter-spacing: 0.4px; }
+.title-block { border-bottom: 2px solid var(--ink); padding-bottom: 18px; margin-bottom: 28px; }
+.title-block h1 { font-size: 44px; font-weight: 700; margin: 0; }
+.title-block .meta { color: var(--ink-light); font-size: 15px; margin-top: 6px; display: flex; flex-wrap: wrap; gap: 18px; }
+.title-block .meta b { color: var(--ink-soft); font-weight: 400; font-family: 'Patrick Hand', cursive; }
+.hyp-badge {
+  display: inline-block; background: var(--yellow); border: 1.5px solid var(--ink);
+  padding: 3px 10px; border-radius: 100px; font-size: 16px; font-family: 'Caveat', cursive;
+  transform: rotate(-1deg); margin-left: 8px;
+}
+.floor-nav {
+  display: flex; gap: 6px 14px; flex-wrap: wrap;
+  padding: 14px 20px; margin-bottom: 48px;
+  border: 1.8px dashed var(--ink); border-radius: 6px;
+}
+.floor-nav a { color: var(--ink); text-decoration: none; font-size: 17px; padding: 2px 8px; border-radius: 3px; border-bottom: 2px solid transparent; }
+.floor-nav a:hover { background: var(--yellow); border-bottom-color: var(--ink); }
+.floor-nav .nav-focus { font-weight: 700; background: var(--yellow-dim); }
+.section { margin-bottom: 68px; scroll-margin-top: 20px; }
+.section-head { display: flex; align-items: flex-end; gap: 18px; margin-bottom: 10px; flex-wrap: wrap; }
+.section-num { font-size: 84px; line-height: 0.9; font-weight: 700; color: var(--ink); }
+.section-title { font-size: 34px; font-weight: 700; margin: 0; }
+.section-sentiment {
+  font-family: 'Patrick Hand', cursive; font-size: 13px;
+  padding: 3px 10px; border: 1.5px solid var(--ink); border-radius: 100px;
+  text-transform: lowercase; transform: rotate(-1.5deg);
+}
+.section-sentiment.pos { background: var(--yellow); }
+.section-sentiment.neutra { background: transparent; }
+.section-sentiment.neg { background: var(--red-soft); }
+.section-desc { font-size: 17px; color: var(--ink-soft); margin: 6px 0 0 102px; max-width: 820px; }
+.highlight { background: linear-gradient(180deg, transparent 55%, var(--yellow) 55%, var(--yellow) 92%, transparent 92%); padding: 0 2px; }
+.vars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 28px; }
+.var-card {
+  position: relative; border: 1.8px solid var(--ink); border-radius: 6px;
+  padding: 26px 18px 18px 18px; background: var(--paper); box-shadow: 4px 4px 0 var(--ink);
+}
+.var-card::before {
+  content: ""; position: absolute; top: -10px; left: 22px;
+  width: 56px; height: 20px; background: var(--yellow);
+  border: 1px solid var(--yellow-edge); transform: rotate(-3deg); opacity: 0.9;
+}
+.var-label { font-size: 28px; font-weight: 700; display: flex; align-items: baseline; gap: 10px; margin: 0 0 2px 0; }
+.var-tag { font-family: 'Patrick Hand', cursive; font-size: 13px; padding: 1px 10px; border: 1.5px solid var(--ink); border-radius: 100px; background: var(--paper); }
+.var-desc { font-size: 15px; color: var(--ink-soft); margin-bottom: 14px; min-height: 42px; }
+.sk-frame {
+  border: 1.8px solid var(--ink); border-radius: 4px; padding: 10px; background: var(--paper);
+  display: flex; flex-direction: column; gap: 7px; min-height: 320px; font-size: 13px;
+}
+.sk-row { display: flex; gap: 6px; align-items: center; }
+.sk-col { display: flex; flex-direction: column; gap: 5px; }
+.sk-grow { flex: 1; }
+.sk-box { border: 1.5px solid var(--ink); border-radius: 3px; padding: 5px 8px; font-family: 'Patrick Hand', cursive; background: var(--paper); font-size: 12.5px; }
+.sk-box.dashed { border-style: dashed; }
+.sk-box.fill { background: var(--yellow); }
+.sk-box.fillsoft { background: #f0efe9; }
+.sk-box.tiny { padding: 3px 6px; font-size: 11.5px; }
+.sk-box small { color: var(--ink-light); font-size: 10.5px; display: block; line-height: 1.2; }
+.sk-btn { display: inline-block; border: 1.5px solid var(--ink); border-radius: 100px; padding: 3px 12px; font-family: 'Patrick Hand', cursive; font-size: 12px; background: var(--paper); box-shadow: 2px 2px 0 var(--ink); }
+.sk-btn.primary { background: var(--yellow); }
+.sk-btn.ghost { border-style: dashed; box-shadow: none; }
+.sk-chip { display: inline-block; border: 1.2px solid var(--ink); border-radius: 100px; padding: 1px 7px; font-size: 10.5px; background: var(--paper); white-space: nowrap; }
+.sk-chip.active { background: var(--yellow); }
+.sk-chip.lock { background: #f0efe9; color: var(--ink-soft); }
+.sk-chip.warn { background: var(--red-soft); }
+.sk-line { height: 1.5px; background: var(--ink); margin: 3px 0; }
+.sk-line.dash { background: none; border-top: 1.5px dashed var(--ink); height: 0; }
+.sk-module {
+  position: relative; border: 1.5px solid var(--ink); border-radius: 4px;
+  padding: 7px 8px; background: var(--paper);
+  display: flex; flex-direction: column; gap: 4px; font-size: 11.5px; min-height: 56px;
+}
+.sk-module .mod-title { font-weight: 700; font-size: 12px; }
+.sk-module .mod-desc { color: var(--ink-light); font-size: 10.5px; line-height: 1.25; }
+.sk-module .badge {
+  position: absolute; top: 4px; right: 4px;
+  font-size: 9.5px; padding: 1px 6px;
+  border: 1.2px solid var(--ink); border-radius: 100px;
+  background: #f0efe9; color: var(--ink-soft);
+}
+.sk-module .badge.warn { background: var(--red-soft); }
+.sk-module .badge.icon { display: flex; align-items: center; gap: 3px; }
+.mod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.mod-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
+.sk-modal-wrap {
+  position: relative; border: 1.5px solid var(--ink); border-radius: 4px;
+  min-height: 250px;
+  background: repeating-linear-gradient(45deg, #f0efe9, #f0efe9 6px, var(--paper) 6px, var(--paper) 12px);
+  padding: 10px;
+}
+.sk-modal {
+  position: relative; background: var(--paper); border: 1.8px solid var(--ink);
+  border-radius: 5px; padding: 12px; margin: 20px auto 10px;
+  width: 90%; box-shadow: 3px 3px 0 var(--ink); font-size: 12.5px;
+}
+.sk-modal h4 { font-family: 'Caveat', cursive; font-size: 20px; margin: 0 0 6px 0; font-weight: 700; }
+.sk-modal p { margin: 4px 0; color: var(--ink-soft); font-size: 12px; line-height: 1.35; }
+.sk-modal .modal-close { position: absolute; top: 6px; right: 8px; font-size: 14px; color: var(--ink-light); }
+.sk-modal-buttons { display: flex; gap: 8px; margin-top: 10px; }
+.sk-checklist { display: flex; flex-direction: column; gap: 4px; margin: 6px 0; }
+.sk-check-item { display: flex; align-items: center; gap: 6px; font-size: 11.5px; }
+.sk-check-item .b {
+  width: 13px; height: 13px; border: 1.5px solid var(--ink); border-radius: 2px;
+  display: inline-flex; align-items: center; justify-content: center; font-size: 10px; line-height: 1;
+}
+.sk-check-item.done .b { background: var(--yellow); }
+.sk-check-item.done .b::after { content: "✓"; font-weight: 700; }
+.sk-check-item.miss .b { background: var(--red-soft); }
+.sk-check-item.miss .b::after { content: "×"; font-weight: 700; }
+.sk-expander { font-size: 12px; color: var(--ink-soft); border-top: 1.5px dashed var(--ink); padding-top: 6px; margin-top: 8px; }
+.sk-expander-items { margin-top: 6px; display: flex; flex-direction: column; gap: 3px; font-size: 11px; color: var(--ink-light); }
+.sk-legend-strip {
+  border: 1.5px dashed var(--ink); border-radius: 3px; padding: 6px 8px;
+  font-size: 11px; color: var(--ink-soft); background: #f7f6f0;
+  display: flex; gap: 12px; flex-wrap: wrap;
+}
+.sk-legend-strip b { color: var(--ink); font-size: 11.5px; }
+.annotate {
+  font-family: 'Caveat', cursive; font-size: 16px; color: var(--ink-soft);
+  font-style: italic; margin-top: 14px; padding-left: 10px;
+  border-left: 2px solid var(--ink); transform: rotate(-0.3deg);
+}
+.overview-card {
+  border: 1.8px dashed var(--ink); border-radius: 6px;
+  padding: 18px 22px; margin-top: 4px; background: var(--paper);
+  display: flex; gap: 20px; align-items: flex-start;
+}
+.overview-card .ov-body { flex: 1; }
+.overview-card .ov-body p { margin: 6px 0; font-size: 15px; }
+.overview-card .ov-meta {
+  font-family: 'Caveat', cursive; font-size: 18px; color: var(--ink-soft);
+  font-style: italic; padding-left: 14px; border-left: 2px solid var(--ink);
+  min-width: 220px; max-width: 260px;
+}
+.footer-note {
+  margin-top: 68px; padding-top: 20px; border-top: 2px solid var(--ink);
+  font-family: 'Caveat', cursive; font-size: 20px; color: var(--ink-soft);
+}
+.footer-note b { font-weight: 700; color: var(--ink); }
+.cross-ref {
+  margin-top: 10px; padding: 10px 14px; background: #f7f6f0;
+  border: 1.5px dashed var(--ink-light); border-radius: 4px;
+  font-family: 'Caveat', cursive; font-size: 17px;
+}
+.var-card.chosen {
+  border-width: 2.5px;
+  box-shadow: 5px 5px 0 var(--ink);
+}
+.var-card.chosen::after {
+  content: "✓ escolhida";
+  position: absolute;
+  top: -14px; right: -10px;
+  background: var(--yellow);
+  border: 1.8px solid var(--ink);
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-family: 'Caveat', cursive;
+  font-size: 18px;
+  font-weight: 700;
+  transform: rotate(4deg);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+.convergence-banner {
+  margin-top: 10px; padding: 14px 18px;
+  background: var(--yellow); border: 2px solid var(--ink); border-radius: 4px;
+  box-shadow: 3px 3px 0 var(--ink);
+  font-family: 'Patrick Hand', cursive; font-size: 16px;
+}
+.convergence-banner b { font-family: 'Caveat', cursive; font-size: 22px; }
+.out-of-scope-banner {
+  background: #f0efe9; border: 2px dashed var(--ink);
+  border-radius: 4px; padding: 12px 16px;
+  margin: 14px 0;
+  font-family: 'Caveat', cursive; font-size: 18px;
+  color: var(--ink-soft);
+}
+.out-of-scope-banner b { color: var(--ink); font-size: 22px; }
+.section.out-of-scope { opacity: 0.65; }
+.section.out-of-scope .section-head { filter: grayscale(0.3); }
+.iva-banner {
+  margin-top: 14px; padding: 14px 18px;
+  background: #fff8d6; border: 2px solid var(--ink); border-radius: 4px;
+  box-shadow: 3px 3px 0 var(--ink);
+  font-family: 'Patrick Hand', cursive; font-size: 15px;
+}
+.iva-banner b { font-family: 'Caveat', cursive; font-size: 22px; }
+.iva-table {
+  width: 100%; margin-top: 10px; font-size: 13px;
+  border-collapse: collapse; font-family: 'Patrick Hand', cursive;
+}
+.iva-table th, .iva-table td {
+  border: 1.2px solid var(--ink); padding: 4px 8px; text-align: left;
+}
+.iva-table th { background: var(--yellow); font-weight: 700; }
+.iva-table tr:nth-child(even) td { background: #fcfbf3; }
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <h1>Cadastro de Lojistas <span class="hyp-badge">H5a — Eligibility Universal</span></h1>
+  <div class="meta">
+    <span><b>caminho:</b> pf-aspirante-happy</span>
+    <span><b>persona:</b> PF em Portugal, sem empresa, quer vender em marketplaces EU</span>
+    <span><b>canal:</b> desktop</span>
+    <span><b>premissa:</b> badges universais · VIES detecta PF/PJ para uso interno · catálogo não personaliza</span>
+    <span><b>cadastro:</b> Google OAuth ou email/senha</span>
+    <span><b>escopo MVP:</b> fases 2, 3, 4, 5 · IVA aplicado em fase 3</span>
+    <span><b>fora MVP:</b> fases 1, 6, 7 (casos em aberto)</span>
+  </div>
+</div>
+
+<div class="convergence-banner">
+  <b>✓ MVP consolidado · 2026-04-21</b><br>
+  <b>Hipótese</b>: H5a Eligibility Universal · <b>Escopo</b>: fases 2, 3, 4, 5 · <b>Novos</b>: Google OAuth + VIES detection + regra de IVA no catálogo.<br>
+  <b>Variações escolhidas</b>: fase 2 = <b>A</b> (Google ao lado, fluxo clássico) · fase 3 = <b>A</b> (chip textual sóbrio, preços c/ IVA) · fase 4 = <b>C</b> (expansível + links passivos) · fase 5 = <b>C</b> (sem mudança, puro universal).<br>
+  <span style="font-family:'Caveat',cursive; font-size:17px;">Fora do MVP: fases 1 (landing), 6 (nurture off-platform), 7 (transição PF→PJ) — ver <a href="#casos-abertos">Casos em aberto</a>.</span>
+</div>
+
+<nav class="floor-nav" style="margin-top: 28px;">
+  <a href="#f1" style="opacity:0.5">1 · Chegada (⊘ fora MVP)</a>
+  <a href="#f2" class="nav-focus">2 · Cadastro ✓A</a>
+  <a href="#f3" class="nav-focus">3 · Catálogo ✓A + IVA</a>
+  <a href="#f4" class="nav-focus">4 · Modal ✓C</a>
+  <a href="#f5" class="nav-focus">5 · Alternativas ✓C</a>
+  <a href="#f6" style="opacity:0.5">6 · Resolução externa (⊘ fora MVP)</a>
+  <a href="#casos-abertos">⏳ Casos em aberto</a>
+</nav>
+
+<!-- FASE 1 -->
+<section class="section out-of-scope" id="f1">
+  <div class="section-head">
+    <span class="section-num">1</span>
+    <h2 class="section-title">Chegada e intenção</h2>
+    <span class="section-sentiment neutra">neutra</span>
+  </div>
+  <div class="out-of-scope-banner">
+    <b>⊘ Fora do escopo MVP</b> — conteúdo e design da landing ficam para iteração dedicada. As 3 variações abaixo ficam registadas como referência para essa futura iteração.
+  </div>
+  <p class="section-desc">PF acessa o Big Hub com intenção de vender em marketplaces EU. <span class="highlight">A landing precisa atrair sem prometer demais</span> — evitar frustração futura depende disso.</p>
+
+  <div class="vars">
+
+    <div class="var-card">
+      <div class="var-label">Landing minimalista <span class="var-tag">A</span></div>
+      <div class="var-desc">Hero único, 2 CTAs claros (criar conta / explorar módulos). Sem preview de catálogo — usuário entra "cru" e descobre tudo no cadastro.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">Big Hub</div>
+          <div class="sk-grow"></div>
+          <span class="sk-chip">entrar</span>
+          <span class="sk-btn primary">criar conta</span>
+        </div>
+        <div class="sk-line"></div>
+        <div style="text-align:center; padding: 22px 10px 10px;">
+          <div style="font-family:'Caveat',cursive; font-size:26px; font-weight:700; line-height:1.1;">
+            A tua presença europeia,<br>num só sítio.
+          </div>
+          <div style="font-size:12px; color:var(--ink-soft); margin-top:8px;">
+            Vende em marketplaces, cria sites, integra tudo.
+          </div>
+          <div style="margin-top:14px; display:flex; gap:10px; justify-content:center;">
+            <span class="sk-btn primary">Criar conta grátis</span>
+            <span class="sk-btn ghost">Explorar módulos</span>
+          </div>
+        </div>
+        <div class="sk-placeholder" style="border:none; font-size:10px; margin-top:auto;">
+          (scroll: testemunhos, FAQ, footer)
+        </div>
+      </div>
+      <div class="annotate">↳ mínima e elegante. Mas o usuário não descobre que há módulos restritos até o cadastro — expectativa mal calibrada.</div>
+    </div>
+
+    <div class="var-card">
+      <div class="var-label">Preview do catálogo <span class="var-tag">B</span></div>
+      <div class="var-desc">Hero + preview do catálogo com badges já visíveis. Educação antes do cadastro — quando chega na fase 3, já não é surpresa.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">Big Hub</div>
+          <div class="sk-grow"></div>
+          <span class="sk-btn primary tiny">criar conta</span>
+        </div>
+        <div class="sk-line"></div>
+        <div style="text-align:center; padding: 10px 10px 6px;">
+          <div style="font-family:'Caveat',cursive; font-size:22px; font-weight:700;">
+            O que podes fazer no Big Hub
+          </div>
+        </div>
+        <div class="mod-grid cols3">
+          <div class="sk-module">
+            <div class="mod-title">Site institucional</div>
+            <div class="mod-desc">Para todos</div>
+          </div>
+          <div class="sk-module">
+            <span class="badge">requer empresa</span>
+            <div class="mod-title">Vender em MKPs</div>
+            <div class="mod-desc">Amazon, eBay</div>
+          </div>
+          <div class="sk-module">
+            <div class="mod-title">Landing page</div>
+            <div class="mod-desc">Conversão</div>
+          </div>
+        </div>
+        <div style="text-align:center; margin-top:8px;">
+          <span class="sk-btn primary">Criar conta grátis</span>
+        </div>
+      </div>
+      <div class="annotate">↳ transparente desde a landing. Mas o espaço do hero compete com a prova social e pode diluir o CTA.</div>
+    </div>
+
+    <div class="var-card">
+      <div class="var-label">Cases por perfil <span class="var-tag">C</span></div>
+      <div class="var-desc">Hero + duas trilhas separadas: "Para freelancers / criadores" e "Para empresas". Auto-segmentação narrativa, sem coletar dado.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">Big Hub</div>
+          <div class="sk-grow"></div>
+          <span class="sk-btn primary tiny">criar conta</span>
+        </div>
+        <div class="sk-line"></div>
+        <div style="text-align:center; font-family:'Caveat',cursive; font-size:22px; margin: 8px 0 6px;">
+          Para cada perfil, o seu caminho.
+        </div>
+        <div class="sk-row" style="gap:10px; align-items:stretch">
+          <div class="sk-choice-card" style="font-size:10.5px">
+            <div class="ch-title" style="font-size:12px">🎨 Freelancers / criadores</div>
+            <div class="ch-desc">Sites, landing, SEO — começa sem precisar de empresa</div>
+            <div style="margin-top:6px"><span class="sk-chip">ver caminho →</span></div>
+          </div>
+          <div class="sk-choice-card" style="font-size:10.5px">
+            <div class="ch-title" style="font-size:12px">🏢 Empresas</div>
+            <div class="ch-desc">MKPs EU, faturação, integrações completas</div>
+            <div style="margin-top:6px"><span class="sk-chip">ver caminho →</span></div>
+          </div>
+        </div>
+        <div style="text-align:center; font-size:10px; color:var(--ink-light); margin-top:auto; font-style:italic;">
+          (não coleta dado — só narrativa)
+        </div>
+      </div>
+      <div class="annotate">↳ acolhedor e educativo. Risco: PF aspirante se reconhece no "freelancer" e nunca descobre o caminho empresa.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FASE 2 -->
+<section class="section" id="f2">
+  <div class="section-head">
+    <span class="section-num">2</span>
+    <h2 class="section-title">Cadastro com Google + VIES</h2>
+    <span class="section-sentiment pos">positiva</span>
+  </div>
+  <p class="section-desc">Dois métodos de autenticação (Google OAuth ou email/senha) + validação VIES do NIF (<span class="highlight">detecta PF/PJ internamente</span>, não exibe no catálogo). Questão: <b>onde posicionar Google e VIES no fluxo</b>?</p>
+
+  <div class="vars">
+
+    <div class="var-card chosen">
+      <div class="var-label">Google ao lado, fluxo clássico <span class="var-tag">A</span></div>
+      <div class="var-desc">Tela de cadastro com 2 caminhos lado a lado: Google (à direita) + email/senha (à esquerda). Depois, ambos convergem no passo fiscal com VIES.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">Big Hub</div>
+          <div class="sk-grow"></div>
+          <span class="sk-chip">sair</span>
+        </div>
+        <div class="sk-steps">
+          <span class="d current">1</span>
+          <span class="ln"></span>
+          <span class="d">2</span>
+        </div>
+        <div style="font-family:'Caveat',cursive; font-size:20px; text-align:center; margin:4px 0">Criar conta</div>
+        <div class="sk-row" style="align-items:stretch; gap:8px;">
+          <div class="sk-col sk-grow" style="border:1.5px solid var(--ink); border-radius:3px; padding:8px; gap:5px;">
+            <div style="font-size:11px; font-weight:700;">Com email</div>
+            <div class="sk-box tiny">Nome</div>
+            <div class="sk-box tiny">Email</div>
+            <div class="sk-box tiny">Telemóvel</div>
+            <div class="sk-box tiny">Palavra-passe</div>
+          </div>
+          <div style="display:flex; align-items:center; font-size:11px; color:var(--ink-light);">ou</div>
+          <div class="sk-col" style="border:1.5px solid var(--ink); border-radius:3px; padding:10px 8px; gap:6px; align-items:center; justify-content:center; min-width: 115px;">
+            <div style="font-size:11px; font-weight:700;">Mais rápido</div>
+            <span class="sk-btn primary" style="font-size:11px;">G · Continuar com Google</span>
+            <div style="font-size:9.5px; color:var(--ink-light); text-align:center;">Importa nome e email</div>
+          </div>
+        </div>
+        <div class="sk-row" style="justify-content:flex-end; margin-top:auto">
+          <span class="sk-btn primary">Continuar →</span>
+        </div>
+        <div class="annotate" style="margin-top:4px; font-size:13px;">↳ passo 2 (depois): NIF + morada + VIES valida</div>
+      </div>
+      <div class="annotate">↳ democrático — ambas opções com peso igual. Mas a tela fica carregada; pode parecer "escolha paralisia".</div>
+    </div>
+
+    <div class="var-card">
+      <div class="var-label">Google-first <span class="var-tag">B</span></div>
+      <div class="var-desc">Botão Google domina a tela como CTA primário. Email/senha vira link secundário "ou criar com email". Após Google, só pede NIF + morada.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">Big Hub</div>
+          <div class="sk-grow"></div>
+          <span class="sk-chip">sair</span>
+        </div>
+        <div class="sk-steps">
+          <span class="d current">1</span>
+          <span class="ln"></span>
+          <span class="d">2</span>
+        </div>
+        <div style="text-align:center; padding:12px 10px 6px;">
+          <div style="font-family:'Caveat',cursive; font-size:22px; font-weight:700;">Começa em 30 segundos</div>
+          <div style="font-size:11px; color:var(--ink-soft); margin-top:4px;">Usamos a tua conta Google só para nome e email.</div>
+        </div>
+        <div style="text-align:center; margin-top:8px;">
+          <span class="sk-btn primary" style="font-size:14px; padding:6px 18px;">G · Continuar com Google</span>
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="text-align:center; font-size:11px; color:var(--ink-light);">
+          ou <u>criar com email e palavra-passe</u>
+        </div>
+        <div class="sk-placeholder" style="border:none; font-size:10px; margin-top:auto; font-style:italic;">
+          passo 2: NIF + morada · VIES consulta silenciosa
+        </div>
+      </div>
+      <div class="annotate">↳ sinal claro da opção recomendada. Risco: usuários sem Google podem sentir que não são prioridade.</div>
+    </div>
+
+    <div class="var-card">
+      <div class="var-label">NIF-first + auth ao fim <span class="var-tag">C</span></div>
+      <div class="var-desc">Inverte a ordem: pergunta NIF primeiro, VIES valida em tempo real, depois oferece Google ou email pra finalizar. Quebra a inércia do form tradicional.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">Big Hub</div>
+          <div class="sk-grow"></div>
+          <span class="sk-chip">sair</span>
+        </div>
+        <div class="sk-steps">
+          <span class="d current">1</span>
+          <span class="ln"></span>
+          <span class="d">2</span>
+        </div>
+        <div style="font-family:'Caveat',cursive; font-size:20px; text-align:center; margin:4px 0">Começa pelo teu NIF</div>
+        <div class="sk-box" style="text-align:center; padding: 10px 8px;">
+          NIF<small>123 456 789</small>
+        </div>
+        <div class="sk-box fillsoft" style="font-size:11px; padding:6px 10px;">
+          ✓ NIF válido · VIES consultou em <b>0.3s</b>
+          <small style="margin-top:2px; color:var(--ink-light);">tipo detectado: registado internamente (não visível)</small>
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="font-size:11px; text-align:center; color:var(--ink-soft);">Agora, como queres entrar?</div>
+        <div class="sk-row" style="gap:8px; justify-content:center;">
+          <span class="sk-btn primary" style="font-size:11px;">G · Google</span>
+          <span class="sk-btn ghost" style="font-size:11px;">Email e palavra-passe</span>
+        </div>
+        <div style="font-size:10px; color:var(--ink-light); text-align:center; margin-top:auto;">
+          morada vem depois, no passo 2
+        </div>
+      </div>
+      <div class="annotate">↳ diferenciado e moderno. Mas exige o NIF logo de cara — pode travar quem está só a explorar.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FASE 3 — FOCO -->
+<section class="section" id="f3">
+  <div class="section-head">
+    <span class="section-num">3</span>
+    <h2 class="section-title">Catálogo com badges universais ★</h2>
+    <span class="section-sentiment neutra">neutra</span>
+  </div>
+  <p class="section-desc">Badges são <span class="highlight">atributos fixos do módulo</span>. Todos veem o mesmo catálogo — PF e PJ. A questão UX é: <b>como comunicar visualmente o requisito de forma que PF entenda "não é pra mim agora" sem ficar rejeitado</b>?</p>
+
+  <div class="iva-banner">
+    <b>💶 Preços já com IVA aplicado (regra baseada em país + VIES)</b><br>
+    O preço exibido no card de cada módulo reflete a regra fiscal conforme o país do usuário e o resultado da consulta VIES do seu NIF.
+    <table class="iva-table">
+      <thead>
+        <tr>
+          <th>País destino</th>
+          <th>Tipo cliente</th>
+          <th>VIES válido?</th>
+          <th>Imposto</th>
+          <th>Taxa</th>
+          <th>Exemplo €100</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Portugal</td><td>Pessoa (B2C)</td><td>—</td><td>IVA PT</td><td><b>23%</b></td><td>€123</td></tr>
+        <tr><td>Portugal</td><td>Empresa (B2B)</td><td>Não</td><td>IVA PT</td><td><b>23%</b></td><td>€123</td></tr>
+        <tr><td>Alemanha</td><td>Pessoa (B2C)</td><td>—</td><td>IVA DE (OSS)</td><td><b>19%</b></td><td>€119</td></tr>
+        <tr><td>Alemanha</td><td>Empresa (B2B)</td><td>Sim</td><td>Reverse Charge</td><td><b>0%</b></td><td>€100</td></tr>
+        <tr><td>Espanha</td><td>Pessoa (B2C)</td><td>—</td><td>IVA ES (OSS)</td><td><b>21%</b></td><td>€121</td></tr>
+        <tr><td>Espanha</td><td>Empresa (B2B)</td><td>Sim</td><td>Reverse Charge</td><td><b>0%</b></td><td>€100</td></tr>
+        <tr><td>França</td><td>Pessoa (B2C)</td><td>—</td><td>IVA FR (OSS)</td><td><b>20%</b></td><td>€120</td></tr>
+        <tr><td>França</td><td>Empresa (B2B)</td><td>Sim</td><td>Reverse Charge</td><td><b>0%</b></td><td>€100</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:10px; font-size:14px;">
+      <b>Para este caminho (PF PT)</b>: todos os preços são exibidos com <b>+23% IVA PT</b>. Ex.: um módulo de €9,99 mostra como <i>"€12,29 / mês (IVA PT 23% incl.)"</i>.
+    </div>
+  </div>
+
+  <div class="vars">
+
+    <!-- 3.A — ESCOLHIDA -->
+    <div class="var-card chosen">
+      <div class="var-label">Chip textual sóbrio <span class="var-tag">A</span></div>
+      <div class="var-desc">Badge pequeno no canto superior direito do card, cor neutra. Mínimo impacto visual, máxima discrição — badge é info, não alerta. Preço já com IVA aplicado.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">BH</div>
+          <div class="sk-box tiny sk-grow">pesquisar módulos...</div>
+          <div class="sk-chip">conta · PT</div>
+        </div>
+        <div class="sk-line"></div>
+        <div class="mod-grid cols3">
+          <div class="sk-module">
+            <div class="mod-title">Site institucional</div>
+            <div class="mod-desc">Criar presença online</div>
+            <div style="font-size:10.5px; font-weight:700; margin-top:2px;">€12,29 <span style="color:var(--ink-light); font-weight:400;">/ mês</span></div>
+          </div>
+          <div class="sk-module">
+            <span class="badge">requer empresa</span>
+            <div class="mod-title">Vender em MKPs</div>
+            <div class="mod-desc">Amazon, eBay, Zalando</div>
+            <div style="font-size:10.5px; font-weight:700; margin-top:2px;">€35,67 <span style="color:var(--ink-light); font-weight:400;">/ mês</span></div>
+          </div>
+          <div class="sk-module">
+            <div class="mod-title">Landing page</div>
+            <div class="mod-desc">Página única</div>
+            <div style="font-size:10.5px; font-weight:700; margin-top:2px;">€8,60 <span style="color:var(--ink-light); font-weight:400;">/ mês</span></div>
+          </div>
+          <div class="sk-module">
+            <span class="badge">requer empresa</span>
+            <div class="mod-title">Integração MKP</div>
+            <div class="mod-desc">Stock, pedidos</div>
+            <div style="font-size:10.5px; font-weight:700; margin-top:2px;">€23,37 <span style="color:var(--ink-light); font-weight:400;">/ mês</span></div>
+          </div>
+          <div class="sk-module">
+            <div class="mod-title">SEO básico</div>
+            <div class="mod-desc">Otimização</div>
+            <div style="font-size:10.5px; font-weight:700; margin-top:2px;">€18,44 <span style="color:var(--ink-light); font-weight:400;">/ mês</span></div>
+          </div>
+          <div class="sk-module">
+            <span class="badge">requer empresa</span>
+            <div class="mod-title">Fatura UE</div>
+            <div class="mod-desc">IVA europeu</div>
+            <div style="font-size:10.5px; font-weight:700; margin-top:2px;">€15,98 <span style="color:var(--ink-light); font-weight:400;">/ mês</span></div>
+          </div>
+        </div>
+        <div style="font-size:10px; color:var(--ink-light); text-align:center; font-style:italic; margin-top:auto;">
+          preços com IVA PT 23% · (líquido €9,99 / €29,00 / €6,99...)
+        </div>
+      </div>
+      <div class="annotate">↳ sóbrio e universal. Preço total transparente evita surpresa no checkout; tooltip pode detalhar a regra VIES aplicada.</div>
+    </div>
+
+    <!-- 3.B -->
+    <div class="var-card">
+      <div class="var-label">Cadeado + label explícito <span class="var-tag">B</span></div>
+      <div class="var-desc">Ícone de cadeado + texto. Mais forte visualmente, impossível ignorar. Card restrito tem background sutil + cadeado no cabeçalho.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">BH</div>
+          <div class="sk-box tiny sk-grow">pesquisar...</div>
+          <div class="sk-chip">conta</div>
+        </div>
+        <div class="sk-line"></div>
+        <div class="mod-grid cols3">
+          <div class="sk-module">
+            <div class="mod-title">Site institucional</div>
+            <div class="mod-desc">Criar presença</div>
+          </div>
+          <div class="sk-module" style="background:#f5f4ee">
+            <span class="badge icon warn">🔒 empresa</span>
+            <div class="mod-title">Vender em MKPs</div>
+            <div class="mod-desc">Amazon, eBay...</div>
+          </div>
+          <div class="sk-module">
+            <div class="mod-title">Landing page</div>
+            <div class="mod-desc">Página única</div>
+          </div>
+          <div class="sk-module" style="background:#f5f4ee">
+            <span class="badge icon warn">🔒 empresa</span>
+            <div class="mod-title">Integração MKP</div>
+            <div class="mod-desc">Stock, pedidos</div>
+          </div>
+          <div class="sk-module">
+            <div class="mod-title">SEO básico</div>
+            <div class="mod-desc">Otimização</div>
+          </div>
+          <div class="sk-module" style="background:#f5f4ee">
+            <span class="badge icon warn">🔒 empresa</span>
+            <div class="mod-title">Fatura UE</div>
+            <div class="mod-desc">IVA europeu</div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">↳ impossível ignorar. Mas cadeado pode parecer "bloqueio comercial" ao invés de requisito regulatório.</div>
+    </div>
+
+    <!-- 3.C -->
+    <div class="var-card">
+      <div class="var-label">Grid uniforme + legenda educativa <span class="var-tag">C</span></div>
+      <div class="var-desc">Grid sem destaques especiais nos cards — badge só aparece como mini-ícone. Uma <b>legenda no topo</b> ensina o vocabulário uma única vez.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">BH</div>
+          <div class="sk-box tiny sk-grow">pesquisar...</div>
+          <div class="sk-chip">conta</div>
+        </div>
+        <div class="sk-line"></div>
+        <div class="sk-legend-strip">
+          <b>✎ Como ler o catálogo:</b>
+          <span>⬤ para todos</span>
+          <span>🏢 requer empresa (NIF PJ)</span>
+          <span>🌍 requer registo UE</span>
+        </div>
+        <div class="mod-grid cols3">
+          <div class="sk-module">
+            <span class="badge" style="background:transparent;border-color:transparent">⬤</span>
+            <div class="mod-title">Site institucional</div>
+            <div class="mod-desc">Presença online</div>
+          </div>
+          <div class="sk-module">
+            <span class="badge" style="background:transparent;border-color:transparent">🏢</span>
+            <div class="mod-title">Vender em MKPs</div>
+            <div class="mod-desc">Amazon, eBay...</div>
+          </div>
+          <div class="sk-module">
+            <span class="badge" style="background:transparent;border-color:transparent">⬤</span>
+            <div class="mod-title">Landing page</div>
+            <div class="mod-desc">Conversão</div>
+          </div>
+          <div class="sk-module">
+            <span class="badge" style="background:transparent;border-color:transparent">🏢🌍</span>
+            <div class="mod-title">Integração MKP</div>
+            <div class="mod-desc">Cross-border</div>
+          </div>
+          <div class="sk-module">
+            <span class="badge" style="background:transparent;border-color:transparent">⬤</span>
+            <div class="mod-title">SEO básico</div>
+            <div class="mod-desc">Otimização</div>
+          </div>
+          <div class="sk-module">
+            <span class="badge" style="background:transparent;border-color:transparent">🏢</span>
+            <div class="mod-title">Fatura UE</div>
+            <div class="mod-desc">IVA europeu</div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">↳ escalável (suporta múltiplos requisitos). Mas exige aprendizado inicial — usuário precisa ler a legenda.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FASE 4 — FOCO -->
+<section class="section" id="f4">
+  <div class="section-head">
+    <span class="section-num">4</span>
+    <h2 class="section-title">Modal informativo ★</h2>
+    <span class="section-sentiment neg">negativa</span>
+  </div>
+  <p class="section-desc">Clicou num módulo com badge. Como <span class="highlight">comunicar a restrição sem pushar rota assistida</span>, mantendo o espírito universal da H5a?</p>
+
+  <div class="vars">
+
+    <div class="var-card">
+      <div class="var-label">Minimalista <span class="var-tag">A</span></div>
+      <div class="var-desc">Título + 1 parágrafo + 2 botões. Zero links externos, zero navegação extra. A versão mais seca possível.</div>
+      <div class="sk-modal-wrap">
+        <div class="sk-modal">
+          <span class="modal-close">×</span>
+          <h4>Este módulo é para empresas</h4>
+          <p>Para usar <b>Vender em marketplaces</b> é necessário NIF de empresa ativo. Quando tiveres a tua atividade aberta, o módulo fica disponível.</p>
+          <div class="sk-modal-buttons">
+            <span class="sk-btn primary">Entendi</span>
+            <span class="sk-btn ghost">Ver outros módulos</span>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">↳ clareza máxima. Mas o usuário fica sem pista do próximo passo.</div>
+    </div>
+
+    <div class="var-card">
+      <div class="var-label">Checklist de requisitos <span class="var-tag">B</span></div>
+      <div class="var-desc">Lista visual dos requisitos do módulo com ✓/× do status atual. Mostra exatamente o gap.</div>
+      <div class="sk-modal-wrap">
+        <div class="sk-modal">
+          <span class="modal-close">×</span>
+          <h4>Requisitos deste módulo</h4>
+          <p style="font-size:11.5px">Para ativar <b>Vender em marketplaces</b>:</p>
+          <div class="sk-checklist">
+            <div class="sk-check-item done"><span class="b"></span>Conta criada</div>
+            <div class="sk-check-item done"><span class="b"></span>NIF registado</div>
+            <div class="sk-check-item miss"><span class="b"></span>NIF de empresa ativo</div>
+            <div class="sk-check-item miss"><span class="b"></span>Comprovativo de morada</div>
+            <div class="sk-check-item miss"><span class="b"></span>IES entregue</div>
+          </div>
+          <div class="sk-modal-buttons">
+            <span class="sk-btn primary">Entendi</span>
+            <span class="sk-btn ghost">Voltar</span>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">↳ transparência radical. Risco: parece "checklist de rejeição".</div>
+    </div>
+
+    <div class="var-card chosen">
+      <div class="var-label">Expansível + links passivos <span class="var-tag">C</span></div>
+      <div class="var-desc">Versão curta + expander "saber mais" que revela informação externa (Portal das Finanças), sem push comercial.</div>
+      <div class="sk-modal-wrap">
+        <div class="sk-modal">
+          <span class="modal-close">×</span>
+          <h4>Este módulo é para empresas</h4>
+          <p>Precisas de NIF de empresa ativo para vender em marketplaces EU.</p>
+          <div class="sk-expander">
+            ▾ Saber mais sobre abrir atividade em Portugal
+            <div class="sk-expander-items">
+              <span>→ Portal das Finanças · Como abrir atividade</span>
+              <span>→ Guia IES para pequenas empresas</span>
+              <span>→ Diferença entre PF e PJ no VIES</span>
+            </div>
+          </div>
+          <div class="sk-modal-buttons">
+            <span class="sk-btn primary">Entendi</span>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">↳ respeita autonomia mas informa. Links externos tiram o usuário do BH.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FASE 5 -->
+<section class="section" id="f5">
+  <div class="section-head">
+    <span class="section-num">5</span>
+    <h2 class="section-title">Exploração de alternativas</h2>
+    <span class="section-sentiment neutra">neutra</span>
+  </div>
+  <p class="section-desc">Modal fechado. Volta ao catálogo universal. <span class="highlight">Como ajudar a encontrar módulos alternativos sem quebrar a filosofia universal</span>?</p>
+
+  <div class="vars">
+
+    <div class="var-card">
+      <div class="var-label">Toggle contextual <span class="var-tag">A</span></div>
+      <div class="var-desc">Após o primeiro modal, um toggle aparece no topo do catálogo: <i>"Ocultar módulos que requerem empresa"</i>. Opcional, usuário controla.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">BH</div>
+          <div class="sk-box tiny sk-grow">pesquisar...</div>
+          <span class="sk-chip">conta</span>
+        </div>
+        <div class="sk-line"></div>
+        <div class="sk-box" style="background:var(--yellow); font-size:11px; display:flex; align-items:center; gap:8px;">
+          <span style="width:26px; height:14px; border:1.5px solid var(--ink); border-radius:100px; background:var(--paper); position:relative;">
+            <span style="position:absolute; right:2px; top:1px; width:9px; height:9px; background:var(--ink); border-radius:100px;"></span>
+          </span>
+          <span>Ocultar módulos que requerem empresa</span>
+          <span class="sk-chip tiny" style="margin-left:auto;">novo</span>
+        </div>
+        <div class="mod-grid cols3">
+          <div class="sk-module">
+            <div class="mod-title">Site institucional</div>
+            <div class="mod-desc">Presença online</div>
+          </div>
+          <div class="sk-module">
+            <div class="mod-title">Landing page</div>
+            <div class="mod-desc">Conversão</div>
+          </div>
+          <div class="sk-module">
+            <div class="mod-title">SEO básico</div>
+            <div class="mod-desc">Otimização</div>
+          </div>
+        </div>
+        <div style="font-size:10.5px; color:var(--ink-light); text-align:center; font-style:italic;">
+          3 módulos ocultos · toggle manual
+        </div>
+      </div>
+      <div class="annotate">↳ respeita filosofia (padrão universal mantido) + dá saída pra quem quer foco. Pequena indireção, mas opcional.</div>
+    </div>
+
+    <div class="var-card">
+      <div class="var-label">Banner inline pós-modal <span class="var-tag">B</span></div>
+      <div class="var-desc">Depois do modal fechar, banner aparece acima do catálogo: <i>"Enquanto não tens empresa, estes módulos podem ser úteis"</i> com 2-3 sugestões inline.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">BH</div>
+          <div class="sk-box tiny sk-grow">pesquisar...</div>
+          <span class="sk-chip">conta</span>
+        </div>
+        <div class="sk-line"></div>
+        <div class="sk-box fill" style="padding:10px;">
+          <div style="font-size:11.5px; font-weight:700; margin-bottom:4px;">
+            ✎ Enquanto avaliamos abertura de atividade:
+          </div>
+          <div class="sk-row" style="gap:6px;">
+            <span class="sk-chip active">Site institucional</span>
+            <span class="sk-chip active">Landing page</span>
+            <span class="sk-chip active">SEO básico</span>
+          </div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div class="mod-grid cols3">
+          <div class="sk-module">
+            <div class="mod-title">Site institucional</div>
+            <div class="mod-desc">Presença online</div>
+          </div>
+          <div class="sk-module">
+            <span class="badge">requer empresa</span>
+            <div class="mod-title">Vender em MKPs</div>
+            <div class="mod-desc">Amazon, eBay</div>
+          </div>
+          <div class="sk-module">
+            <div class="mod-title">Landing page</div>
+            <div class="mod-desc">Conversão</div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">↳ proativo. Mas é "quase personalização" — roça a linha da filosofia universal.</div>
+    </div>
+
+    <div class="var-card chosen">
+      <div class="var-label">Sem mudança (puro universal) <span class="var-tag">C</span></div>
+      <div class="var-desc">Modal fecha, catálogo volta exatamente como estava — sem banner, sem toggle. Usuário triangula sozinho o que não tem badge. Filosofia universal 100% pura.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">BH</div>
+          <div class="sk-box tiny sk-grow">pesquisar...</div>
+          <span class="sk-chip">conta</span>
+        </div>
+        <div class="sk-line"></div>
+        <div class="mod-grid cols3">
+          <div class="sk-module">
+            <div class="mod-title">Site institucional</div>
+            <div class="mod-desc">Criar presença online</div>
+          </div>
+          <div class="sk-module">
+            <span class="badge">requer empresa</span>
+            <div class="mod-title">Vender em MKPs</div>
+            <div class="mod-desc">Amazon, eBay, Zalando</div>
+          </div>
+          <div class="sk-module">
+            <div class="mod-title">Landing page</div>
+            <div class="mod-desc">Página única</div>
+          </div>
+          <div class="sk-module">
+            <span class="badge">requer empresa</span>
+            <div class="mod-title">Integração MKP</div>
+            <div class="mod-desc">Stock, pedidos</div>
+          </div>
+          <div class="sk-module">
+            <div class="mod-title">SEO básico</div>
+            <div class="mod-desc">Otimização</div>
+          </div>
+          <div class="sk-module">
+            <span class="badge">requer empresa</span>
+            <div class="mod-title">Fatura UE</div>
+            <div class="mod-desc">IVA europeu</div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">↳ o mais coerente com H5a. Exige mais esforço cognitivo do usuário, mas não mexe na filosofia.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FASE 6 -->
+<section class="section out-of-scope" id="f6">
+  <div class="section-head">
+    <span class="section-num">6</span>
+    <h2 class="section-title">Período de resolução externa</h2>
+    <span class="section-sentiment neg">negativa</span>
+  </div>
+  <div class="out-of-scope-banner">
+    <b>⊘ Fora do escopo MVP</b> — nurture off-platform fica para fase posterior. As 3 variações abaixo (opt-in VIES watcher, email educacional, dashboard em espera) ficam registadas como referência.
+  </div>
+  <p class="section-desc">Usuário sai para resolver abertura de atividade. <span class="highlight">Big Hub fica invisível por dias/meses</span> — como manter presença leve sem ser invasivo?</p>
+
+  <div class="vars">
+
+    <div class="var-card">
+      <div class="var-label">Opt-in VIES watcher <span class="var-tag">A</span></div>
+      <div class="var-desc">Ao sair da conta, pop-up oferece opt-in: <i>"Quando o VIES detectar o teu NIF como empresa, avisamos por email"</i>. Usa a mesma API que já usamos no cadastro.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">Big Hub</div>
+          <div class="sk-grow"></div>
+          <span class="sk-chip">minha conta</span>
+        </div>
+        <div class="sk-line"></div>
+        <div class="sk-modal-wrap" style="min-height:200px;">
+          <div class="sk-modal">
+            <h4>Antes de saíres...</h4>
+            <p>Podemos verificar automaticamente quando o teu NIF ficar ativo como empresa no VIES.</p>
+            <div class="sk-box fillsoft" style="font-size:11px; padding:6px 10px; margin:6px 0;">
+              ✓ Avisa-me quando o meu NIF for reconhecido como empresa<br>
+              <small>verificamos mensalmente · podes cancelar a qualquer momento</small>
+            </div>
+            <div class="sk-modal-buttons">
+              <span class="sk-btn primary">Sim, avisem-me</span>
+              <span class="sk-btn ghost">Agora não</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="annotate">↳ aproveita a infraestrutura VIES existente. Touchpoint proativo mas controlado pelo usuário.</div>
+    </div>
+
+    <div class="var-card">
+      <div class="var-label">Email educacional <span class="var-tag">B</span></div>
+      <div class="var-desc">Mockup do email enviado pós-cadastro. Conteúdo neutro: guia sobre abrir atividade em PT, links para Portal das Finanças, nenhum push comercial.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">📧</div>
+          <div class="sk-box tiny sk-grow">Caixa de entrada</div>
+        </div>
+        <div class="sk-line"></div>
+        <div class="sk-box" style="padding:10px; font-size:11px;">
+          <div style="font-weight:700; font-size:12px;">
+            Bem-vindo(a) ao Big Hub · O que precisas saber sobre abrir atividade
+          </div>
+          <div style="color:var(--ink-light); font-size:10.5px; margin-top:2px;">
+            no-reply@bighub.store
+          </div>
+        </div>
+        <div class="sk-box" style="padding:10px; font-size:11px; line-height:1.4;">
+          <p style="margin:0 0 6px;">Olá! Obrigado por te registares.</p>
+          <p style="margin:0 0 6px;">Para te ajudar no caminho, juntámos recursos úteis:</p>
+          <div style="font-size:10.5px; color:var(--ink-soft); border-left: 2px solid var(--ink); padding-left:8px;">
+            → <u>Guia: abrir atividade em Portugal (passo a passo)</u><br>
+            → <u>Portal das Finanças · CAE para e-commerce</u><br>
+            → <u>IES e IVA para pequenas empresas</u>
+          </div>
+          <p style="margin:6px 0 0; font-size:10px; color:var(--ink-light); font-style:italic;">
+            Não vendemos nada neste email. É só informação útil.
+          </p>
+        </div>
+      </div>
+      <div class="annotate">↳ honesto e útil. Risco: se não sinalizar "sem push comercial", pode virar spam filtrado.</div>
+    </div>
+
+    <div class="var-card">
+      <div class="var-label">Dashboard "em espera" <span class="var-tag">C</span></div>
+      <div class="var-desc">Se o usuário voltar ao Big Hub entre fases 4 e 7, vê um dashboard específico com status "conta criada · aguardando regularização" + progresso e recursos externos.</div>
+      <div class="sk-frame">
+        <div class="sk-row">
+          <div class="sk-box tiny">BH</div>
+          <div class="sk-grow"></div>
+          <span class="sk-chip">minha conta</span>
+        </div>
+        <div class="sk-line"></div>
+        <div class="sk-box fillsoft" style="padding:10px;">
+          <div style="font-weight:700; font-size:12px;">Olá, Maria 👋</div>
+          <div style="font-size:11px; color:var(--ink-soft); margin-top:2px;">
+            A tua conta está pronta. A aguardar <b>abertura de atividade</b> para ativares os módulos empresariais.
+          </div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="font-size:11px; font-weight:700;">✎ Caminho sugerido (externo):</div>
+        <div class="sk-col" style="font-size:10.5px; gap:3px;">
+          <div>1. Abrir atividade no Portal das Finanças</div>
+          <div>2. Obter CAE adequado (ex: 4791 e-commerce)</div>
+          <div>3. Entregar IES</div>
+          <div>4. Voltar e ativar módulos →</div>
+        </div>
+        <div class="sk-line dash"></div>
+        <div style="font-size:11px;">
+          <span class="sk-chip active">✓ Verificamos o teu NIF no VIES mensalmente</span>
+        </div>
+        <div class="sk-placeholder" style="border:none; font-size:10px; margin-top:auto; font-style:italic;">
+          se usuário logar entre fase 4 e 7, vê isto
+        </div>
+      </div>
+      <div class="annotate">↳ mantém o usuário ancorado ao Big Hub mesmo off-platform. Mais trabalho de produto, mas maior taxa de retorno potencial.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CASOS EM ABERTO (ex-fase 7) -->
+<section class="section" id="casos-abertos">
+  <div class="section-head">
+    <span class="section-num" style="font-size:64px;">⏳</span>
+    <h2 class="section-title">Casos em aberto</h2>
+    <span class="section-sentiment neutra">pós-MVP</span>
+  </div>
+  <p class="section-desc">Casos de uso identificados mas deliberadamente <span class="highlight">fora do escopo desta iteração</span>. Registados aqui para não serem perdidos.</p>
+
+  <div class="overview-card" style="border-style: solid; border-width: 2px; background: #fffef5;">
+    <div class="ov-body">
+      <p style="font-family:'Caveat',cursive; font-size:24px; font-weight:700; margin-top:0;">Transição PF → PJ (ex-fase 7)</p>
+      <p>Quando o usuário regulariza a atividade e volta querendo ativar um módulo restrito, enfrentamos decisões ainda não resolvidas:</p>
+      <ul style="font-size:15px; margin:10px 0; padding-left:20px; line-height:1.6;">
+        <li><b>Modelo de dados</b>: 2 NIFs na mesma conta? Re-cadastro? Extensão da conta PF existente?</li>
+        <li><b>Política de re-consulta VIES</b>: frequência, custo da API, agendamento vs sob demanda</li>
+        <li><b>Gatilho da atualização</b>: automático (detecção VIES no login), manual (botão), ou lazy (dentro do checkout)</li>
+        <li><b>Fluxo de docs KYC</b>: cartão do sócio, IES, comprovativo de morada — integrar onde?</li>
+        <li><b>NIF mudou de entidade</b>: usuário apaga atividade PF e abre empresa com NIF diferente — migra ou é conta nova?</li>
+        <li><b>Retrocompatibilidade</b>: módulos comprados como PF continuam válidos após transição?</li>
+      </ul>
+      <p style="background:var(--yellow); padding:8px 12px; border:1.5px solid var(--ink); border-radius:4px; font-size:14px;">
+        <b>⚠ Risco de não endereçar</b>: se um PF aspirante virar PJ e tentar ativar marketplaces, esbarra num fluxo não desenhado — fricção equivalente à dor original que H5a veio resolver.
+      </p>
+    </div>
+    <div class="ov-meta">↳ Revisitar pós-MVP das fases 1-6, ou quando o primeiro cliente PF real atingir retorno qualificado.</div>
+  </div>
+</section>
+
+<div class="footer-note">
+  <p>✎ <b>MVP consolidado</b>: fases <b>2, 3, 4, 5</b> no escopo · catálogo universal · VIES detecta PF/PJ (interno) · cadastro Google OAuth + email/senha · IVA calculado na fase 3 via VIES.</p>
+  <p>✎ <b>Variações escolhidas</b>: fase 2 = <b>A</b> · fase 3 = <b>A</b> · fase 4 = <b>C</b> · fase 5 = <b>C</b>. MVP convergido.</p>
+  <p>✎ <b>Fora do MVP</b> (registado como referência/casos em aberto): fase 1 (landing), fase 6 (nurture off-platform), fase 7 (transição PF→PJ).</p>
+  <p>✎ <b>Próximo</b>: <b>atualizar requirements</b> (Google + VIES + regra IVA + escopo MVP) · mapear caminhos alternativos (pf-desiste, pj-happy) · especificar política VIES para re-consulta.</p>
+</div>
+
+</body>
+</html>

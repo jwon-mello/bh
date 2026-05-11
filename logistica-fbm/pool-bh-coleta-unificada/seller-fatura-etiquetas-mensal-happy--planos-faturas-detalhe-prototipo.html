@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<title>Protótipo de tela — planos-faturas-detalhe (4 cenários)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a; --ink-soft: #3d3d3d; --ink-light: #8a8a8a; --ink-faint: #c8c8c8;
+  --paper: #fcfcfa; --paper-edge: #f3f1e8;
+  --yellow: #fff2a8; --yellow-dim: #ffe771; --yellow-edge: #e6c732;
+  --green-soft: #c9e6b8; --red-soft: #f4b8b0; --blue-soft: #b8d4f0; --orange-soft: #f5d0a0;
+}
+* { box-sizing: border-box; }
+body { font-family: 'Patrick Hand', cursive; background: var(--paper); color: var(--ink); font-size: 16px; line-height: 1.4; margin: 0; padding: 0 0 80px; }
+h1, h2, h3 { font-family: 'Caveat', cursive; }
+
+.title-block { border-bottom: 2.5px solid var(--ink); padding: 16px 28px; background: var(--paper); position: sticky; top: 0; z-index: 50; }
+.title-block .row { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.title-block h1 { font-size: 28px; margin: 0; line-height: 1.05; }
+.title-block .meta { font-size: 13.5px; color: var(--ink-soft); }
+.title-block .meta b { color: var(--ink); }
+.title-block .badge-etapa { background: var(--yellow); border: 1.5px solid var(--ink); padding: 2px 12px; border-radius: 100px; font-family: 'Caveat', cursive; font-size: 16px; transform: rotate(-1.5deg); display: inline-block; }
+.title-block .combo { background: var(--green-soft); border: 1.5px solid var(--ink); padding: 2px 12px; border-radius: 100px; font-size: 13px; }
+
+.proto-nav { position: sticky; top: 64px; z-index: 40; background: var(--paper-edge); padding: 8px 28px; display: flex; gap: 6px; flex-wrap: wrap; border-bottom: 1.5px dashed var(--ink-light); }
+.proto-nav button { border: 1.5px solid var(--ink); border-radius: 100px; padding: 4px 12px; background: var(--paper); font-family: 'Patrick Hand', cursive; font-size: 13px; cursor: pointer; }
+.proto-nav button:hover { background: var(--yellow-dim); transform: translate(-1px, -1px); }
+.proto-nav button.active { background: var(--yellow); font-weight: 700; box-shadow: 2px 2px 0 var(--ink); }
+
+.screen { display: none; padding: 24px 28px; }
+.screen.active { display: block; animation: fadeIn 0.2s; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.scenario-banner { border: 1.8px solid var(--ink); border-radius: 6px; padding: 8px 14px; margin-bottom: 16px; display: flex; gap: 10px; align-items: center; font-size: 13.5px; box-shadow: 3px 3px 0 var(--ink); }
+.scenario-banner.happy { background: var(--green-soft); }
+.scenario-banner.neutra { background: var(--paper-edge); }
+.scenario-banner.warn { background: var(--orange-soft); }
+.scenario-banner.info { background: var(--blue-soft); }
+.scenario-banner b { font-family: 'Caveat', cursive; font-size: 16px; }
+.scenario-banner .tag { font-family: 'Caveat', cursive; font-size: 13px; font-weight: 700; border: 1.5px solid var(--ink); padding: 1px 10px; border-radius: 100px; background: var(--paper); }
+
+/* R1 — Header stripe denso */
+.tela-header { border: 1.8px solid var(--ink); border-radius: 6px; padding: 10px 14px; margin-bottom: 14px; box-shadow: 3px 3px 0 var(--ink); background: var(--paper); position: relative; }
+.tela-header .row { display: flex; gap: 10px; align-items: center; }
+.tela-header .id { font-weight: 700; font-size: 15px; }
+.tela-header .actions-tr { position: absolute; top: 8px; right: 10px; display: flex; gap: 4px; }
+
+/* R4 — Status banner */
+.status-banner { border: 1.8px solid var(--ink); border-radius: 6px; padding: 10px 14px; margin-bottom: 14px; box-shadow: 3px 3px 0 var(--ink); display: flex; gap: 10px; align-items: center; font-size: 14px; }
+.status-banner.green { background: var(--green-soft); }
+.status-banner.warn { background: var(--orange-soft); }
+.status-banner.danger { background: var(--red-soft); }
+.status-banner b { font-weight: 700; }
+
+/* R2 — Linhas tabela densa */
+.invoice-table { border: 1.5px solid var(--ink); border-radius: 5px; overflow: hidden; font-size: 13px; margin-bottom: 14px; box-shadow: 3px 3px 0 var(--ink); background: var(--paper); }
+.invoice-table .tr { display: flex; border-bottom: 1px dashed var(--ink-light); padding: 8px 14px; gap: 10px; align-items: center; }
+.invoice-table .tr:last-child { border-bottom: 0; }
+.invoice-table .tr.head { background: var(--paper-edge); font-weight: 700; font-size: 11.5px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.3px; padding: 6px 14px; }
+.invoice-table .tr.highlight { background: var(--yellow); }
+.invoice-table .col-desc { flex: 2.5; }
+.invoice-table .col-qty { flex: 0.5; text-align: center; }
+.invoice-table .col-unit { flex: 0.8; text-align: right; }
+.invoice-table .col-total { flex: 0.8; text-align: right; font-weight: 700; }
+.invoice-table .drilldown-link { font-size: 11.5px; color: var(--ink-soft); text-decoration: underline; cursor: pointer; font-style: italic; }
+.invoice-table .drilldown-link:hover { color: var(--ink); }
+
+/* R3 — Bloco fiscal à direita */
+.fiscal-block { display: flex; justify-content: flex-end; margin-bottom: 14px; }
+.fiscal-block .box { width: 55%; border: 1.5px solid var(--ink); border-radius: 5px; overflow: hidden; box-shadow: 3px 3px 0 var(--ink); background: var(--paper); }
+.fiscal-block .row { display: flex; padding: 5px 14px; gap: 10px; border-bottom: 1px dashed var(--ink-light); align-items: center; font-size: 13px; }
+.fiscal-block .row:last-child { border-bottom: 0; }
+.fiscal-block .row.total { background: var(--ink); color: var(--paper); font-weight: 700; font-family: 'Caveat', cursive; font-size: 17px; padding: 8px 14px; }
+.fiscal-block .row.iva-rev { background: var(--blue-soft); font-style: italic; font-size: 12px; }
+.fiscal-block .label { flex: 1; }
+.fiscal-block .value { flex: 0.4; text-align: right; }
+
+/* Buttons */
+.btn { border: 1.5px solid var(--ink); border-radius: 100px; padding: 4px 12px; background: var(--paper); font-family: inherit; font-size: 13px; cursor: pointer; }
+.btn:hover { transform: translate(-1px, -1px); }
+.btn.primary { background: var(--yellow); font-weight: 700; }
+.btn.ghost { border-style: dashed; color: var(--ink-soft); }
+.btn.icon { padding: 3px 10px; font-size: 12px; }
+
+.chip { border: 1.2px solid var(--ink); border-radius: 100px; padding: 1px 8px; font-size: 12px; background: var(--paper); display: inline-block; }
+.chip.green { background: var(--green-soft); }
+.chip.warn { background: var(--orange-soft); }
+.chip.danger { background: var(--red-soft); }
+.chip.muted { color: var(--ink-light); }
+.chip.b2b { background: var(--blue-soft); }
+
+.tag { font-size: 11.5px; color: var(--ink-light); font-style: italic; }
+.line-dash { border-top: 1.2px dashed var(--ink-light); margin: 6px 0; }
+
+/* Drill-down modal preview */
+.drill-pop { position: fixed; bottom: 24px; right: 32px; width: 280px; background: var(--paper); border: 2px solid var(--ink); border-radius: 6px; box-shadow: 5px 5px 0 var(--ink); padding: 12px; z-index: 100; }
+.drill-pop .ph { font-family: 'Caveat', cursive; font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.drill-pop .row-d { display: flex; gap: 6px; padding: 3px 0; font-size: 11px; border-bottom: 1px dashed var(--ink-faint); }
+.drill-pop .row-d:last-child { border: 0; }
+
+/* Breadcrumb */
+.breadcrumb { font-size: 12px; color: var(--ink-soft); margin-bottom: 8px; }
+.breadcrumb a, .breadcrumb b { color: var(--ink); }
+.breadcrumb b { font-weight: 700; }
+.breadcrumb .sep { color: var(--ink-light); margin: 0 4px; }
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <div class="row">
+    <h1>planos-faturas-detalhe</h1>
+    <span class="badge-etapa">Etapa 2 · 4 cenários</span>
+    <span class="combo">Combinação: 1A · 2A · 3A · 4A · 5B</span>
+    <div style="flex:1;"></div>
+    <span class="meta"><b>seller-fatura-etiquetas-mensal-happy</b> · Fases 4 e 7</span>
+  </div>
+</div>
+
+<nav class="proto-nav">
+  <button data-screen="sc-em-curso" class="active">1. em curso (D-2 aviso)</button>
+  <button data-screen="sc-breakdown">2. breakdown 2 linhas</button>
+  <button data-screen="sc-paga">3. paga</button>
+  <button data-screen="sc-iva-reverse">4. IVA reverse charge B2B</button>
+</nav>
+
+<!-- ============================================ -->
+<!-- 1 · EM CURSO (D-2 aviso)                       -->
+<!-- ============================================ -->
+<section class="screen active" id="sc-em-curso">
+  <div class="scenario-banner warn">
+    <span class="tag">em curso</span>
+    <span><b>Fatura emitida · débito em 2 dias</b> — D-3 já notificado por email. Seller ainda pode revisar e contestar antes do débito automático D+5.</span>
+  </div>
+
+  <div class="breadcrumb"><a>Planos e preços</a><span class="sep">›</span><a>Faturas</a><span class="sep">›</span><b>FAT 2026/04-1029</b></div>
+
+  <div class="tela-header">
+    <div class="actions-tr">
+      <span class="btn icon ghost" title="Baixar fatura PDF">↓ PDF</span>
+      <span class="btn icon ghost" title="Baixar detalhe etiquetas CSV">↓ CSV</span>
+    </div>
+    <div class="row">
+      <span class="id">FAT 2026/04-1029</span>
+      <span class="chip muted">abr 2026</span>
+      <span class="chip warn">em curso</span>
+      <div style="flex:1;"></div>
+      <span class="id">€197,72</span>
+      <span class="chip muted">SLA: SEPA · D+5</span>
+    </div>
+    <div class="line-dash"></div>
+    <div style="font-size:12px; color:var(--ink-light); display:flex; gap:14px;">
+      <span>Emitida 01/05 · D-2 aviso enviado 03/05</span>
+      <span>Débito previsto: 06/05</span>
+    </div>
+  </div>
+
+  <div class="status-banner warn">
+    <span style="font-weight:700;">⏱</span>
+    <span style="flex:1;"><b>Débito em 2 dias</b> via SEPA · €197,72 — se algo estiver errado, contacte o suporte antes de 06/05.</span>
+    <span class="btn ghost" style="font-size:12px;">contestar</span>
+    <span class="btn" style="font-size:12px;">trocar método</span>
+  </div>
+
+  <div class="invoice-table">
+    <div class="tr head">
+      <div class="col-desc">Descrição</div>
+      <div class="col-qty">Qtd</div>
+      <div class="col-unit">Unit.</div>
+      <div class="col-total">Total</div>
+    </div>
+    <div class="tr">
+      <div class="col-desc">Assinatura BIG logistics</div>
+      <div class="col-qty">1</div>
+      <div class="col-unit">€99,00</div>
+      <div class="col-total">€99,00</div>
+    </div>
+    <div class="tr highlight">
+      <div class="col-desc">
+        <b>Etiquetas BIG logistics</b>
+        <span class="drilldown-link"> ↗ ver detalhe das 247 etiquetas</span>
+      </div>
+      <div class="col-qty">247</div>
+      <div class="col-unit">€0,25</div>
+      <div class="col-total">€61,75</div>
+    </div>
+    <div class="tr">
+      <div class="col-desc">Vitrine BIG sales</div>
+      <div class="col-qty">1</div>
+      <div class="col-unit">—</div>
+      <div class="col-total">—</div>
+    </div>
+  </div>
+
+  <div class="fiscal-block">
+    <div class="box">
+      <div class="row">
+        <div class="label">Subtotal</div>
+        <div class="value">€160,75</div>
+      </div>
+      <div class="row">
+        <div class="label">IVA 23% <span class="chip muted" style="font-size:10px; margin-left:4px;">PT B2C</span></div>
+        <div class="value">€36,97</div>
+      </div>
+      <div class="row total">
+        <div class="label">TOTAL</div>
+        <div class="value">€197,72</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 2 · BREAKDOWN 2 LINHAS (happy)                 -->
+<!-- ============================================ -->
+<section class="screen" id="sc-breakdown">
+  <div class="scenario-banner happy">
+    <span class="tag">breakdown</span>
+    <span><b>Vista detalhada das linhas</b> — seller acessou para revisar onde estão as 247 etiquetas que viraram €61,75. Drill-down disponível na linha do BIG logistics.</span>
+  </div>
+
+  <div class="breadcrumb"><a>Planos e preços</a><span class="sep">›</span><a>Faturas</a><span class="sep">›</span><b>FAT 2026/04-1029</b></div>
+
+  <div class="tela-header">
+    <div class="actions-tr">
+      <span class="btn icon ghost" title="Baixar fatura PDF">↓ PDF</span>
+      <span class="btn icon ghost" title="Baixar detalhe etiquetas CSV">↓ CSV</span>
+    </div>
+    <div class="row">
+      <span class="id">FAT 2026/04-1029</span>
+      <span class="chip muted">abr 2026</span>
+      <span class="chip warn">em curso</span>
+      <div style="flex:1;"></div>
+      <span class="id">€197,72</span>
+    </div>
+    <div class="line-dash"></div>
+    <div style="font-size:12px; color:var(--ink-light); display:flex; gap:14px;">
+      <span>Emitida 01/05 · Débito previsto 06/05 · SEPA</span>
+    </div>
+  </div>
+
+  <div class="invoice-table">
+    <div class="tr head">
+      <div class="col-desc">Descrição</div>
+      <div class="col-qty">Qtd</div>
+      <div class="col-unit">Unit.</div>
+      <div class="col-total">Total</div>
+    </div>
+    <div class="tr">
+      <div class="col-desc">
+        Assinatura BIG logistics
+        <div style="font-size:11px; color:var(--ink-light);">mensal · plano Pro</div>
+      </div>
+      <div class="col-qty">1</div>
+      <div class="col-unit">€99,00</div>
+      <div class="col-total">€99,00</div>
+    </div>
+    <div class="tr highlight">
+      <div class="col-desc">
+        <b>Etiquetas BIG logistics</b>
+        <div style="font-size:11px;">
+          247 cobradas · 12 excluídas (canceladas &lt;60min) ·
+          <span class="drilldown-link">↗ ver detalhe das etiquetas</span>
+        </div>
+      </div>
+      <div class="col-qty">247</div>
+      <div class="col-unit">€0,25</div>
+      <div class="col-total">€61,75</div>
+    </div>
+    <div class="tr">
+      <div class="col-desc">
+        Vitrine BIG sales
+        <div style="font-size:11px; color:var(--ink-light);">plano gratuito</div>
+      </div>
+      <div class="col-qty">1</div>
+      <div class="col-unit">—</div>
+      <div class="col-total">—</div>
+    </div>
+  </div>
+
+  <div class="fiscal-block">
+    <div class="box">
+      <div class="row">
+        <div class="label">Subtotal</div>
+        <div class="value">€160,75</div>
+      </div>
+      <div class="row">
+        <div class="label">IVA 23% <span class="chip muted" style="font-size:10px; margin-left:4px;">PT B2C</span></div>
+        <div class="value">€36,97</div>
+      </div>
+      <div class="row total">
+        <div class="label">TOTAL</div>
+        <div class="value">€197,72</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="drill-pop">
+    <div class="ph">↗ Drill-down preview</div>
+    <div class="tag" style="margin-bottom:4px;">click "ver detalhe das etiquetas" abre <code>etiquetas-do-ciclo-tabela</code></div>
+    <div class="row-d"><span style="font-weight:700;">12/04</span><span style="flex:1;">#PED-1029</span><span>DPD</span><span>€0,25</span></div>
+    <div class="row-d"><span style="font-weight:700;">14/04</span><span style="flex:1;">#PED-1031</span><span>GLS</span><span>€0,25</span></div>
+    <div class="row-d" style="opacity:0.6;"><span style="font-weight:700;">15/04</span><span style="flex:1; text-decoration:line-through;">#PED-1033</span><span class="chip muted" style="font-size:9px;">excluída</span><span>€0,00</span></div>
+    <div class="tag" style="text-align:center; margin-top:4px;">+ 244 etiquetas</div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 3 · PAGA                                       -->
+<!-- ============================================ -->
+<section class="screen" id="sc-paga">
+  <div class="scenario-banner happy">
+    <span class="tag">paga</span>
+    <span><b>Ciclo fechado</b> — fatura debitada em 06/05 via SEPA · recibo disponível para download · não há ações pendentes.</span>
+  </div>
+
+  <div class="breadcrumb"><a>Planos e preços</a><span class="sep">›</span><a>Faturas</a><span class="sep">›</span><b>FAT 2026/04-1029</b></div>
+
+  <div class="tela-header">
+    <div class="actions-tr">
+      <span class="btn icon ghost" title="Baixar fatura PDF">↓ PDF</span>
+      <span class="btn icon ghost" title="Baixar detalhe etiquetas CSV">↓ CSV</span>
+      <span class="btn icon ghost" title="Baixar recibo">↓ recibo</span>
+    </div>
+    <div class="row">
+      <span class="id">FAT 2026/04-1029</span>
+      <span class="chip muted">abr 2026</span>
+      <span class="chip green">paga ✓</span>
+      <div style="flex:1;"></div>
+      <span class="id">€197,72</span>
+    </div>
+    <div class="line-dash"></div>
+    <div style="font-size:12px; color:var(--ink-light); display:flex; gap:14px;">
+      <span>Emitida 01/05 · Debitada 06/05 às 09:14 · SEPA ref XYZ-2901</span>
+    </div>
+  </div>
+
+  <div class="status-banner green">
+    <span style="font-weight:700;">✓</span>
+    <span style="flex:1;"><b>Fatura paga em 06/05 às 09:14</b> via SEPA · recibo disponível para download</span>
+    <span class="btn icon ghost">↓ recibo</span>
+  </div>
+
+  <div class="invoice-table">
+    <div class="tr head">
+      <div class="col-desc">Descrição</div>
+      <div class="col-qty">Qtd</div>
+      <div class="col-unit">Unit.</div>
+      <div class="col-total">Total</div>
+    </div>
+    <div class="tr">
+      <div class="col-desc">Assinatura BIG logistics</div>
+      <div class="col-qty">1</div>
+      <div class="col-unit">€99,00</div>
+      <div class="col-total">€99,00</div>
+    </div>
+    <div class="tr highlight">
+      <div class="col-desc">
+        <b>Etiquetas BIG logistics</b>
+        <span class="drilldown-link"> ↗ ver detalhe das 247 etiquetas</span>
+      </div>
+      <div class="col-qty">247</div>
+      <div class="col-unit">€0,25</div>
+      <div class="col-total">€61,75</div>
+    </div>
+    <div class="tr">
+      <div class="col-desc">Vitrine BIG sales</div>
+      <div class="col-qty">1</div>
+      <div class="col-unit">—</div>
+      <div class="col-total">—</div>
+    </div>
+  </div>
+
+  <div class="fiscal-block">
+    <div class="box">
+      <div class="row">
+        <div class="label">Subtotal</div>
+        <div class="value">€160,75</div>
+      </div>
+      <div class="row">
+        <div class="label">IVA 23% <span class="chip muted" style="font-size:10px; margin-left:4px;">PT B2C</span></div>
+        <div class="value">€36,97</div>
+      </div>
+      <div class="row total">
+        <div class="label">TOTAL PAGO</div>
+        <div class="value">€197,72</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="border: 1.5px dashed var(--ink-light); background: var(--paper-edge); padding: 10px 14px; border-radius: 5px; margin-top: 14px; font-size: 12.5px;">
+    <b>↗ Próximo ciclo</b> — fatura de maio será emitida em 01/06 (snapshot fecha 31/05 às 23:59:59). Acompanhe o consumo em tempo real no <span style="text-decoration:underline;">dashboard de uso &amp; cobrança</span>.
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 4 · IVA REVERSE CHARGE B2B                     -->
+<!-- ============================================ -->
+<section class="screen" id="sc-iva-reverse">
+  <div class="scenario-banner info">
+    <span class="tag">B2B VIES</span>
+    <span><b>Reverse charge intra-UE</b> — seller cross-border com VIES válido. BH não fatura IVA · seller declara nele próprio no país de destino. Mesma estrutura, regra fiscal diferente.</span>
+  </div>
+
+  <div class="breadcrumb"><a>Planos e preços</a><span class="sep">›</span><a>Faturas</a><span class="sep">›</span><b>FAT 2026/04-1042 (B2B FR)</b></div>
+
+  <div class="tela-header">
+    <div class="actions-tr">
+      <span class="btn icon ghost" title="Baixar fatura PDF">↓ PDF</span>
+      <span class="btn icon ghost" title="Baixar detalhe etiquetas CSV">↓ CSV</span>
+    </div>
+    <div class="row">
+      <span class="id">FAT 2026/04-1042</span>
+      <span class="chip muted">abr 2026</span>
+      <span class="chip warn">em curso</span>
+      <span class="chip b2b">B2B · VIES FR✓</span>
+      <div style="flex:1;"></div>
+      <span class="id">€160,75</span>
+    </div>
+    <div class="line-dash"></div>
+    <div style="font-size:12px; color:var(--ink-light); display:flex; gap:14px;">
+      <span>Cliente: SARL Exemple · NIF FR12345678901 (VIES válido)</span>
+      <span>Débito previsto: 06/05 · SEPA</span>
+    </div>
+  </div>
+
+  <div class="status-banner" style="background: var(--blue-soft);">
+    <span style="font-weight:700;">ℹ</span>
+    <span style="flex:1;"><b>Reverse charge intra-UE aplicado</b> — IVA não cobrado por BH. Sujeito a autoliquidação pelo cliente no país de destino (art. 196 Diretiva UE 2006/112/CE).</span>
+  </div>
+
+  <div class="invoice-table">
+    <div class="tr head">
+      <div class="col-desc">Descrição</div>
+      <div class="col-qty">Qtd</div>
+      <div class="col-unit">Unit.</div>
+      <div class="col-total">Total</div>
+    </div>
+    <div class="tr">
+      <div class="col-desc">Assinatura BIG logistics</div>
+      <div class="col-qty">1</div>
+      <div class="col-unit">€99,00</div>
+      <div class="col-total">€99,00</div>
+    </div>
+    <div class="tr highlight">
+      <div class="col-desc">
+        <b>Etiquetas BIG logistics</b>
+        <span class="drilldown-link"> ↗ ver detalhe das 247 etiquetas</span>
+      </div>
+      <div class="col-qty">247</div>
+      <div class="col-unit">€0,25</div>
+      <div class="col-total">€61,75</div>
+    </div>
+    <div class="tr">
+      <div class="col-desc">Vitrine BIG sales</div>
+      <div class="col-qty">1</div>
+      <div class="col-unit">—</div>
+      <div class="col-total">—</div>
+    </div>
+  </div>
+
+  <div class="fiscal-block">
+    <div class="box">
+      <div class="row">
+        <div class="label">Subtotal</div>
+        <div class="value">€160,75</div>
+      </div>
+      <div class="row iva-rev">
+        <div class="label">IVA — reverse charge intra-UE</div>
+        <div class="value">€0,00</div>
+      </div>
+      <div class="row total">
+        <div class="label">TOTAL</div>
+        <div class="value">€160,75</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="border: 1.5px solid var(--ink); background: var(--paper-edge); padding: 10px 14px; border-radius: 5px; margin-top: 14px; font-size: 12px; box-shadow: 3px 3px 0 var(--ink);">
+    <b>Nota fiscal:</b> Operación no sujeta a IVA español. Reverse charge aplicable según artículo 196 de la Directiva 2006/112/CE — el cliente debe autoliquidar el IVA en su país de establecimiento (FR). NIF intracomunitario validado en VIES en 01/05/2026.
+  </div>
+</section>
+
+<script>
+document.querySelectorAll('.proto-nav button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.screen;
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(target).classList.add('active');
+    document.querySelectorAll('.proto-nav button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    window.scrollTo({ top: 130, behavior: 'smooth' });
+  });
+});
+</script>
+
+</body>
+</html>

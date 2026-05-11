@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<title>BIG Hub · Wireframes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a1a; --ink-soft: #3d3d3d; --ink-light: #8a8a8a;
+  --paper: #fcfcfa; --paper-edge: #f3f1e8;
+  --yellow: #fff2a8; --yellow-edge: #e6c732;
+  --green-soft: #c9e6b8; --blue-soft: #b8d4f0;
+}
+* { box-sizing: border-box; }
+body { font-family: 'Patrick Hand', cursive; background: var(--paper); color: var(--ink); padding: 30px 50px 80px; line-height: 1.45; max-width: 1100px; margin: 0 auto; }
+h1, h2, h3 { font-family: 'Caveat', cursive; letter-spacing: 0.4px; }
+h1 { font-size: 42px; margin: 0 0 4px; }
+h2 { font-size: 28px; margin: 30px 0 12px; padding-bottom: 8px; border-bottom: 1.8px solid var(--ink); }
+h3 { font-size: 20px; margin: 18px 0 6px; }
+.subtitle { color: var(--ink-soft); font-size: 16px; margin-bottom: 4px; }
+.tag { display: inline-block; background: var(--yellow); border: 1.5px solid var(--ink); padding: 2px 10px; border-radius: 100px; font-size: 13px; transform: rotate(-1deg); margin-right: 6px; }
+.tag.green { background: var(--green-soft); }
+.tag.blue { background: var(--blue-soft); }
+.card { border: 1.5px solid var(--ink); border-radius: 6px; padding: 14px 18px; margin-bottom: 14px; background: var(--paper); box-shadow: 3px 3px 0 var(--ink); }
+.card.muted { background: var(--paper-edge); box-shadow: 2px 2px 0 var(--ink); }
+.card .meta { color: var(--ink-light); font-size: 13.5px; margin-bottom: 8px; }
+ul.list { list-style: none; padding: 0; margin: 0; }
+ul.list li { padding: 5px 0; border-bottom: 1px dashed var(--ink-light); }
+ul.list li:last-child { border-bottom: none; }
+a { color: var(--ink); text-decoration: none; border-bottom: 1.5px solid var(--yellow-edge); padding-bottom: 1px; }
+a:hover { background: var(--yellow); }
+.lead-link { font-weight: 700; font-size: 16px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+.row .nm { flex: 1; }
+.row .pill { font-size: 11.5px; padding: 1px 8px; border: 1.2px solid var(--ink-light); border-radius: 100px; background: var(--paper-edge); color: var(--ink-soft); white-space: nowrap; }
+.note { font-size: 13px; color: var(--ink-soft); font-style: italic; margin-top: 6px; }
+.banner { background: var(--yellow); border: 2px solid var(--ink); border-radius: 8px; padding: 14px 20px; margin: 16px 0 30px; box-shadow: 4px 4px 0 var(--ink); }
+.banner b { font-family: 'Caveat', cursive; font-size: 22px; }
+</style>
+</head>
+<body>
+
+<h1>BIG Hub · Wireframes</h1>
+<p class="subtitle">Wireframes low-fidelity (estética sketch / whiteboard) das iniciativas do ecossistema Big Hub.</p>
+
+<div class="banner">
+  <b>BIG logistics FBM v1.5 — onda 1 completa</b><br>
+  14 wireframes base · 5 protótipos de tela · 8 jornadas navegáveis cobrindo as 8 user stories must/should-have.
+</div>
+
+<h2>🚚 logistica-fbm · Pool BH + coleta unificada</h2>
+
+<div class="card">
+  <div class="meta">8 user stories · 27 artefatos (Etapa 1 · 2 · 3) · Release v1.5</div>
+
+  <h3>Jornadas navegáveis (Etapa 3) — entrada principal</h3>
+  <ul class="list">
+    <li class="row"><span class="nm"><a class="lead-link" href="logistica-fbm/pool-bh-coleta-unificada/setup-inicial-happy-jornada.html">Setup inicial do BIG logistics</a></span><span class="pill">8 fases</span> <span class="pill">must-have</span></li>
+    <li class="row"><span class="nm"><a class="lead-link" href="logistica-fbm/pool-bh-coleta-unificada/seller-pedido-happy-jornada.html">Processar pedido FBM multi-canal</a></span><span class="pill">6 fases</span> <span class="pill">must-have</span></li>
+    <li class="row"><span class="nm"><a class="lead-link" href="logistica-fbm/pool-bh-coleta-unificada/seller-rma-canal-bh-happy-jornada.html">Processar RMA em canais BH</a></span><span class="pill">6 fases</span> <span class="pill">must-have</span></li>
+    <li class="row"><span class="nm"><a class="lead-link" href="logistica-fbm/pool-bh-coleta-unificada/comprador-cancela-antes-coleta-jornada.html">Cancelar pedido antes da coleta</a></span><span class="pill">5 fases</span> <span class="pill">must-have</span></li>
+    <li class="row"><span class="nm"><a class="lead-link" href="logistica-fbm/pool-bh-coleta-unificada/seller-fatura-etiquetas-mensal-happy-jornada.html">Pagar etiquetas via fatura mensal</a></span><span class="pill">5 fases</span> <span class="pill">must-have</span></li>
+    <li class="row"><span class="nm"><a class="lead-link" href="logistica-fbm/pool-bh-coleta-unificada/seller-importar-contrato-poc-happy-jornada.html">Importar contrato de carrier via PDF (POC)</a></span><span class="pill">5 fases</span> <span class="pill">poc-mvp</span></li>
+    <li class="row"><span class="nm"><a class="lead-link" href="logistica-fbm/pool-bh-coleta-unificada/seller-dashboard-uso-cobranca-happy-jornada.html">Acompanhar uso & cobrança no dashboard</a></span><span class="pill">3 rotinas</span> <span class="pill">must-have</span></li>
+    <li class="row"><span class="nm"><a class="lead-link" href="logistica-fbm/pool-bh-coleta-unificada/seller-config-regra-happy-jornada.html">Criar regras de roteamento e embalagem</a></span><span class="pill">5 fases</span> <span class="pill">should-have</span></li>
+  </ul>
+
+  <h3>Protótipos de tela (Etapa 2)</h3>
+  <ul class="list">
+    <li><a href="logistica-fbm/pool-bh-coleta-unificada/seller-pedido-happy--detalhe-pedido-prototipo.html">Pedido · detalhe (8 cenários)</a></li>
+    <li><a href="logistica-fbm/pool-bh-coleta-unificada/seller-rma-canal-bh-happy--detalhe-devolucao-prototipo.html">RMA · detalhe devolução (5 cenários)</a></li>
+    <li><a href="logistica-fbm/pool-bh-coleta-unificada/seller-fatura-etiquetas-mensal-happy--planos-faturas-detalhe-prototipo.html">Fatura · planos-faturas (4 cenários)</a></li>
+    <li><a href="logistica-fbm/pool-bh-coleta-unificada/seller-importar-contrato-poc-happy--importar-contrato-preview-prototipo.html">Import contrato · preview (5 cenários multi-contrato)</a></li>
+    <li><a href="logistica-fbm/pool-bh-coleta-unificada/setup-inicial-happy--wizard-shell-prototipo.html">Setup · wizard shell (8 conteúdos)</a></li>
+    <li><a href="logistica-fbm/pool-bh-coleta-unificada/seller-dashboard-uso-cobranca-prototipo.html">Dashboard · uso & cobrança (5 cenários)</a></li>
+  </ul>
+
+  <h3>Wireframes base (Etapa 1)</h3>
+  <ul class="list">
+    <li><a href="logistica-fbm/pool-bh-coleta-unificada/setup-inicial-happy--wizard-shell.html">Setup · wizard shell</a></li>
+    <li><a href="logistica-fbm/pool-bh-coleta-unificada/seller-pedido-happy--fila-pedidos.html">Pedido · fila</a></li>
+    <li><a href="logistica-fbm/pool-bh-coleta-unificada/seller-pedido-happy--detalhe-pedido.html">Pedido · detalhe (tela-âncora)</a></li>
+    <li><a href="logistica-fbm/pool-bh-coleta-unificada/seller-pedido-happy--painel-coletas.html">Pedido · painel de coletas</a></li>
+    <li><a href="logistica-fbm/pool-bh-coleta-unificada/seller-pedido-happy--importacoes-csv.html">Pedido · importações CSV</a></li>
+    <li><a href="logistica-fbm/pool-bh-coleta-unificada/seller-pedido-happy--novo-pedido-manual.html">Pedido · novo manual</a></li>
+    <li><a href="logistica-fbm/pool-bh-coleta-unificada/seller-rma-canal-bh-happy--fila-devolucoes.html">RMA · fila devoluções</a></li>
+    <li><a href="logistica-fbm/pool-bh-coleta-unificada/seller-rma-canal-bh-happy--detalhe-devolucao.html">RMA · detalhe devolução</a></li>
+    <li><a href="logistica-fbm/pool-bh-coleta-unificada/seller-fatura-etiquetas-mensal-happy--planos-faturas-detalhe.html">Fatura · planos-faturas</a></li>
+    <li><a href="logistica-fbm/pool-bh-coleta-unificada/seller-fatura-etiquetas-mensal-happy--etiquetas-do-ciclo-tabela.html">Fatura · etiquetas do ciclo</a></li>
+    <li><a href="logistica-fbm/pool-bh-coleta-unificada/seller-importar-contrato-poc-happy--importar-contrato-preview.html">Import contrato · preview</a></li>
+    <li><a href="logistica-fbm/pool-bh-coleta-unificada/seller-dashboard-uso-cobranca-happy.html">Dashboard · uso & cobrança</a></li>
+    <li><a href="logistica-fbm/pool-bh-coleta-unificada/seller-config-regra-happy--config-hub.html">Configs · hub</a></li>
+    <li><a href="logistica-fbm/pool-bh-coleta-unificada/seller-config-regra-happy--regra-builder.html">Configs · regra builder</a></li>
+  </ul>
+</div>
+
+<h2>👤 cadastro-lojistas</h2>
+
+<div class="card muted">
+  <div class="meta">Exploração de cadastro · 3 hipóteses</div>
+  <ul class="list">
+    <li><a href="cadastro-lojistas/eligibility-por-perfil/">eligibility-por-perfil/</a></li>
+    <li><a href="cadastro-lojistas/eligibility-preview/">eligibility-preview/</a></li>
+    <li><a href="cadastro-lojistas/eligibility-universal/">eligibility-universal/</a></li>
+  </ul>
+</div>
+
+<h2>🛒 loja-templates</h2>
+
+<div class="card muted">
+  <div class="meta">Templates de loja</div>
+  <ul class="list">
+    <li><a href="loja-templates/checkout-antes-briefing/">checkout-antes-briefing/</a></li>
+  </ul>
+</div>
+
+<p class="note" style="margin-top: 40px;">Documentação completa (PRD, journeys, decisões, mapa de telas) no ClickUp · doc <em>Product Documentation</em> · space <em>Novo Ecosistema 2</em>.</p>
+
+</body>
+</html>
